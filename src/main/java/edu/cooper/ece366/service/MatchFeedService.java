@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MatchFeedService {
     // Returns feed for current user
-    List<User> getUserFeed(String userID);
+    List<User> getUserFeed(String userID, int numUsers);
 }

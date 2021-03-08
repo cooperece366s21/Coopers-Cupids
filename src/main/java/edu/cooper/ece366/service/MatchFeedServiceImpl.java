@@ -17,8 +17,11 @@ public class MatchFeedServiceImpl implements MatchFeedService {
         this.userStore = userStore;
     }
 
+    // Builds user feed
+    // Pulls list of users and filters it
+    // Arguments: userID to build feed for, size of feed
     @Override
-    public List<User> getUserFeed(String userID) {
+    public List<User> getUserFeed(String userID, int numUsers) {
         // Create UserFeed
         List<User> userFeed;
 
@@ -28,9 +31,34 @@ public class MatchFeedServiceImpl implements MatchFeedService {
                             .map(uid -> userStore.getUserFromId(uid))
                             .collect(Collectors.toList());
 
-        // TODO: Filter list for users already seen
+        // Repeats request to userStore until size of feed is the wanted size
+        // Times out after multiple attempts that do not change feed size
+        int prevFeedSize = userFeed.size(), attempts = 0;
 
-        // TODO: Add function to UserStore that returns list of random user
+        while(attempts < 5) {
+            // Gets list of users from userStore
+            userFeed.addAll(userStore.feedUsers(numUsers));
+
+            // Removes current user from list (Don't want to see yourself)
+            if(userFeed.contains(userStore.getUserFromId(userID))) {
+                userFeed.remove(userStore.getUserFromId(userID));
+            }
+
+            // Filters list to not show users already seen
+            // For now, seen = liked + disliked
+            userFeed.stream()
+                    .filter(user -> !matchStore.getLikes(userID).contains(user.getUserID())
+                            && !matchStore.getDislikes(userID).contains(user.getUserID()))
+                    .collect(Collectors.toList());
+
+            // Checks if new users were added
+            if(userFeed.size() == prevFeedSize) {
+                attempts++;
+            } else {
+                prevFeedSize = userFeed.size();
+                attempts = 0;
+            }
+        }
 
         return userFeed;
     }

@@ -20,4 +20,7 @@ public interface UserStore {
 
     // Deletes User
     void deleteUser(String userID);
+
+    // Returns list of users for feed
+    List<User> feedUsers(int numUsers);
 }
