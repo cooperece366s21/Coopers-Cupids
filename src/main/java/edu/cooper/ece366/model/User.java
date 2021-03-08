@@ -33,6 +33,10 @@ public class User {
         return this.conversations;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
     // Returns conversation with specified user
     // Returns empty list if none
     public List<Conversation> searchConversation(String uid) {

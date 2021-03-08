@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public class UserStoreImpl implements UserStore {
     // List of all users
-    List<User> users;
+    private List<User> users;
 
     // Constructor
     public UserStoreImpl() {
