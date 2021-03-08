@@ -23,6 +23,10 @@ public class Conversation {
         return this.users.get(0).equals(uid) ? this.users.get(1) : this.users.get(0);
     }
 
+    public List<String> getUsers() {
+        return users;
+    }
+
     public List<Message> getMessages() {
         return messageHistory;
     }
