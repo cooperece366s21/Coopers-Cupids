@@ -34,22 +34,22 @@ public class MatchFeedServiceImpl implements MatchFeedService {
         int prevFeedSize = userFeed.size(), attempts = 0;
 
         while(attempts < 5) {
-            // Gets list of users from userStore
-            userFeed.addAll(this.userStore.feedUsers(numUsers));
-
-            // Remove`s current user from list (Don't want to see yourself)
-            if(userFeed.contains(this.userStore.getUserFromId(userID))) {
-                userFeed.remove(this.userStore.getUserFromId(userID));
-            }
-
-            // Filters list to not show users already seen
-            // For now, seen = liked + disliked
-            userFeed.stream()
-                    .filter(user -> !this.matchStore.getLikes(userID).contains(user.getUserID())
-                            && !this.matchStore.getDislikes(userID).contains(user.getUserID())
-                            && !this.matchStore.getDislikes(user.getUserID()).contains(userID)
-                            && this.userStore.getUserFromId(user.getUserID()).hasProfile())
-                    .collect(Collectors.toList());
+            // Gets list of users from userStore & filters list
+            // Removes already seen: for now, seen = liked + disliked
+            // Removes users who disliked this user
+            // Removes self (don't want to see yourself)
+            // Removes users without a profile to show
+            // Removes users already in feed
+            userFeed.addAll(this.userStore.feedUsers(numUsers)
+                            .stream()
+                            .filter(user -> !this.matchStore.getLikes(userID).contains(user.getUserID())
+                                && !this.matchStore.getDislikes(userID).contains(user.getUserID())
+                                && !this.matchStore.getDislikes(user.getUserID()).contains(userID)
+                                && this.userStore.getUserFromId(user.getUserID()).hasProfile()
+                                && !user.getUserID().equals(userID)
+                                && !userFeed.contains(user))
+                            .collect(Collectors.toList())
+                            );
 
             // Checks if new users were added
             if(userFeed.size() == prevFeedSize) {
