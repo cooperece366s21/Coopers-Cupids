@@ -2,7 +2,7 @@ package edu.cooper.ece366.model;
 
 public class Message {
     // Enum for message type
-    enum Message_Type {
+    public enum Message_Type {
         TEXT,
         IMAGE,
         GIF
@@ -18,34 +18,21 @@ public class Message {
 
     // Methods
     // -------
-    public Message(String sender, String recipient, Message_Type type, String text) {
+    public Message(String sender, Message_Type type, String text) {
         this.sender = sender;
-        this.recipient = recipient;
         this.messageType = type;
         this.messageText = text;
 
         // TODO: Set Timestamp
     }
 
-    public String getSender() {
-        return sender;
-    }
+    public String getSender() { return this.sender; }
 
-    public String getRecipient() {
-        return recipient;
-    }
+    public Message_Type getMessageType() { return this.messageType; }
 
-    public Message_Type getMessageType() {
-        return messageType;
-    }
+    public String getMessageText() { return this.messageText; }
 
-    public String getMessageText() {
-        return messageText;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
+    public String getTimestamp() { return this.timestamp; }
 
     // Setters aren't needed, since messages cannot be edited
 }

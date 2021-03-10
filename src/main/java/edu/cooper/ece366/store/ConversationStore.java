@@ -8,9 +8,11 @@ public interface ConversationStore {
     // Returns list of conversations containing user
     List<Conversation> getUserConversations(String userID);
 
+    Conversation getUserConversation(String userID, String convoUserID);
+
     // Adds Conversation
     void addConversation(Conversation conv);
 
     // Deletes Conversation
-    void deleteConversation(Conversation conv);
+    void deleteConversation(String userID, String deletedUserID);
 }

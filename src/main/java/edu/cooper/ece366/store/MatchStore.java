@@ -4,14 +4,13 @@ import java.util.List;
 
 public interface MatchStore {
     // Updates all lists to reflect like
-    void addLike(String userID, String likedUserID);
-
-    void removeLike(String userID, String likedUserID);
+    boolean addLike(String userID, String likedUserID);
 
     // Updates all lists to reflect dislike
     void addDislike(String userID, String dislikedUserID);
 
-    void removeDislike(String userID, String dislikedUserID);
+
+    void unmatch(String userID, String unmatchedUserID);
 
     // Returns list of userIDs that user has liked
     List<String> getLikes(String userID);

@@ -12,54 +12,29 @@ public class Profile {
 
     // Setters
     // --------
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setName(String name) { this.name = name; }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+    public void setAge(int age) { this.age = age; }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
+    public void setPhoto(String photo) { this.photo = photo; }
 
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
+    public void setBio(String bio) { this.bio = bio; }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+    public void setLocation(String location) { this.location = location; }
 
-    public void setInterests(String interests) {
-        this.interests = interests;
-    }
+    public void setInterests(String interests) { this.interests = interests; }
 
     // Getters
     // --------
-    public String getName() {
-        return this.name;
-    }
+    public String getName() { return this.name; }
 
-    public int getAge() {
-        return this.age;
-    }
+    public int getAge() { return this.age; }
 
-    public String getPhoto() {
-        return this.photo;
-    }
+    public String getPhoto() { return this.photo; }
 
-    public String getBio() {
-        return this.bio;
-    }
+    public String getBio() { return this.bio; }
 
-    public String getLocation() {
-        return this.location;
-    }
+    public String getLocation() { return this.location; }
 
-    public String getInterests() {
-        return this.interests;
-    }
-
+    public String getInterests() { return this.interests; }
 }

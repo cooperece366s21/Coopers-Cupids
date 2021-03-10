@@ -1,18 +1,16 @@
 package edu.cooper.ece366.service;
 
 import edu.cooper.ece366.model.User;
-import edu.cooper.ece366.store.MatchStoreImpl;
+import edu.cooper.ece366.store.MatchStore;
 import edu.cooper.ece366.store.UserStore;
-import edu.cooper.ece366.store.UserStoreImpl;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MatchFeedServiceImpl implements MatchFeedService {
-    private MatchStoreImpl matchStore;
-    private UserStoreImpl userStore;
+    private MatchStore matchStore;
+    private UserStore userStore;
 
-    public MatchFeedServiceImpl(MatchStoreImpl matchStore, UserStoreImpl userStore) {
+    public MatchFeedServiceImpl(MatchStore matchStore, UserStore userStore) {
         this.matchStore = matchStore;
         this.userStore = userStore;
     }
@@ -26,9 +24,9 @@ public class MatchFeedServiceImpl implements MatchFeedService {
         List<User> userFeed;
 
         // Pull list of users that liked this user
-        userFeed = matchStore.getLikedBy(userID)
+        userFeed = this.matchStore.getLikedBy(userID)
                             .stream()
-                            .map(uid -> userStore.getUserFromId(uid))
+                            .map(uid -> this.userStore.getUserFromId(uid))
                             .collect(Collectors.toList());
 
         // Repeats request to userStore until size of feed is the wanted size
@@ -37,24 +35,27 @@ public class MatchFeedServiceImpl implements MatchFeedService {
 
         while(attempts < 5) {
             // Gets list of users from userStore
-            userFeed.addAll(userStore.feedUsers(numUsers));
+            userFeed.addAll(this.userStore.feedUsers(numUsers));
 
-            // Removes current user from list (Don't want to see yourself)
-            if(userFeed.contains(userStore.getUserFromId(userID))) {
-                userFeed.remove(userStore.getUserFromId(userID));
+            // `Remove`s current user from list (Don't want to see yourself)
+            if(userFeed.contains(this.userStore.getUserFromId(userID))) {
+                userFeed.remove(this.userStore.getUserFromId(userID));
             }
 
             // Filters list to not show users already seen
             // For now, seen = liked + disliked
             userFeed.stream()
-                    .filter(user -> !matchStore.getLikes(userID).contains(user.getUserID())
-                            && !matchStore.getDislikes(userID).contains(user.getUserID()))
+                    .filter(user -> !this.matchStore.getLikes(userID).contains(user.getUserID())
+                            && !this.matchStore.getDislikes(userID).contains(user.getUserID())
+                            && !this.matchStore.getDislikes(user.getUserID()).contains(userID)
+                            && this.userStore.getUserFromId(user.getUserID()).hasProfile())
                     .collect(Collectors.toList());
 
             // Checks if new users were added
             if(userFeed.size() == prevFeedSize) {
                 attempts++;
-            } else {
+            }
+            else {
                 prevFeedSize = userFeed.size();
                 attempts = 0;
             }
@@ -62,4 +63,10 @@ public class MatchFeedServiceImpl implements MatchFeedService {
 
         return userFeed;
     }
+
+    @Override
+    public MatchStore getMatchStore() { return this.matchStore; }
+
+    @Override
+    public UserStore getUserStore() { return this.userStore; }
 }

@@ -6,6 +6,9 @@ import java.util.List;
 
 public interface UserStore {
 
+    // Checks if password is correct
+    boolean validateUser(String userID, String password);
+
     // Checks if UserID is taken
     boolean isUser(String userID);
 

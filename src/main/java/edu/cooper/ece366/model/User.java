@@ -1,8 +1,5 @@
 package edu.cooper.ece366.model;
 
-import edu.cooper.ece366.model.Profile;
-import edu.cooper.ece366.model.Conversation;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,39 +7,40 @@ import java.util.stream.Collectors;
 public class User {
     // Variables
     // ----------
-    private Profile profile;
-    private List<Conversation> conversations;
+    private boolean hasProfile;
     private final String userID;
+    private String password;
+    private Profile profile;
 
     // Methods
     // --------
 
     // Constructor
-    public User(String uid) {
-        this.conversations = new ArrayList<Conversation>();
+    public User(String uid, String password) {
+        this.hasProfile = false;
         this.userID = uid;
+        this.password = password;
+        this.profile = new Profile();
     }
+
+    public void createdProfile() { this.hasProfile = true; }
+
+    public void deletedProfile() { this.hasProfile = false; }
+
+    public boolean hasProfile() { return this.hasProfile; }
 
     // Returns user's profile
-    public Profile getProfile() {
-        return this.profile;
-    }
+    public Profile getProfile() { return this.profile; }
 
-    // Returns user's conversations
-    public List<Conversation>  getConversations() {
-        return this.conversations;
-    }
+    public String getUserID() { return this.userID; }
 
-    public String getUserID() {
-        return userID;
-    }
-
-    // Returns conversation with specified user
-    // Returns empty list if none
-    public List<Conversation> searchConversation(String uid) {
-        return conversations.stream()
-                            .filter(c -> c.getRecipient(userID).equals(uid))
-                            .collect(Collectors.toList());
+    public boolean checkPass(String password) {
+        if(password.equals(this.password)) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 
