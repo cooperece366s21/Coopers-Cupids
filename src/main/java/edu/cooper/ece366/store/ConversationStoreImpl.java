@@ -8,11 +8,7 @@ import java.util.ArrayList;
 
 public class ConversationStoreImpl implements ConversationStore {
     // Maps userID -> {Conversations}
-    private Map<String,List<Conversation>> userConversations; // Are objects pass-by-reference? Does this store one copy?
-
-    public ConversationStoreImpl() {
-        this.userConversations = new HashMap<>();
-    }
+    private static final Map<String,List<Conversation>> userConversations = new HashMap<>(); // Are objects pass-by-reference? Does this store one copy?
 
     // Returns list of conversations containing user
     @Override
