@@ -1,5 +1,6 @@
 package edu.cooper.ece366.handler;
 
+import com.google.common.hash.Hashing;
 import edu.cooper.ece366.model.Conversation;
 import edu.cooper.ece366.model.Message;
 import edu.cooper.ece366.model.Profile;
@@ -10,6 +11,8 @@ import spark.Request;
 import spark.Response;
 import com.google.gson.Gson;
 import com.google.common.reflect.TypeToken;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -33,7 +36,8 @@ public class Handler {
             res.status(400);
             return null;
         }
-        this.matchService.getUserStore().addUser(new User(info.get("username"), info.get("password")));
+        this.matchService.getUserStore().addUser(new User(info.get("username"),
+                Hashing.sha256().hashString(info.get("password"), StandardCharsets.UTF_8).toString()));
         User user = this.matchService.getUserStore().getUserFromId(info.get("username"));
         res.status(200);
         return user;
@@ -44,7 +48,8 @@ public class Handler {
     public User login(final Request req, final Response res) {
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().isUser(info.get("username"))
-                && this.matchService.getUserStore().validateUser(info.get("username"), info.get("password"))) {
+                && this.matchService.getUserStore().validateUser(info.get("username"),
+                Hashing.sha256().hashString(info.get("password"), StandardCharsets.UTF_8).toString())) {
             User user = this.matchService.getUserStore().getUserFromId(info.get("username"));
             res.status(200);
             return user;
