@@ -5,7 +5,7 @@ import edu.cooper.ece366.model.Conversation;
 import java.util.List;
 
 public interface ConversationStore {
-    // Returns list of conversations containing user
+
     List<Conversation> getUserConversations(String userID);
 
     Conversation getUserConversation(String userID, String convoUserID);

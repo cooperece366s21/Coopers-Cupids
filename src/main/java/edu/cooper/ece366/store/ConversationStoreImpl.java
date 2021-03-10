@@ -22,9 +22,11 @@ public class ConversationStoreImpl implements ConversationStore {
     @Override
     public Conversation getUserConversation(String userID, String convoUserID) {
         List<Conversation> convos = this.getUserConversations(userID);
-        for(Conversation c : convos) {
-            if (c.getUsers().contains(userID) && c.getUsers().contains(convoUserID)) {
-                return c;
+        if(convos != null) {
+            for(Conversation c : convos) {
+                if (c.getUsers().contains(userID) && c.getUsers().contains(convoUserID)) {
+                    return c;
+                }
             }
         }
         return null;
