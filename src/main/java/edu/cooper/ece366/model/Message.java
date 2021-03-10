@@ -11,7 +11,6 @@ public class Message {
     // Variables
     // ---------
     private String sender;
-    private String recipient;
     private Message_Type messageType;
     private String messageText;
     private String timestamp; // TODO: Change to Date Type in future
