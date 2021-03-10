@@ -1,9 +1,5 @@
 package edu.cooper.ece366.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class User {
     // Variables
     // ----------
@@ -35,12 +31,7 @@ public class User {
     public String getUserID() { return this.userID; }
 
     public boolean checkPass(String password) {
-        if(password.equals(this.password)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return password.equals(this.password);
     }
 }
 

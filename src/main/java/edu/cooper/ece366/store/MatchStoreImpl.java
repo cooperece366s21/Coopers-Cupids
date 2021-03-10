@@ -155,4 +155,9 @@ public class MatchStoreImpl implements MatchStore {
             return List.of();
         }
     }
+
+    @Override
+    public boolean isMatch(String userID, String matchUserID) {
+        return this.matches.get(userID).contains(matchUserID) && this.matches.get(matchUserID).contains(userID);
+    }
 }

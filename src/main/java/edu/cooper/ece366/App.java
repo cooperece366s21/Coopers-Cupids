@@ -23,7 +23,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        Gson gson = new GsonBuilder().create();
+        Gson gson = new GsonBuilder().setLenient().create();
 
         ResponseTransformer responseTransformer = model -> {
                                                             if (model == null) {
@@ -66,19 +66,19 @@ public class App
                 });
 
         get("/ping", (req, res) -> "OK");
-        post("/signup", (req, res) -> handler.signup(req, res), responseTransformer);
-        post("/login", (req, res) -> handler.login(req, res), responseTransformer);
-        post("/logout", (req, res) -> handler.logout(req, res), responseTransformer);
-        get("/me", (req, res) -> handler.me(req, res), responseTransformer);
-        get("/user/:userId", (req, res) -> handler.getUser(req), responseTransformer);
-        post("/user/:userId/create", (req, res) -> handler.create(req, res), responseTransformer);
-        get("/user/:userId/profile", (req, res) -> handler.getProfile(req, res), responseTransformer);
-        get("/user/:userId/feed", (req, res) -> handler.getFeed(req), responseTransformer);
-        post("/user/:userId/feed/like", (req, res) -> handler.like(req, res), responseTransformer);
-        post("/user/:userId/feed/dislike", (req, res) -> handler.dislike(req, res), responseTransformer);
-        get("/user/:userId/convos", (req, res) -> handler.getConvos(req), responseTransformer);
-        post("/user/:userId/convos/:matchId", (req, res) -> handler.getConvo(req, res), responseTransformer);
-        post("/user/:userId/convos/:matchId/send", (req, res) -> handler.sendMessage(req, res), responseTransformer);
-        post("/user/:userId/convos/:matchId/unmatch", (req, res) -> handler.unmatch(req, res), responseTransformer);
+        post("/signup", handler::signup, responseTransformer);
+        post("/login", handler::login, responseTransformer);
+        post("/logout", handler::logout, responseTransformer);
+        get("/me", handler::me, responseTransformer);
+        get("/user/:userId", handler::getUser, responseTransformer);
+        post("/user/:userId/create", handler::create, responseTransformer);
+        get("/user/:userId/profile", handler::getProfile, responseTransformer);
+        get("/user/:userId/feed", handler::getFeed, responseTransformer);
+        post("/user/:userId/feed/like", handler::like, responseTransformer);
+        post("/user/:userId/feed/dislike", handler::dislike, responseTransformer);
+        get("/user/:userId/convos", handler::getConvos, responseTransformer);
+        get("/user/:userId/convos/:matchId", handler::getConvo, responseTransformer);
+        post("/user/:userId/convos/:matchId/send", handler::sendMessage, responseTransformer);
+        post("/user/:userId/convos/:matchId/unmatch", handler::unmatch, responseTransformer);
     }
 }

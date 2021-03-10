@@ -37,7 +37,7 @@ public class MatchFeedServiceImpl implements MatchFeedService {
             // Gets list of users from userStore
             userFeed.addAll(this.userStore.feedUsers(numUsers));
 
-            // `Remove`s current user from list (Don't want to see yourself)
+            // Remove`s current user from list (Don't want to see yourself)
             if(userFeed.contains(this.userStore.getUserFromId(userID))) {
                 userFeed.remove(this.userStore.getUserFromId(userID));
             }

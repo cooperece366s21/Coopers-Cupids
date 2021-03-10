@@ -6,7 +6,7 @@ import java.util.List;
 public class Conversation {
     // Variables
     // ----------
-    private List<Message> messageHistory;
+    private final List<Message> messageHistory;
     private final List<String> users; // UserIDs of users in conversation
 
     // Methods
