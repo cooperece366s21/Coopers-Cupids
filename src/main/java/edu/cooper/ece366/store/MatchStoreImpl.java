@@ -1,9 +1,9 @@
 package edu.cooper.ece366.store;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class MatchStoreImpl implements MatchStore {
     // Maps userID to list of UserIDs that user has liked
