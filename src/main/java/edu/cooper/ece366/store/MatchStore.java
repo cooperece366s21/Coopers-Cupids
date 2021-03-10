@@ -9,7 +9,7 @@ public interface MatchStore {
     // Updates all lists to reflect dislike
     void addDislike(String userID, String dislikedUserID);
 
-
+    // Basically equal to legacy removeLike
     void unmatch(String userID, String unmatchedUserID);
 
     // Returns list of userIDs that user has liked

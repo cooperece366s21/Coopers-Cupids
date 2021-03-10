@@ -19,6 +19,7 @@ public class ConversationStoreImpl implements ConversationStore {
     @Override
     public List<Conversation> getUserConversations(String userID) { return this.userConversations.get(userID); }
 
+    // Returns a specific conversation
     @Override
     public Conversation getUserConversation(String userID, String convoUserID) {
         List<Conversation> convos = this.getUserConversations(userID);

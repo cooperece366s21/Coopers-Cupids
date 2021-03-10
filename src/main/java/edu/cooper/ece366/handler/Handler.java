@@ -58,6 +58,8 @@ public class Handler {
         return this.conversationStore.getUserConversations(userID);
     }
 
+    // Function to get a specific conversation
+    // Take arguments through URL
     public Conversation getConvo(final Request req, final Response res) {
         String userID = req.params(":userId");
         String convoUserId = req.params(":matchId");
@@ -70,6 +72,8 @@ public class Handler {
         return null;
     }
 
+    // Function to send a message
+    // Take arguments through URL and POST body
     public Object sendMessage(final Request req, final Response res) {
         String userID = req.params(":userId");
         String convoUserId = req.params(":matchId");
@@ -114,7 +118,7 @@ public class Handler {
     }
 
     // Function to allow users to unmatch with other users
-    // Take arguments through URL and POST body
+    // Take arguments through URL
     public Object unmatch(final Request req, final Response res) {
         String userID = req.params(":userId");
         String unmatchedUserID = req.params(":matchId");
