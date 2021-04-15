@@ -5,20 +5,39 @@ import static spark.Spark.get;
 import static spark.Spark.initExceptionHandler;
 import static spark.Spark.options;
 import static spark.Spark.post;
+import spark.ResponseTransformer;
+import spark.Request;
+import spark.Response;
 
 import edu.cooper.ece366.handler.Handler;
-import edu.cooper.ece366.store.UserStoreImpl;
-import edu.cooper.ece366.store.MatchStoreImpl;
-import edu.cooper.ece366.store.ConversationStoreImpl;
+import edu.cooper.ece366.store.*;
 import edu.cooper.ece366.service.MatchFeedServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import spark.ResponseTransformer;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.Handle;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 
 public class App 
 {
-    public static void main( String[] args )
-    {
+    public static void main( String[] args ) {
+        // when installing MySQL, making sure to make password 123456
+        // changing the password in MySQL after installation is a PIA
+        //
+        // must run:
+        //
+        //      CREATE SCHEMA `coopids` ;
+        //
+        // in MySQL before connecting
+        String jdbcUrl = "jdbc:mysql://127.0.0.1:3306/coopids";
+        Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
+
+        File sqlFile = new File("src/main/resources/sql/schema.sql");
+        createSchema(sqlFile, jdbi);
+
         Gson gson = new GsonBuilder().setLenient().create();
 
         ResponseTransformer responseTransformer = model -> {
@@ -31,8 +50,8 @@ public class App
         initExceptionHandler(Throwable::printStackTrace);
 
         Handler handler = new Handler(
-                            new MatchFeedServiceImpl(new MatchStoreImpl(), new UserStoreImpl()),
-                            new ConversationStoreImpl(),
+                            new MatchFeedServiceImpl(new MatchStoreMySQL(jdbi), new UserStoreMySQL(jdbi)),
+                            new ConversationStoreMySQL(jdbi),
                             gson);
 
         options(
@@ -76,5 +95,35 @@ public class App
         get("/user/:userId/convos/:matchId", handler::getConvo, responseTransformer);
         post("/user/:userId/convos/:matchId/send", handler::sendMessage, responseTransformer);
         post("/user/:userId/convos/:matchId/unmatch", handler::unmatch, responseTransformer);
+    }
+
+    private static void createSchema(File schemaFile, Jdbi db) {
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(schemaFile));
+        } catch (Exception e) {
+            System.out.println(e);
+            return;
+        }
+
+        String tot = "";
+        try {
+            String st;
+            while ((st = br.readLine()) != null) {
+                tot += st;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            return;
+        }
+        String[] sqlCommands = tot.replace("    ", "").split(";");
+
+        Handle handle = db.open();
+
+        for (String s : sqlCommands) {
+            handle.execute(s);
+        }
+
+        return;
     }
 }

@@ -8,9 +8,7 @@ public class MatchStoreMySQL implements MatchStore {
 
     private final Jdbi jdbi;
 
-    public MatchStoreMySQL(final Jdbi jdbi) {
-        this.jdbi = jdbi;
-    }
+    public MatchStoreMySQL(final Jdbi jdbi) { this.jdbi = jdbi; }
 
     @Override
     public boolean addLike(String userID, String likedUserID) {
