@@ -33,10 +33,10 @@ public class App
         //
         // in MySQL before connecting
         String jdbcUrl = "jdbc:mysql://127.0.0.1:3306/coopids";
-        String schemaUrl = "src/main/resources/sql/schema.sql";
+        String schemaPath = "src/main/resources/sql/schema.sql";
 
         Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
-        CoopidsJdbi.setupSchema(jdbi, schemaUrl);
+        CoopidsJdbi.setupSchema(jdbi, schemaPath);
 
         Gson gson = new GsonBuilder().setLenient().create();
 
