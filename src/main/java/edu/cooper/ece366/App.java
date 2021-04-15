@@ -33,10 +33,10 @@ public class App
         //
         // in MySQL before connecting
         String jdbcUrl = "jdbc:mysql://127.0.0.1:3306/coopids";
-        Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
+        String schemaUrl = "src/main/resources/sql/schema.sql";
 
-        File sqlFile = new File("src/main/resources/sql/schema.sql");
-        createSchema(sqlFile, jdbi);
+        Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
+        CoopidsJdbi.setupSchema(jdbi, schemaUrl);
 
         Gson gson = new GsonBuilder().setLenient().create();
 
@@ -95,35 +95,5 @@ public class App
         get("/user/:userId/convos/:matchId", handler::getConvo, responseTransformer);
         post("/user/:userId/convos/:matchId/send", handler::sendMessage, responseTransformer);
         post("/user/:userId/convos/:matchId/unmatch", handler::unmatch, responseTransformer);
-    }
-
-    private static void createSchema(File schemaFile, Jdbi db) {
-        BufferedReader br;
-        try {
-            br = new BufferedReader(new FileReader(schemaFile));
-        } catch (Exception e) {
-            System.out.println(e);
-            return;
-        }
-
-        String tot = "";
-        try {
-            String st;
-            while ((st = br.readLine()) != null) {
-                tot += st;
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            return;
-        }
-        String[] sqlCommands = tot.replace("    ", "").split(";");
-
-        Handle handle = db.open();
-
-        for (String s : sqlCommands) {
-            handle.execute(s);
-        }
-
-        return;
     }
 }
