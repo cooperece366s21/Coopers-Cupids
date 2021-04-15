@@ -14,8 +14,8 @@ public class CoopidsJdbi {
         return jdbi;
     }
 
-    public static void setupSchema(Jdbi jdbi, String sqlFileUrl) {
-        File schemaFile = new File(sqlFileUrl);
+    public static void setupSchema(Jdbi jdbi, String sqlFilePath) {
+        File schemaFile = new File(sqlFilePath);
 
         BufferedReader br;
         try {
