@@ -10,9 +10,7 @@ public class UserStoreMySQL implements UserStore {
     private final Jdbi jdbi;
 
     // Constructor
-    public UserStoreMySQL(final Jdbi jdbi) {
-        this.jdbi = jdbi;
-    }
+    public UserStoreMySQL(final Jdbi jdbi) { this.jdbi = jdbi; }
 
     @Override
     public boolean validateUser(String userID, String password) {

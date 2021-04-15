@@ -9,9 +9,7 @@ public class ConversationStoreMySQL implements ConversationStore {
 
     private final Jdbi jdbi;
 
-    public ConversationStoreMySQL(final Jdbi jdbi) {
-        this.jdbi = jdbi;
-    }
+    public ConversationStoreMySQL(final Jdbi jdbi) { this.jdbi = jdbi; }
 
     // Returns list of conversations containing user
     @Override
