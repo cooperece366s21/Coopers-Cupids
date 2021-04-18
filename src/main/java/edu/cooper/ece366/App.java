@@ -6,20 +6,14 @@ import static spark.Spark.initExceptionHandler;
 import static spark.Spark.options;
 import static spark.Spark.post;
 import spark.ResponseTransformer;
-import spark.Request;
-import spark.Response;
-
-import edu.cooper.ece366.handler.Handler;
-import edu.cooper.ece366.store.*;
-import edu.cooper.ece366.service.MatchFeedServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.Handle;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.BufferedReader;
+import edu.cooper.ece366.auth.Cookies;
+import edu.cooper.ece366.handler.Handler;
+import edu.cooper.ece366.store.*;
+import edu.cooper.ece366.service.MatchFeedServiceImpl;
 
 public class App 
 {
@@ -37,6 +31,12 @@ public class App
 
         Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
         CoopidsJdbi.setupSchema(jdbi, schemaPath);
+
+        Cookies c = new Cookies(jdbi);
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println(c.assignCookie(""));
+        }
 
         Gson gson = new GsonBuilder().setLenient().create();
 

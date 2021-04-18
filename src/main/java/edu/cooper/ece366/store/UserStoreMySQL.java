@@ -1,9 +1,9 @@
 package edu.cooper.ece366.store;
 
-import edu.cooper.ece366.model.User;
 import org.jdbi.v3.core.Jdbi;
-
 import java.util.List;
+
+import edu.cooper.ece366.model.User;
 
 public class UserStoreMySQL implements UserStore {
 

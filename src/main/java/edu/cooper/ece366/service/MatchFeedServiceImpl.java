@@ -1,10 +1,11 @@
 package edu.cooper.ece366.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import edu.cooper.ece366.model.User;
 import edu.cooper.ece366.store.MatchStore;
 import edu.cooper.ece366.store.UserStore;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MatchFeedServiceImpl implements MatchFeedService {
     private MatchStore matchStore;

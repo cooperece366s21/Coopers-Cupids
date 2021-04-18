@@ -1,10 +1,11 @@
 package edu.cooper.ece366.store;
 
-import edu.cooper.ece366.model.User;
 import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+
+import edu.cooper.ece366.model.User;
 
 public class UserStoreImpl implements UserStore {
     // List of all users

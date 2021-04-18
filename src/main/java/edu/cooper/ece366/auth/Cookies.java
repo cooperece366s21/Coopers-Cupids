@@ -1,5 +1,6 @@
 package edu.cooper.ece366.auth;
 
+import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 
 public class Cookies {
@@ -10,7 +11,9 @@ public class Cookies {
     }
 
     public String assignCookie(String UserID) {
-        return "yo";
+        String cookie = UUID.randomUUID().toString();
+        cookie = cookie.replace("-", "");
+        return cookie;
     }
 
     public boolean verifyCookie(String cookie) {
