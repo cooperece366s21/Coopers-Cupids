@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
 import LoginSignupForm from "../ui/LoginSignupForm/LoginSignupForm";
-import NavBar from "../sections/NavBar/navbar";
+import NavBar from "../sections/Navbar/Navbar";
 
 // Sets types
 type AppProps = {};
