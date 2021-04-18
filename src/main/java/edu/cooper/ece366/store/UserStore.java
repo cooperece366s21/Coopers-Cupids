@@ -1,8 +1,8 @@
 package edu.cooper.ece366.store;
 
-import edu.cooper.ece366.model.User;
-
 import java.util.List;
+
+import edu.cooper.ece366.model.User;
 
 public interface UserStore {
 

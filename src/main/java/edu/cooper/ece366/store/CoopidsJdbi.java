@@ -1,11 +1,9 @@
 package edu.cooper.ece366.store;
 
-import org.jdbi.v3.core.Handle;
-import org.jdbi.v3.core.Jdbi;
-
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.BufferedReader;
+import org.jdbi.v3.core.Jdbi;
 
 public class CoopidsJdbi {
 
@@ -35,12 +33,10 @@ public class CoopidsJdbi {
             System.out.println(e);
             return;
         }
-        String[] sqlCommands = tot.replace("    ", "").split(";");
-
-        Handle handle = jdbi.open();
+        String[] sqlCommands = tot.replace("   ", "").split(";");
 
         for (String s : sqlCommands) {
-            handle.execute(s);
+            jdbi.useHandle(handle -> handle.execute(s));
         }
 
         return;

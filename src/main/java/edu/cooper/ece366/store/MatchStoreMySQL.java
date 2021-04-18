@@ -1,8 +1,7 @@
 package edu.cooper.ece366.store;
 
-import org.jdbi.v3.core.Jdbi;
-
 import java.util.List;
+import org.jdbi.v3.core.Jdbi;
 
 public class MatchStoreMySQL implements MatchStore {
 

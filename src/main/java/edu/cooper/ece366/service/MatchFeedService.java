@@ -1,10 +1,10 @@
 package edu.cooper.ece366.service;
 
+import java.util.List;
+
 import edu.cooper.ece366.model.User;
 import edu.cooper.ece366.store.MatchStore;
 import edu.cooper.ece366.store.UserStore;
-
-import java.util.List;
 
 public interface MatchFeedService {
     // Returns feed for current user

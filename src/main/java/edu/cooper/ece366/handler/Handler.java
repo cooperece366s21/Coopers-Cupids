@@ -1,19 +1,20 @@
 package edu.cooper.ece366.handler;
 
+import java.util.List;
+import java.util.Hashtable;
+import java.nio.charset.StandardCharsets;
+import spark.Request;
+import spark.Response;
+import com.google.gson.Gson;
+import com.google.common.hash.Hashing;
+import com.google.common.reflect.TypeToken;
+
 import edu.cooper.ece366.model.Conversation;
 import edu.cooper.ece366.model.Message;
 import edu.cooper.ece366.model.Profile;
 import edu.cooper.ece366.model.User;
 import edu.cooper.ece366.service.MatchFeedService;
 import edu.cooper.ece366.store.ConversationStore;
-import spark.Request;
-import spark.Response;
-import com.google.gson.Gson;
-import com.google.common.hash.Hashing;
-import com.google.common.reflect.TypeToken;
-import java.nio.charset.StandardCharsets;
-import java.util.Hashtable;
-import java.util.List;
 
 public class Handler {
     private final MatchFeedService matchService;

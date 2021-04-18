@@ -1,10 +1,11 @@
 package edu.cooper.ece366.store;
 
-import edu.cooper.ece366.model.Conversation;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
+
+import edu.cooper.ece366.model.Conversation;
 
 public class ConversationStoreImpl implements ConversationStore {
     // Maps userID -> {Conversations}
