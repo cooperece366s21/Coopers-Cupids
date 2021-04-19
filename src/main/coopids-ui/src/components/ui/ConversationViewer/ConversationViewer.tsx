@@ -9,10 +9,6 @@ type ConversationViewerState = {};
 class ConversationViewer extends Component<ConversationViewerProps,ConversationViewerState> {
 
     displayMessages = () => {
-        if(this.props.current_conversation?.messages.length == 0) {
-            return null;
-        }
-
         const messages = this.props.current_conversation?.messages.map(
             (message, index) => {
                 // Checks sender of message
@@ -33,6 +29,8 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
                 )
             }
         )
+
+        return messages;
     }
 
     render() {
