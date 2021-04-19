@@ -6,9 +6,7 @@ import org.jdbi.v3.core.Jdbi;
 public class Cookies {
     private final Jdbi jdbi;
 
-    public Cookies(final Jdbi jdbi) {
-        this.jdbi = jdbi;
-    }
+    public Cookies(final Jdbi jdbi) { this.jdbi = jdbi; }
 
     public String assignCookie() {
         String cookie = UUID.randomUUID().toString();

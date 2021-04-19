@@ -208,7 +208,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public List<User> getFeed(final Request req, final Response res) {
+    public List<Profile> getFeed(final Request req, final Response res) {
         String userID = req.params(":userId");
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {

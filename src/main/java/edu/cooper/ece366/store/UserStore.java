@@ -16,9 +16,6 @@ public interface UserStore {
     // Returns user matching ID
     User getUserFromId(String userID);
 
-    // Returns list of users with given name
-    List<User> getUsersFromName(String name);
-
     // Adds user
     void addUser(User user);
 
@@ -26,9 +23,9 @@ public interface UserStore {
     void deleteUser(String userID);
 
     // Returns list of users for feed
-    List<User> feedUsers(int numUsers);
+    List<Profile> feedUsers(int numUsers);
 
-    void addProfile(String userID, Profile profile);
+    void addProfile(Profile profile);
 
     Profile getProfileFromId(String userID);
 }

@@ -1,14 +1,15 @@
 package edu.cooper.ece366.store;
 
-import edu.cooper.ece366.model.Profile;
 import org.jdbi.v3.core.Jdbi;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import edu.cooper.ece366.model.User;
+import edu.cooper.ece366.model.Profile;
 
 public class UserStoreMySQL implements UserStore {
-
     private final Jdbi jdbi;
 
     // Constructor
@@ -21,12 +22,7 @@ public class UserStoreMySQL implements UserStore {
                         .bind(0, userID)
                         .mapTo(String.class)
                         .findOne());
-        if (dbPass.isPresent() && dbPass.equals(password)) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return dbPass.isPresent() && dbPass.get().equals(password);
     }
 
     // Checks if UserID is taken
@@ -37,12 +33,7 @@ public class UserStoreMySQL implements UserStore {
                         .bind(0, userID)
                         .mapTo(String.class)
                         .findOne());
-        if (dbUserID.isPresent()) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return dbUserID.isPresent();
     }
 
     // Returns user matching ID
@@ -53,29 +44,21 @@ public class UserStoreMySQL implements UserStore {
                 handle.createQuery("SELECT * FROM users WHERE userID = ?")
                         .bind(0, userID)
                         .map((rs, ctx) ->
-                                new User(rs.getString("userID"), rs.getString("password"), rs.getBoolean("hasProfile")))
+                                new User(rs.getString("userID"),
+                                        rs.getString("password"),
+                                        rs.getBoolean("hasProfile")))
                         .findOne());
-        if (user.isPresent()) {
-            return user.get();
-        }
-        else {
-            return null;
-        }
-    }
-
-    // Returns list of users with given name
-    // currently not in use so not actually completed
-    @Override
-    public List<User> getUsersFromName(String name) {
-        return null;
+        return user.orElse(null);
     }
 
     // Adds user
     @Override
     public void addUser(User user) {
-        jdbi.useHandle(handle ->
-                handle.execute("INSERT INTO users (userID, password, hasProfile) VALUES (?, ?, ?)",
-                        user.getUserID(), user.getPassword(), user.hasProfile()));
+        if (!isUser(user.getUserID())) {
+            jdbi.useHandle(handle ->
+                    handle.execute("INSERT INTO users (userID, password, hasProfile) VALUES (?, ?, ?)",
+                            user.getUserID(), user.getPassword(), user.hasProfile()));
+        }
     }
 
     // Deletes User
@@ -88,6 +71,12 @@ public class UserStoreMySQL implements UserStore {
             if (user.hasProfile()) {
                 jdbi.useHandle(handle ->
                         handle.execute("DELETE FROM profiles WHERE userID = ?", userID));
+                jdbi.useHandle(handle ->
+                        handle.execute("DELETE FROM likes_dislikes WHERE from_userID = ? OR to_userID = ?", userID, userID));
+                jdbi.useHandle(handle ->
+                        handle.execute("DELETE FROM matches WHERE userID1 = ? OR userID2 = ?", userID, userID));
+                jdbi.useHandle(handle ->
+                        handle.execute("DELETE FROM messages WHERE from_userID = ? OR to_userID = ?", userID, userID));
             }
         }
     }
@@ -95,24 +84,27 @@ public class UserStoreMySQL implements UserStore {
     // Returns list of users for feed
     // TODO
     @Override
-    public List<User> feedUsers(int numUsers) {
-        return null;
+    public List<Profile> feedUsers(int numUsers) {
+        return new ArrayList<>();
     }
 
     @Override
-    public void addProfile(String userID, Profile profile) {
-        if (isUser(userID)) {
-            User user = getUserFromId(userID);
+    public void addProfile(Profile profile) {
+        if (isUser(profile.getUserID())) {
+            User user = getUserFromId(profile.getUserID());
             if (!user.hasProfile()) {
                 jdbi.useHandle(handle ->
                         handle.execute("INSERT INTO profiles (userID, name, age, photo, bio, location, interests) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                                userID,
+                                profile.getUserID(),
                                 profile.getName(),
                                 profile.getAge(),
                                 profile.getPhoto(),
                                 profile.getBio(),
                                 profile.getLocation(),
                                 profile.getInterests()));
+                jdbi.useHandle(handle ->
+                        handle.execute("UPDATE users SET hasProfile = true WHERE userID = ?",
+                                profile.getUserID()));
             }
         }
     }
@@ -122,18 +114,18 @@ public class UserStoreMySQL implements UserStore {
         if(isUser(userID)) {
             User user = getUserFromId(userID);
             if (user.hasProfile()) {
-                Profile profile = jdbi.withHandle(handle ->
+                return jdbi.withHandle(handle ->
                         handle.createQuery("SELECT * FROM profiles WHERE userID = ?")
                                 .bind(0, user.getUserID())
                                 .map((rs, ctx) ->
                                         new Profile(rs.getString("userID"),
+                                                rs.getString("name"),
                                                 rs.getInt("age"),
                                                 rs.getString("photo"),
                                                 rs.getString("bio"),
                                                 rs.getString("location"),
                                                 rs.getString("interests")))
                                 .one());
-                return profile;
             }
             return null;
         }
