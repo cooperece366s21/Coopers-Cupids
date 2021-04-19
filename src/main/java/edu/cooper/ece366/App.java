@@ -105,19 +105,32 @@ public class App
                 });
 
         get("/ping", (req, res) -> "OK");
+        // doesnt need a get method (can be done in frontend)
         post("/signup", handler::signup, responseTransformer);
+        // doesnt need a get method (can be done in frontend)
         post("/login", handler::login, responseTransformer);
+        // doesnt need a get method (can be done in frontend)
         post("/logout", handler::logout, responseTransformer);
+        // may delete since same as below
         get("/me", handler::me, responseTransformer);
+        // TODO
+        // may add post method for changing userID/password in the future
         get("/user/:userId", handler::getUser, responseTransformer);
+        // doesnt need a get method (can be done in frontend)
         post("/user/:userId/create", handler::create, responseTransformer);
+        // TODO
+        // may add post method for changing userID/password in the future
         get("/user/:userId/profile", handler::getProfile, responseTransformer);
+        // no post method needed (use like/dislike as necessary)
         get("/user/:userId/feed", handler::getFeed, responseTransformer);
         post("/user/:userId/feed/like", handler::like, responseTransformer);
         post("/user/:userId/feed/dislike", handler::dislike, responseTransformer);
+        // doesnt need post method (cant create new conversation without match)
         get("/user/:userId/convos", handler::getConvos, responseTransformer);
+        // doesnt need post method (use send to post/send message)
         get("/user/:userId/convos/:matchId", handler::getConvo, responseTransformer);
         post("/user/:userId/convos/:matchId/send", handler::sendMessage, responseTransformer);
+        // doesnt need get method needed
         post("/user/:userId/convos/:matchId/unmatch", handler::unmatch, responseTransformer);
     }
 }
