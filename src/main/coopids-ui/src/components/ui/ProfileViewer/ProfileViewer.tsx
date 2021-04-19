@@ -35,7 +35,8 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                             <Heading>Edit your profile</Heading>
                         </Box>
                         <Box my={4} textAlign="left">
-                            <form onSubmit={e => e.preventDefault()} action="">
+                            <form onSubmit={e => {e.preventDefault();
+                                this.onSubmit(this.state.editedProfile)}} >
                                 <Stack spacing={4}>
                                     {/* Error Message */}
                                     {/* In future, will have error depending on incorrect field */}
@@ -116,7 +117,6 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                             boxShadow='sm'
                                             _hover={{boxShadow: 'md'}}
                                             _active={{boxShadow: 'lg'}}
-                                            onClick={() => this.onSubmit(this.state.editedProfile)}
                                             isLoading={this.state.is_loading}
                                     >
                                         {this.props.has_profile ? "Update Profile" : "Create Profile"}
