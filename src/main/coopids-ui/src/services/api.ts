@@ -17,7 +17,7 @@ export type Profile = {
     bio: string | null;
     location: string | null;
     interests: string | null; // In future make array of strings and show as badges?
-} | null;
+};
 
 export type Conversation = {
     user1ID: string;
@@ -185,9 +185,9 @@ export async function getUserProfile(userID: string): Promise<Profile | null> {
 
 /* Expecting in response:
        header: userID / cookie
-       body: Array of type User (See User type above)
+       body: Array of type Profile (See Profile type above)
  */
-export async function getFeed(): Promise<User[]> {
+export async function getFeed(): Promise<Profile[]> {
     const userID = getCurrentUserID();
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/feed`, {
         method: 'GET',
