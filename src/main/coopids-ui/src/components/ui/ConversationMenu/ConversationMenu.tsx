@@ -12,7 +12,9 @@ import {
 } from "@chakra-ui/react";
 import {Conversation} from "../../../services/api";
 
-type ConversationMenuProps = {conversations: Conversation[]; updateVisibleConversation: (new_conversation: number | null) => void};
+type ConversationMenuProps = {conversations: Conversation[];
+                              updateVisibleConversation: (new_conversation: number | null) => void;
+                              current_userID: string};
 type ConversationMenuState = {is_open: boolean};
 
 class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuState> {
@@ -26,6 +28,14 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
     }
 
     render() {
+        const conversationButtons = this.props.conversations.map((value, index) => {
+            return (
+                <Button onClick={() => this.props.updateVisibleConversation(index)} key={`Conversation ${index}`}>
+                    {value.user1ID === this.props.current_userID ? value.user2ID : value.user1ID}
+                </Button>
+            )
+        })
+
         // Two options depending on size
         return (
                 <Box float="left">
@@ -33,8 +43,9 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
                     <Box display={{ base: "none", md: "block" }} pr={2} borderRight="3px solid black">
                         <Stack spacing={8} align="center">
                             <Heading borderBottom="3px solid black">Conversations</Heading>
-                            <p>Hello</p>
-                            <p>Hello again</p>
+                            <Stack width="100%">
+                                {conversationButtons}
+                            </Stack>
                         </Stack>
                     </Box>
 
@@ -48,8 +59,9 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
                                 <DrawerContent>
                                     <DrawerHeader borderBottomWidth="1px">Conversations</DrawerHeader>
                                     <DrawerBody>
-                                        <p>Hello</p>
-                                        <p>Hello again</p>
+                                        <Stack>
+                                            {conversationButtons}
+                                        </Stack>
                                     </DrawerBody>
                                     <DrawerFooter>
                                         <Button onClick={this.drawerOnClick}>
@@ -60,7 +72,6 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
                             </DrawerOverlay>
                         </Drawer>
                     </Box>
-
                 </Box>
             );
 
