@@ -4,6 +4,7 @@ import NavBar from "../sections/Navbar/Navbar";
 import LoginSignupForm from "../ui/LoginSignupForm/LoginSignupForm";
 import ProfileLayout from "../layouts/ProfileLayout/ProfileLayout";
 import FeedLayout from "../layouts/FeedLayout/FeedLayout";
+import MessageLayout from "../layouts/MessagesLayout/MessageLayout";
 
 // Sets types
 type AppProps = {};
@@ -24,7 +25,7 @@ class App extends Component<AppProps, AppState> {
     return (
         <div className="App">
           <NavBar />
-          <FeedLayout />
+          <MessageLayout />
         </div>
     );
   }
