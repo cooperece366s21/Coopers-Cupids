@@ -5,12 +5,13 @@ import static spark.Spark.get;
 import static spark.Spark.initExceptionHandler;
 import static spark.Spark.options;
 import static spark.Spark.post;
+
+import edu.cooper.ece366.model.User;
 import spark.ResponseTransformer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jdbi.v3.core.Jdbi;
 
-import edu.cooper.ece366.auth.Cookies;
 import edu.cooper.ece366.handler.Handler;
 import edu.cooper.ece366.store.*;
 import edu.cooper.ece366.service.MatchFeedServiceImpl;
@@ -32,11 +33,13 @@ public class App
         Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
         CoopidsJdbi.setupSchema(jdbi, schemaPath);
 
-        Cookies c = new Cookies(jdbi);
-
-        for (int i = 0; i < 5; i++) {
-            System.out.println(c.assignCookie(""));
-        }
+        UserStore store = new UserStoreMySQL(jdbi);
+        store.addUser(new User("test", "test", false));
+        User test = store.getUserFromId("test");
+        System.out.println(test);
+        store.deleteUser("test");
+        test = store.getUserFromId("test");
+        System.out.println(test);
 
         Gson gson = new GsonBuilder().setLenient().create();
 
@@ -59,8 +62,6 @@ public class App
                 (request, response) -> {
                     String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
                     if (accessControlRequestHeaders != null) {
-                        //            response.header("Access-Control-Allow-Headers",
-                        // accessControlRequestHeaders);
                         response.header("Access-Control-Allow-Headers", "*");
                     }
 

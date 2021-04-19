@@ -10,6 +10,15 @@ public class Profile {
     private String location; // Can be updated to different data-type later
     private String interests;
 
+    public Profile(String name, int age, String photo, String bio, String loc, String ints) {
+        this.name = name;
+        this.age = age;
+        this.photo = photo;
+        this.bio = bio;
+        this.location = loc;
+        this.interests = ints;
+    }
+
     // Setters
     // --------
     public void setName(String name) { this.name = name; }

@@ -35,8 +35,17 @@ create table if not exists messages (
 create table if not exists likes_dislikes (
     from_userID varchar(32) not null,
     to_userID varchar(32) not null,
-    like_dislike enum('NONE', 'LIKE', 'DISLIKE'),
+    like_dislike enum('LIKE', 'DISLIKE') not null,
     primary key (from_userID, to_userID),
     foreign key (from_userID) references users(userID),
     foreign key (to_userID) references users(userID)
+);
+
+create table if not exists matches (
+    userID1 varchar(32) not null,
+    userID2 varchar(32) not null,
+    primary key (userID1, userID2),
+    unique key (userID2, userID1),
+    foreign key (userID1) references users(userID),
+    foreign key (userID2) references users(userID)
 );

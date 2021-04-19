@@ -16,7 +16,14 @@ public class User {
         this.hasProfile = false;
         this.userID = uid;
         this.password = password;
-        this.profile = new Profile();
+        //this.profile = new Profile();
+    }
+
+    public User(String uid, String password, boolean hp) {
+        this.hasProfile = hp;
+        this.userID = uid;
+        this.password = password;
+        //this.profile = new Profile();
     }
 
     public void createdProfile() { this.hasProfile = true; }
@@ -29,6 +36,8 @@ public class User {
     public Profile getProfile() { return this.profile; }
 
     public String getUserID() { return this.userID; }
+
+    public String getPassword() { return this.password; }
 
     public boolean checkPass(String password) {
         return password.equals(this.password);

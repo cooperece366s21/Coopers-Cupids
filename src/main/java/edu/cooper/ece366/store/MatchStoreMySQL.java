@@ -1,6 +1,8 @@
 package edu.cooper.ece366.store;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.jdbi.v3.core.Jdbi;
 
 public class MatchStoreMySQL implements MatchStore {
@@ -11,17 +13,67 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public boolean addLike(String userID, String likedUserID) {
-        return false;
+        // logic for if user already made decision on this other user
+        Optional<Integer> lod = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
+                        .bind(0, userID)
+                        .bind(1, likedUserID)
+                        .mapTo(Integer.class)
+                        .findOne());
+        if (lod.isPresent()) {
+            // decision was already handled (matched if necessary)
+            return false;
+        }
+        else {
+            jdbi.useHandle(handle ->
+                    handle.execute("INSERT INTO likes_dislikes (from_userID, to_userID, like_dislike) VALUES (?, ?, 'LIKE')",
+                            userID, likedUserID));
+            Optional<Integer> likedlod = jdbi.withHandle(handle ->
+                    handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
+                            .bind(0, likedUserID)
+                            .bind(1, userID)
+                            .mapTo(Integer.class)
+                            .findOne());
+            if (likedlod.isPresent() && likedlod.get() == 0) {
+                jdbi.useHandle(handle ->
+                        handle.execute("INSERT INTO matches (userID1, userID2) VALUES (?, ?)",
+                                userID, likedUserID));
+                return true;
+            }
+            return false;
+        }
     }
 
     @Override
     public void addDislike(String userID, String dislikedUserID) {
-
+        Optional<Integer> lod = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
+                        .bind(0, userID)
+                        .bind(1, dislikedUserID)
+                        .mapTo(Integer.class)
+                        .findOne());
+        if (!lod.isPresent()) {
+            jdbi.useHandle(handle ->
+                    handle.execute("INSERT INTO likes_dislikes (from_userID, to_userID, like_dislike) VALUES (?, ?, 'DISLIKE')",
+                            userID, dislikedUserID));
+        }
     }
 
     @Override
     public void unmatch(String userID, String unmatchedUserID) {
-
+        Optional<String> oneID = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT userID1 FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)")
+                        .bind(0, userID)
+                        .bind(1, unmatchedUserID)
+                        .bind(2, userID)
+                        .bind(3, unmatchedUserID)
+                        .mapTo(String.class)
+                        .findOne());
+        if (oneID.isPresent()) {
+            jdbi.useHandle(handle ->
+                    handle.execute("DELETE FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)",
+                            userID, unmatchedUserID, userID, unmatchedUserID));
+        }
     }
 
     // Returns list of userIDs that user has liked

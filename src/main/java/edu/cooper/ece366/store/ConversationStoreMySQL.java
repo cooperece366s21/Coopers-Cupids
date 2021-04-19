@@ -14,6 +14,7 @@ public class ConversationStoreMySQL implements ConversationStore {
     // Returns list of conversations containing user
     @Override
     public List<Conversation> getUserConversations(String userID) {
+        //List<Conversation> = jdbi.withHandle(handle -> );
         return null;
     }
 

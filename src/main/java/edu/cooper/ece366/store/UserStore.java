@@ -3,6 +3,7 @@ package edu.cooper.ece366.store;
 import java.util.List;
 
 import edu.cooper.ece366.model.User;
+import edu.cooper.ece366.model.Profile;
 
 public interface UserStore {
 
@@ -26,4 +27,8 @@ public interface UserStore {
 
     // Returns list of users for feed
     List<User> feedUsers(int numUsers);
+
+    void addProfile(String userID, Profile profile);
+
+    Profile getProfileFromId(String userID);
 }

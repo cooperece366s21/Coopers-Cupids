@@ -10,7 +10,7 @@ public class Cookies {
         this.jdbi = jdbi;
     }
 
-    public String assignCookie(String UserID) {
+    public String assignCookie() {
         String cookie = UUID.randomUUID().toString();
         cookie = cookie.replace("-", "");
         return cookie;
