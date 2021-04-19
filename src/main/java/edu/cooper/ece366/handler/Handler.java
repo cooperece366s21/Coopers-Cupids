@@ -158,7 +158,7 @@ public class Handler {
         String userID = req.params(":userId");
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().isUser(userID) && !this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
-            Profile profile = this.matchService.getUserStore().getUserFromId(userID).getProfile();
+            Profile profile = this.matchService.getUserStore().getProfileFromId(userID);
             profile.setName(info.get("name"));
             profile.setAge(Integer.parseInt(info.get("age")));
             profile.setPhoto(info.get("photo"));
@@ -190,7 +190,7 @@ public class Handler {
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
             res.status(200);
-            return this.matchService.getUserStore().getUserFromId(userID).getProfile();
+            return this.matchService.getUserStore().getProfileFromId(userID);
         }
         res.status(400);
         return null;

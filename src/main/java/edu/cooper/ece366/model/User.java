@@ -6,7 +6,6 @@ public class User {
     private boolean hasProfile;
     private final String userID;
     private String password;
-    private Profile profile;
 
     // Methods
     // --------
@@ -16,14 +15,12 @@ public class User {
         this.hasProfile = false;
         this.userID = uid;
         this.password = password;
-        //this.profile = new Profile();
     }
 
     public User(String uid, String password, boolean hp) {
         this.hasProfile = hp;
         this.userID = uid;
         this.password = password;
-        //this.profile = new Profile();
     }
 
     public void createdProfile() { this.hasProfile = true; }
@@ -31,9 +28,6 @@ public class User {
     public void deletedProfile() { this.hasProfile = false; }
 
     public boolean hasProfile() { return this.hasProfile; }
-
-    // Returns user's profile
-    public Profile getProfile() { return this.profile; }
 
     public String getUserID() { return this.userID; }
 

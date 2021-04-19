@@ -6,19 +6,18 @@ import static spark.Spark.initExceptionHandler;
 import static spark.Spark.options;
 import static spark.Spark.post;
 
-import edu.cooper.ece366.model.Profile;
-import edu.cooper.ece366.model.User;
-import edu.cooper.ece366.service.MatchFeedService;
-import edu.cooper.ece366.service.MatchFeedServiceSQL;
+import java.util.List;
 import spark.ResponseTransformer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jdbi.v3.core.Jdbi;
 
+import edu.cooper.ece366.model.Profile;
+import edu.cooper.ece366.model.User;
+import edu.cooper.ece366.service.MatchFeedService;
+import edu.cooper.ece366.service.MatchFeedServiceSQL;
 import edu.cooper.ece366.handler.Handler;
 import edu.cooper.ece366.store.*;
-
-import java.util.List;
 
 public class App 
 {

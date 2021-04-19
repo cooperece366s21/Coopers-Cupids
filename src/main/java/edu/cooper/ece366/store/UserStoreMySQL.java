@@ -1,11 +1,10 @@
 package edu.cooper.ece366.store;
 
-import org.jdbi.v3.core.Jdbi;
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import org.jdbi.v3.core.Jdbi;
 
 import edu.cooper.ece366.model.User;
 import edu.cooper.ece366.model.Profile;
