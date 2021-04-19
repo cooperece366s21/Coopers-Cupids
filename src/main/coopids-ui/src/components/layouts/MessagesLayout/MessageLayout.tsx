@@ -1,7 +1,8 @@
 import React, {Component} from "react";
 import ConversationMenu from "../../ui/ConversationMenu/ConversationMenu";
 import {Flex, Heading, Spacer} from "@chakra-ui/react";
-import {Conversation, getAllConversations} from "../../../services/api";
+import {Conversation, getAllConversations, getCurrentUserID} from "../../../services/api";
+import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
 
 type MessageLayoutProps = {};
 type MessageLayoutState = {conversations: Conversation[]; is_loaded: boolean, conversation_displayed: number | null};
@@ -23,6 +24,8 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     }
 
     render() {
+        const current_userID = getCurrentUserID();
+
         if(!this.state.is_loaded) {
             return (
                 <Heading>Loading Conversations...</Heading>
@@ -32,8 +35,14 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         return (
             <Flex pl={4}>
                 <ConversationMenu conversations={this.state.conversations}
-                                  updateVisibleConversation={this.updateConversationViewer} />
-                <Spacer />
+                                  updateVisibleConversation={this.updateConversationViewer}
+                                  current_userID={current_userID}
+                />
+                <ConversationViewer current_conversation={this.state.conversation_displayed === null ?
+                                                          null :
+                                                          this.state.conversations[this.state.conversation_displayed]}
+                                    current_userID={current_userID}
+                />
             </Flex>
         )
     }
