@@ -50,4 +50,16 @@ public class Profile {
     public String getLocation() { return this.location; }
 
     public String getInterests() { return this.interests; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+        final Profile profile = (Profile) o;
+        return this.userID.equals(profile.getUserID());
+    }
 }

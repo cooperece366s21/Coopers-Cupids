@@ -13,7 +13,7 @@ public class MatchStoreMySQL implements MatchStore {
     @Override
     public boolean addLike(String userID, String likedUserID) {
         // logic for if user already made decision on this other user
-        Optional<String> lod = jdbi.withHandle(handle ->
+        Optional<String> lod = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
                         .bind(0, userID)
                         .bind(1, likedUserID)
@@ -24,7 +24,7 @@ public class MatchStoreMySQL implements MatchStore {
             return false;
         }
         else {
-            jdbi.useHandle(handle ->
+            this.jdbi.useHandle(handle ->
                     handle.execute("INSERT INTO likes_dislikes (from_userID, to_userID, like_dislike) VALUES (?, ?, 'LIKE')",
                             userID, likedUserID));
             Optional<String> likedlod = jdbi.withHandle(handle ->
@@ -34,7 +34,7 @@ public class MatchStoreMySQL implements MatchStore {
                             .mapTo(String.class)
                             .findOne());
             if (likedlod.isPresent() && likedlod.get().equals("LIKE")) {
-                jdbi.useHandle(handle ->
+                this.jdbi.useHandle(handle ->
                         handle.execute("INSERT INTO matches (userID1, userID2) VALUES (?, ?)",
                                 userID, likedUserID));
                 return true;
@@ -45,14 +45,14 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public void addDislike(String userID, String dislikedUserID) {
-        Optional<String> lod = jdbi.withHandle(handle ->
+        Optional<String> lod = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
                         .bind(0, userID)
                         .bind(1, dislikedUserID)
                         .mapTo(String.class)
                         .findOne());
         if (lod.isEmpty()) {
-            jdbi.useHandle(handle ->
+            this.jdbi.useHandle(handle ->
                     handle.execute("INSERT INTO likes_dislikes (from_userID, to_userID, like_dislike) VALUES (?, ?, 'DISLIKE')",
                             userID, dislikedUserID));
         }
@@ -60,7 +60,7 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public void unmatch(String userID, String unmatchedUserID) {
-        Optional<String> oneID = jdbi.withHandle(handle ->
+        Optional<String> oneID = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT userID1 FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)")
                         .bind(0, userID)
                         .bind(1, unmatchedUserID)
@@ -69,7 +69,7 @@ public class MatchStoreMySQL implements MatchStore {
                         .mapTo(String.class)
                         .findOne());
         if (oneID.isPresent()) {
-            jdbi.useHandle(handle ->
+            this.jdbi.useHandle(handle ->
                     handle.execute("DELETE FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)",
                             userID, unmatchedUserID, userID, unmatchedUserID));
         }
@@ -79,7 +79,7 @@ public class MatchStoreMySQL implements MatchStore {
     // If none, returns empty list
     @Override
     public List<String> getLikes(String userID) {
-        List<String> likes = jdbi.withHandle(handle ->
+        List<String> likes = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT to_userID FROM likes_dislikes WHERE from_userID = ? AND like_dislike = 'LIKE'")
                         .bind(0, userID)
                         .mapTo(String.class)
@@ -91,7 +91,7 @@ public class MatchStoreMySQL implements MatchStore {
     // If none, returns empty list
     @Override
     public List<String> getDislikes(String userID) {
-        List<String> dislikes = jdbi.withHandle(handle ->
+        List<String> dislikes = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT to_userID FROM likes_dislikes WHERE from_userID = ? AND like_dislike = 'DISLIKE'")
                         .bind(0, userID)
                         .mapTo(String.class)
@@ -103,7 +103,7 @@ public class MatchStoreMySQL implements MatchStore {
     // If none, returns empty list
     @Override
     public List<String> getLikedBy(String userID) {
-        List<String> likedBy = jdbi.withHandle(handle ->
+        List<String> likedBy = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT from_userID FROM likes_dislikes WHERE to_userID = ? AND like_dislike = 'LIKE'")
                         .bind(0, userID)
                         .mapTo(String.class)
@@ -115,12 +115,12 @@ public class MatchStoreMySQL implements MatchStore {
     // If none, returns empty list
     @Override
     public List<String> getMatches(String userID) {
-        List<String> matches1 = jdbi.withHandle(handle ->
+        List<String> matches1 = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT userID1 FROM matches WHERE userID2 = ?")
                         .bind(0, userID)
                         .mapTo(String.class)
                         .list());
-        List<String> matches2 = jdbi.withHandle(handle ->
+        List<String> matches2 = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT userID2 FROM matches WHERE userID1 = ?")
                         .bind(0, userID)
                         .mapTo(String.class)
@@ -131,7 +131,7 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public boolean isMatch(String userID, String matchUserID) {
-        Optional<String> match = jdbi.withHandle(handle ->
+        Optional<String> match = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT userID1 FROM matches WHERE (userID1 = ? AND userID2 = ?) OR (userID2 = ? AND userID1 = ?)")
                         .bind(0, userID)
                         .bind(1, matchUserID)
