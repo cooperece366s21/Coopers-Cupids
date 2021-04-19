@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.jdbi.v3.core.Jdbi;
 
 public class MatchStoreMySQL implements MatchStore {
-
     private final Jdbi jdbi;
 
     public MatchStoreMySQL(final Jdbi jdbi) { this.jdbi = jdbi; }
@@ -14,11 +13,11 @@ public class MatchStoreMySQL implements MatchStore {
     @Override
     public boolean addLike(String userID, String likedUserID) {
         // logic for if user already made decision on this other user
-        Optional<Integer> lod = jdbi.withHandle(handle ->
+        Optional<String> lod = jdbi.withHandle(handle ->
                 handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
                         .bind(0, userID)
                         .bind(1, likedUserID)
-                        .mapTo(Integer.class)
+                        .mapTo(String.class)
                         .findOne());
         if (lod.isPresent()) {
             // decision was already handled (matched if necessary)
@@ -28,13 +27,13 @@ public class MatchStoreMySQL implements MatchStore {
             jdbi.useHandle(handle ->
                     handle.execute("INSERT INTO likes_dislikes (from_userID, to_userID, like_dislike) VALUES (?, ?, 'LIKE')",
                             userID, likedUserID));
-            Optional<Integer> likedlod = jdbi.withHandle(handle ->
+            Optional<String> likedlod = jdbi.withHandle(handle ->
                     handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
                             .bind(0, likedUserID)
                             .bind(1, userID)
-                            .mapTo(Integer.class)
+                            .mapTo(String.class)
                             .findOne());
-            if (likedlod.isPresent() && likedlod.get() == 0) {
+            if (likedlod.isPresent() && likedlod.get().equals("LIKE")) {
                 jdbi.useHandle(handle ->
                         handle.execute("INSERT INTO matches (userID1, userID2) VALUES (?, ?)",
                                 userID, likedUserID));
@@ -46,13 +45,13 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public void addDislike(String userID, String dislikedUserID) {
-        Optional<Integer> lod = jdbi.withHandle(handle ->
+        Optional<String> lod = jdbi.withHandle(handle ->
                 handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
                         .bind(0, userID)
                         .bind(1, dislikedUserID)
-                        .mapTo(Integer.class)
+                        .mapTo(String.class)
                         .findOne());
-        if (!lod.isPresent()) {
+        if (lod.isEmpty()) {
             jdbi.useHandle(handle ->
                     handle.execute("INSERT INTO likes_dislikes (from_userID, to_userID, like_dislike) VALUES (?, ?, 'DISLIKE')",
                             userID, dislikedUserID));
@@ -80,32 +79,66 @@ public class MatchStoreMySQL implements MatchStore {
     // If none, returns empty list
     @Override
     public List<String> getLikes(String userID) {
-        return null;
+        List<String> likes = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT to_userID FROM likes_dislikes WHERE from_userID = ? AND like_dislike = 'LIKE'")
+                        .bind(0, userID)
+                        .mapTo(String.class)
+                        .list());
+        return likes;
     }
 
     // Returns list of userIDs that user has disliked
     // If none, returns empty list
     @Override
     public List<String> getDislikes(String userID) {
-        return null;
+        List<String> dislikes = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT to_userID FROM likes_dislikes WHERE from_userID = ? AND like_dislike = 'DISLIKE'")
+                        .bind(0, userID)
+                        .mapTo(String.class)
+                        .list());
+        return dislikes;
     }
 
     // Returns list of userIDs that liked user
     // If none, returns empty list
     @Override
     public List<String> getLikedBy(String userID) {
-        return null;
+        List<String> likedBy = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT from_userID FROM likes_dislikes WHERE to_userID = ? AND like_dislike = 'LIKE'")
+                        .bind(0, userID)
+                        .mapTo(String.class)
+                        .list());
+        return likedBy;
     }
 
     // Returns list of userIDs that matched with user (users liked each other)
     // If none, returns empty list
     @Override
     public List<String> getMatches(String userID) {
-        return null;
+        List<String> matches1 = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT userID1 FROM matches WHERE userID2 = ?")
+                        .bind(0, userID)
+                        .mapTo(String.class)
+                        .list());
+        List<String> matches2 = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT userID2 FROM matches WHERE userID1 = ?")
+                        .bind(0, userID)
+                        .mapTo(String.class)
+                        .list());
+        matches1.addAll(matches2);
+        return matches1;
     }
 
     @Override
     public boolean isMatch(String userID, String matchUserID) {
-        return false;
+        Optional<String> match = jdbi.withHandle(handle ->
+                handle.createQuery("SELECT userID1 FROM matches WHERE (userID1 = ? AND userID2 = ?) OR (userID2 = ? AND userID1 = ?)")
+                        .bind(0, userID)
+                        .bind(1, matchUserID)
+                        .bind(2, userID)
+                        .bind(3, matchUserID)
+                        .mapTo(String.class)
+                        .findOne());
+        return match.isPresent();
     }
 }

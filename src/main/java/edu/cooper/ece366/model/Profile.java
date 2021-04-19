@@ -3,6 +3,7 @@ package edu.cooper.ece366.model;
 public class Profile {
     // Variables
     // ----------
+    private String userID;
     private String name;
     private int age;
     private String photo; // Link to photo
@@ -10,7 +11,8 @@ public class Profile {
     private String location; // Can be updated to different data-type later
     private String interests;
 
-    public Profile(String name, int age, String photo, String bio, String loc, String ints) {
+    public Profile(String uid, String name, int age, String photo, String bio, String loc, String ints) {
+        this.userID = uid;
         this.name = name;
         this.age = age;
         this.photo = photo;
@@ -35,6 +37,8 @@ public class Profile {
 
     // Getters
     // --------
+    public String getUserID() { return this.userID; }
+
     public String getName() { return this.name; }
 
     public int getAge() { return this.age; }

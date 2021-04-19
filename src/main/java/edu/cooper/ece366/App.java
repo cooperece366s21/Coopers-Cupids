@@ -6,7 +6,10 @@ import static spark.Spark.initExceptionHandler;
 import static spark.Spark.options;
 import static spark.Spark.post;
 
+import edu.cooper.ece366.model.Profile;
 import edu.cooper.ece366.model.User;
+import edu.cooper.ece366.service.MatchFeedService;
+import edu.cooper.ece366.service.MatchFeedServiceSQL;
 import spark.ResponseTransformer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,7 +17,8 @@ import org.jdbi.v3.core.Jdbi;
 
 import edu.cooper.ece366.handler.Handler;
 import edu.cooper.ece366.store.*;
-import edu.cooper.ece366.service.MatchFeedServiceImpl;
+
+import java.util.List;
 
 public class App 
 {
@@ -34,12 +38,32 @@ public class App
         CoopidsJdbi.setupSchema(jdbi, schemaPath);
 
         UserStore store = new UserStoreMySQL(jdbi);
-        store.addUser(new User("test", "test", false));
-        User test = store.getUserFromId("test");
-        System.out.println(test);
-        store.deleteUser("test");
-        test = store.getUserFromId("test");
-        System.out.println(test);
+        store.addUser(new User("test1", "test1", false));
+        store.addProfile(new Profile("test1", "mark", 21, "google.com", "im interesting", "NY", "making apps"));
+        store.addUser(new User("test2", "test2", false));
+        store.addProfile(new Profile("test2", "andrew", 21, "google.com", "im interesting", "NY", "making apps"));
+        store.addUser(new User("test3", "test3", false));
+        store.addProfile(new Profile("test3", "shine", 21, "google.com", "im interesting", "NY", "making apps"));
+
+        MatchStore store1 = new MatchStoreMySQL(jdbi);
+        store1.addLike("test1", "test2");
+        store1.addDislike("test1", "test3");
+        store1.addLike("test3", "test1");
+        store1.addLike("test3", "test2");
+        MatchFeedService service = new MatchFeedServiceSQL(store1, store);
+
+        List<Profile> feed = service.getUserFeed("test2", 15);
+        for (Profile f : feed) {
+            System.out.println(f.getName());
+        }
+        store1.addLike("test2", "test1");
+        System.out.println(store1.isMatch("test1", "test2"));
+        System.out.println(store1.isMatch("test1", "test3"));
+
+        feed = service.getUserFeed("test2", 15);
+        for (Profile f : feed) {
+            System.out.println(f.getName());
+        }
 
         Gson gson = new GsonBuilder().setLenient().create();
 
@@ -53,7 +77,7 @@ public class App
         initExceptionHandler(Throwable::printStackTrace);
 
         Handler handler = new Handler(
-                            new MatchFeedServiceImpl(new MatchStoreMySQL(jdbi), new UserStoreMySQL(jdbi)),
+                            new MatchFeedServiceSQL(new MatchStoreMySQL(jdbi), new UserStoreMySQL(jdbi)),
                             new ConversationStoreMySQL(jdbi),
                             gson);
 
