@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import edu.cooper.ece366.model.Profile;
 import edu.cooper.ece366.model.User;
 
 public class UserStoreImpl implements UserStore {
@@ -85,4 +86,10 @@ public class UserStoreImpl implements UserStore {
 
         return userFeed;
     }
+
+    @Override
+    public void addProfile(String userID, Profile profile) { return; }
+
+    @Override
+    public Profile getProfileFromId(String userID) { return null; }
 }
