@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import './App.css';
-import LoginSignupForm from "../ui/LoginSignupForm/LoginSignupForm";
 import NavBar from "../sections/Navbar/Navbar";
+import LoginSignupForm from "../ui/LoginSignupForm/LoginSignupForm";
+import ProfileLayout from "../layouts/ProfileLayout/ProfileLayout";
+import FeedLayout from "../layouts/FeedLayout/FeedLayout";
 
 // Sets types
 type AppProps = {};
@@ -22,7 +24,7 @@ class App extends Component<AppProps, AppState> {
     return (
         <div className="App">
           <NavBar />
-          <LoginSignupForm />
+          <FeedLayout />
         </div>
     );
   }
