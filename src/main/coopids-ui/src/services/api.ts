@@ -13,11 +13,11 @@ export type Profile = {
     userID: string;
     name: string;
     age: number | null;
-    photo: number | null;
+    photo: string | null;
     bio: string | null;
     location: string | null;
-    interests: string[] | null;
-};
+    interests: string | null; // In future make array of strings and show as badges?
+} | null;
 
 export type Conversation = {
     user1ID: string;
@@ -166,6 +166,10 @@ export async function setUserProfile(profile: Profile): Promise<Profile | null> 
     return resp.ok ? await resp.json() : null;
 }
 
+export async function getCurrentUserProfile(): Promise<Profile | null> {
+    return getUserProfile(getCurrentUserID());
+}
+
 /* Expecting in response:
        header: userID / cookie
        body: Profile (See Profile type above)
@@ -281,6 +285,7 @@ const exports = {
     getCurrentUser,
     getUserFromID,
     setUserProfile,
+    getCurrentUserProfile,
     getUserProfile,
     getFeed,
     like,
