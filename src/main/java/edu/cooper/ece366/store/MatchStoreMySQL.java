@@ -2,7 +2,6 @@ package edu.cooper.ece366.store;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.jdbi.v3.core.Jdbi;
 
 public class MatchStoreMySQL implements MatchStore {
@@ -12,6 +11,9 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public boolean addLike(String userID, String likedUserID) {
+        if (userID.equals(likedUserID)) {
+            return false;
+        }
         // logic for if user already made decision on this other user
         Optional<String> lod = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
@@ -45,6 +47,9 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public void addDislike(String userID, String dislikedUserID) {
+        if (userID.equals(dislikedUserID)) {
+            return;
+        }
         Optional<String> lod = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
                         .bind(0, userID)

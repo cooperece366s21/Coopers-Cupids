@@ -1,11 +1,12 @@
 package edu.cooper.ece366.service;
 
+import java.util.List;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import edu.cooper.ece366.model.Profile;
 import edu.cooper.ece366.store.MatchStore;
 import edu.cooper.ece366.store.UserStore;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MatchFeedServiceSQL implements MatchFeedService {
     private MatchStore matchStore;
@@ -23,8 +24,9 @@ public class MatchFeedServiceSQL implements MatchFeedService {
         userFeed = this.matchStore.getLikedBy(userID)
                             .stream()
                             .map(uid -> this.userStore.getProfileFromId(uid))
-                            .filter(user -> !this.matchStore.isMatch(user.getUserID(), userID)
-                                && !this.matchStore.getDislikes(userID).contains(user.getUserID()))
+                            .filter(user -> !this.matchStore.isMatch(user.getUserID(), userID) // already matched
+                                && !this.matchStore.getDislikes(userID).contains(user.getUserID()) // user disliked person that likes them
+                                && this.userStore.getUserFromId(user.getUserID()).hasProfile()) // make sure they have a profile
                             .collect(Collectors.toList());
 
         int prevFeedSize = userFeed.size(), attempts = 0;
@@ -49,6 +51,8 @@ public class MatchFeedServiceSQL implements MatchFeedService {
                 attempts = 0;
             }
         }
+        // done so that not all the people that liked them came up first
+        Collections.shuffle(userFeed);
 
         return userFeed;
     }
