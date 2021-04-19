@@ -19,10 +19,9 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
 
     async updateFeed() {
         // Checks if ran out of feed
-        if(this.state.current_user >= this.state.feed_list.length) {
+        if(this.state.current_user >= this.state.feed_list.length-1) {
             const feed = await getFeed();
             this.setState({feed_list: feed, current_user: 0});
-            console.log(`Updated Feed. Current size: ${this.state.feed_list.length}`);
         } else {
             this.setState({current_user: this.state.current_user + 1});
         }
@@ -39,8 +38,7 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
     }
 
     render() {
-        console.log(this.state.feed_list.length);
-        if(this.state.feed_list.length === 0) {
+        if(this.state.current_user >= this.state.feed_list.length) {
             return (
                 <Heading>Loading Feed...</Heading>
             )
