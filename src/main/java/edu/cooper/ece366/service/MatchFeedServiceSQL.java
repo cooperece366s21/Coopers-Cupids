@@ -27,24 +27,19 @@ public class MatchFeedServiceSQL implements MatchFeedService {
                                 && !this.matchStore.getDislikes(userID).contains(user.getUserID()))
                             .collect(Collectors.toList());
 
-//        for (Profile p : userFeed) {
-//            System.out.println(p.getName());
-//        }
-
         int prevFeedSize = userFeed.size(), attempts = 0;
 
         while (attempts < 5) {
             userFeed.addAll(this.userStore.feedUsers(numUsers)
                                 .stream()
-                                .filter(user -> !this.matchStore.getLikes(userID).contains(user.getUserID())
+                                .filter(user -> !userFeed.contains(user)
+                                    && this.userStore.getUserFromId(user.getUserID()).hasProfile()
+                                    && !this.matchStore.getLikes(userID).contains(user.getUserID())
                                     && !this.matchStore.getDislikes(userID).contains(user.getUserID())
                                     && !this.matchStore.getDislikes(user.getUserID()).contains(userID)
-                                    && this.userStore.getUserFromId(user.getUserID()).hasProfile()
                                     && !this.matchStore.isMatch(user.getUserID(), userID)
-                                    && !user.getUserID().equals(userID)
-                                    && !userFeed.contains(user))
-                                .collect(Collectors.toList())
-                                );
+                                    && !user.getUserID().equals(userID))
+                                .collect(Collectors.toList()));
 
             if (userFeed.size() == prevFeedSize) {
                 attempts++;
