@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import ConversationMenu from "../../ui/ConversationMenu/ConversationMenu";
-import {Flex, Heading, Spacer} from "@chakra-ui/react";
-import {Conversation, getAllConversations, getCurrentUserID} from "../../../services/api";
+import {Flex, Heading} from "@chakra-ui/react";
+import {Conversation, getAllConversations, getCurrentUserID, sendMessage} from "../../../services/api";
 import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
 
 type MessageLayoutProps = {};
@@ -23,6 +23,13 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         this.setState({conversation_displayed: new_conversation});
     }
 
+    sendMessage = async (to_userID: string, new_message: string) => {
+        // TODO: Only request update on conversation being added to
+        await sendMessage(to_userID, new_message);
+        const conversation_resp = await getAllConversations();
+        this.setState({conversations: conversation_resp});
+    }
+
     render() {
         const current_userID = getCurrentUserID();
 
@@ -41,10 +48,10 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                 <ConversationViewer current_conversation={this.state.conversation_displayed === null ?
                                                           null :
                                                           this.state.conversations[this.state.conversation_displayed]}
-                                    current_userID={current_userID}
+                                    current_userID={current_userID} sendMessage={this.sendMessage}
                 />
             </Flex>
-        )
+        );
     }
 }
 

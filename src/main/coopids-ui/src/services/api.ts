@@ -21,7 +21,9 @@ export type Profile = {
 
 export type Conversation = {
     user1ID: string;
+    // user1_name: string;
     user2ID: string;
+    // user2_name: string;
     messages: Message[];
 };
 
@@ -47,8 +49,17 @@ type loginResponse = {
 // Functions
 // ---------
 
+// Auth Token
+function getUserToken(): string {
+    return localStorage.getItem("current_user_auth_token") || "";
+}
+
+function setUserToken(token: string): void {
+    localStorage.setItem("current_user_auth_token", token);
+}
+
 // Local Storage
-function getCurrentUserID(): string {
+export function getCurrentUserID(): string {
     return localStorage.getItem("current_user") || "";
 }
 
@@ -251,14 +262,14 @@ export async function getUserConversation(with_userID: string): Promise<Conversa
     return resp.ok ? await resp.json() : null;
 }
 
-export async function sendMessage(to_userID: string): Promise<boolean> {
+export async function sendMessage(to_userID: string, message: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${to_userID}/send`, {
         method: 'POST',
         mode: 'cors',
         headers: {userID: userID, 'Content-Type': 'application/json'},
-        body: JSON.stringify({to_userID: to_userID})
+        body: JSON.stringify({to_userID: to_userID, message: message})
     });
 
     return resp.ok;
@@ -278,6 +289,7 @@ export async function unmatch(unmatched_userID: string): Promise<boolean> {
 }
 
 const exports = {
+    getCurrentUserID,
     signup,
     login,
     logout,
