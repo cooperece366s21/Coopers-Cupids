@@ -39,6 +39,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
 
     }
 
+    // TODO: Disable button while API is loading request (when is_loading = true)
     getFormSwitchText = () => {
         const form_switch_text = this.state.form_type === "Signup" ? "Already have an account?"
                                                                    : "Don't have an account?";

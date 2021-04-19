@@ -1,14 +1,29 @@
 import React, {Component} from "react";
-import { Box, Stack, Image, Text, Heading, FormControl, FormLabel, Input,
-         NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
-         NumberDecrementStepper } from "@chakra-ui/react";
+import {
+    Box, Stack, Image, Text, Heading, FormControl, FormLabel, Input,
+    NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
+    NumberDecrementStepper, Button, Textarea
+} from "@chakra-ui/react";
 import ErrorMessage from "../../ui/ErrorMessage/ErrorMessage";
-import { Profile } from "../../../services/api";
+import {Profile} from "../../../services/api";
 
-type ProfileViewerProps = {is_editing: boolean, profile: Profile, editedProfile: Profile};
-type ProfileViewerState = {error: boolean};
+type ProfileViewerProps = {is_editing: boolean; profile: Profile;
+                           has_profile: boolean; editProfile: (new_profile: Profile) => void};
+type ProfileViewerState = {error: boolean, is_loading: boolean, editedProfile: Profile};
 
 class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
+    constructor(props: ProfileViewerProps) {
+        super(props);
+        this.state = {error: false, is_loading: false, editedProfile: {...this.props.profile}}
+    }
+
+    onSubmit = async (new_profile: Profile) => {
+        this.setState({is_loading: true});
+
+        await this.props.editProfile(new_profile);
+
+        this.setState({is_loading: false});
+    }
 
     render() {
             // If editing, show form instead
@@ -20,31 +35,42 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                             <Heading>Edit your profile</Heading>
                         </Box>
                         <Box my={4} textAlign="left">
-                            <form onSubmit={e => e.preventDefault()}>
+                            <form onSubmit={e => e.preventDefault()} action="">
                                 <Stack spacing={4}>
                                     {/* Error Message */}
                                     {/* In future, will have error depending on incorrect field */}
                                     {this.state.error && <ErrorMessage message="Incorrect Input" />}
                                     {/* Photo Field */}
-                                    <FormControl>
+                                    <FormControl isRequired>
                                         <FormLabel>Photo</FormLabel>
-                                        <Input type="name" placeholder={editedProfile.photo || ""} 
-                                            value={editedProfile.photo || ""} aria-label="Photo"
-                                            onChange={e => editedProfile.photo = e.currentTarget.value}/>
+                                        <Input type="name" value={this.state.editedProfile.photo || ""}
+                                               aria-label="Photo"
+                                               onChange={e => {e.persist(); this.setState(prevState => ({
+                                                   editedProfile: {...prevState.editedProfile,
+                                                                   photo: e.target.value}
+                                               }))}}
+                                        />
                                     </FormControl>
                                     {/* Name Field */}
-                                    <FormControl>
+                                    <FormControl isRequired>
                                         <FormLabel>Name</FormLabel>
-                                        <Input type="name" placeholder={editedProfile.name || ""} 
-                                            value={editedProfile.name || ""} aria-label="Name"
-                                            onChange={e => editedProfile.name = e.currentTarget.value}/>
+                                        <Input type="name" value={this.state.editedProfile.name || ""}
+                                               aria-label="Name"
+                                               onChange={e => {e.persist(); this.setState(prevState => ({
+                                                   editedProfile: {...prevState.editedProfile,
+                                                       name: e.target.value}
+                                               }))}}
+                                        />
                                     </FormControl>
                                     {/* Age Field */}
-                                    <FormControl>
+                                    <FormControl isRequired>
                                         <FormLabel>Age</FormLabel>
-                                        <NumberInput defaultValue={editedProfile.age || 18} min={18} 
-                                                     value={editedProfile.age || 18}
-                                                     onChange={e => editedProfile.age = Number(e)}>
+                                        <NumberInput min={18}
+                                                     value={this.state.editedProfile.age || ""}
+                                                     onChange={e => this.setState(prevState => ({
+                                                         editedProfile: {...prevState.editedProfile,
+                                                             age: Number(e)}
+                                                     }))}>
                                             <NumberInputField />
                                             <NumberInputStepper>
                                                 <NumberIncrementStepper />
@@ -53,26 +79,48 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                         </NumberInput>
                                     </FormControl>
                                     {/* Bio Field */}
-                                    <FormControl>
+                                    <FormControl isRequired>
                                         <FormLabel>Bio</FormLabel>
-                                        <Input type="name" placeholder={editedProfile.bio || ""} 
-                                            value={editedProfile.bio || ""} aria-label="Bio"
-                                            onChange={e => editedProfile.bio = e.currentTarget.value}/>
+                                        <Textarea type="name" value={this.state.editedProfile.bio || ""}
+                                                  aria-label="Bio"
+                                                  onChange={e => {e.persist(); this.setState(prevState => ({
+                                                      editedProfile: {...prevState.editedProfile,
+                                                          bio: e.target.value}
+                                                  }))}}
+                                        />
                                     </FormControl>
                                     {/* Location Field */}
-                                    <FormControl>
+                                    <FormControl isRequired>
                                         <FormLabel>Location</FormLabel>
-                                        <Input type="name" placeholder={editedProfile.location || ""} 
-                                            value={editedProfile.location || ""} aria-label="Location"
-                                            onChange={e => editedProfile.location = e.currentTarget.value}/>
+                                        <Input type="name" value={this.state.editedProfile.location || ""}
+                                               aria-label="Location"
+                                               onChange={e => {e.persist(); this.setState(prevState => ({
+                                                   editedProfile: {...prevState.editedProfile,
+                                                       location: e.target.value}
+                                               }))}}
+                                        />
                                     </FormControl>
                                     {/* Interests Field */}
-                                    <FormControl>
+                                    <FormControl isRequired>
                                         <FormLabel>Interests</FormLabel>
-                                        <Input type="name" placeholder={editedProfile.interests || ""} 
-                                            value={editedProfile.interests || ""} aria-label="Interests"
-                                            onChange={e => editedProfile.interests = e.currentTarget.value}/>
+                                        <Input type="name" value={this.state.editedProfile.interests || ""}
+                                               aria-label="Interests"
+                                               onChange={e => {e.persist(); this.setState(prevState => ({
+                                                   editedProfile: {...prevState.editedProfile,
+                                                       interests: e.target.value}
+                                               }))}}
+                                        />
                                     </FormControl>
+                                    <Button width="full"
+                                            type="submit"
+                                            boxShadow='sm'
+                                            _hover={{boxShadow: 'md'}}
+                                            _active={{boxShadow: 'lg'}}
+                                            onClick={() => this.onSubmit(this.state.editedProfile)}
+                                            isLoading={this.state.is_loading}
+                                    >
+                                        {this.props.has_profile ? "Update Profile" : "Create Profile"}
+                                    </Button>
                                 </Stack>
                             </form>
                         </Box>
@@ -82,44 +130,44 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
 
             // Will only pull a non-profiled user if current user
             // In future will take some profile info at sign-up which can be added to later on
-            if(this.props.profile == null) {
-                return (<Heading>You do not have a profile.<br/>Please click the <i>edit</i> button above.</Heading>)
+            if(!this.props.has_profile) {
+                return (<Heading>You do not have a profile.<br/>Please click the button below to get started.</Heading>)
             } else {
                 return (
-                    <Stack spacing={4}>
+                    <Stack spacing={6}>
                         {/* Profile Picture */}
                         <Box>
                             <Image src={this.props.profile.photo || undefined} alt={`${this.props.profile.name} Profile Picture`} />
                         </Box>
                         {/* Name */}
                         <Box>
-                            <Text>{this.props.profile.name}</Text>
+                            <Text><b>NAME:</b> {this.props.profile.name}</Text>
                         </Box>
                         {/* Age */}
                         {this.props.profile.age ?
                             <Box>
-                                <Text>{this.props.profile.age}</Text>
+                                <Text><b>AGE:</b> {this.props.profile.age}</Text>
                             </Box> 
                             : null 
                         }
                         {/* Bio */}
                         {this.props.profile.bio ?
                             <Box>
-                                <Text>{this.props.profile.bio}</Text>
+                                <Text><b>BIO:</b> {this.props.profile.bio}</Text>
                             </Box> 
                             : null 
                         }
                         {/* Location */}
                         {this.props.profile.location ?
                             <Box>
-                                <Text>{this.props.profile.location}</Text>
+                                <Text><b>LOCATION:</b> {this.props.profile.location}</Text>
                             </Box> 
                             : null 
                         }
                         {/* Interests */}
                         {this.props.profile.interests ?
                             <Box>
-                                <Text>{this.props.profile.interests}</Text>
+                                <Text><b>INTERESTS:</b> {this.props.profile.interests}</Text>
                             </Box> 
                             : null 
                         }
