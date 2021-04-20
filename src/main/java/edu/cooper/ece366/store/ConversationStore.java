@@ -2,17 +2,19 @@ package edu.cooper.ece366.store;
 
 import java.util.List;
 
-import edu.cooper.ece366.model.Conversation;
+import edu.cooper.ece366.model.Message;
 
 public interface ConversationStore {
 
-    List<Conversation> getUserConversations(String userID);
+    List<String> getUserConversations(String userID);
 
-    Conversation getUserConversation(String userID, String convoUserID);
+    List<Message> getUserConversation(String userID, String convoUserID);
+
+    void sendMessage(Message mes);
 
     // Adds Conversation
-    void addConversation(Conversation conv);
+    //void addConversation(Conversation conv);
 
     // Deletes Conversation
-    void deleteConversation(String userID, String deletedUserID);
+    //void deleteConversation(String userID, String deletedUserID);
 }

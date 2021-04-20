@@ -9,8 +9,8 @@ import edu.cooper.ece366.store.MatchStore;
 import edu.cooper.ece366.store.UserStore;
 
 public class MatchFeedServiceSQL implements MatchFeedService {
-    private MatchStore matchStore;
-    private UserStore userStore;
+    private final MatchStore matchStore;
+    private final UserStore userStore;
 
     public MatchFeedServiceSQL(MatchStore matchStore, UserStore userStore) {
         this.matchStore = matchStore;
@@ -23,7 +23,7 @@ public class MatchFeedServiceSQL implements MatchFeedService {
 
         userFeed = this.matchStore.getLikedBy(userID)
                             .stream()
-                            .map(uid -> this.userStore.getProfileFromId(uid))
+                            .map(this.userStore::getProfileFromId)
                             .filter(user -> !this.matchStore.isMatch(user.getUserID(), userID) // already matched
                                 && !this.matchStore.getDislikes(userID).contains(user.getUserID()) // user disliked person that likes them
                                 && this.userStore.getUserFromId(user.getUserID()).hasProfile()) // make sure they have a profile

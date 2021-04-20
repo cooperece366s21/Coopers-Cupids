@@ -84,36 +84,33 @@ public class MatchStoreMySQL implements MatchStore {
     // If none, returns empty list
     @Override
     public List<String> getLikes(String userID) {
-        List<String> likes = this.jdbi.withHandle(handle ->
+        return this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT to_userID FROM likes_dislikes WHERE from_userID = ? AND like_dislike = 'LIKE'")
                         .bind(0, userID)
                         .mapTo(String.class)
                         .list());
-        return likes;
     }
 
     // Returns list of userIDs that user has disliked
     // If none, returns empty list
     @Override
     public List<String> getDislikes(String userID) {
-        List<String> dislikes = this.jdbi.withHandle(handle ->
+        return this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT to_userID FROM likes_dislikes WHERE from_userID = ? AND like_dislike = 'DISLIKE'")
                         .bind(0, userID)
                         .mapTo(String.class)
                         .list());
-        return dislikes;
     }
 
     // Returns list of userIDs that liked user
     // If none, returns empty list
     @Override
     public List<String> getLikedBy(String userID) {
-        List<String> likedBy = this.jdbi.withHandle(handle ->
+        return this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT from_userID FROM likes_dislikes WHERE to_userID = ? AND like_dislike = 'LIKE'")
                         .bind(0, userID)
                         .mapTo(String.class)
                         .list());
-        return likedBy;
     }
 
     // Returns list of userIDs that matched with user (users liked each other)

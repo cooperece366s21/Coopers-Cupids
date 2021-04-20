@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.common.hash.Hashing;
 import com.google.common.reflect.TypeToken;
 
-import edu.cooper.ece366.model.Conversation;
 import edu.cooper.ece366.model.Message;
 import edu.cooper.ece366.model.Profile;
 import edu.cooper.ece366.model.User;
@@ -42,7 +41,7 @@ public class Handler {
 //        res.status(200);
 //        return user;
 //    }
-    public User signup(final Request req, final Response res) {
+    public Object signup(final Request req, final Response res) {
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().isUser(info.get("username"))) {
             res.status(400);
@@ -69,7 +68,7 @@ public class Handler {
 //        res.status(401);
 //        return null;
 //    }
-    public User login(final Request req, final Response res) {
+    public Object login(final Request req, final Response res) {
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().isUser(info.get("username"))
                 && this.matchService.getUserStore().validateUser(info.get("username"),
@@ -103,7 +102,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public User me(final Request req, final Response res) {
+    public Object me(final Request req, final Response res) {
         String userID = req.body();
         if (this.matchService.getUserStore().isUser(userID)) {
             res.status(200);
@@ -124,7 +123,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public User getUser(final Request req, final Response res) {
+    public Object getUser(final Request req, final Response res) {
         String userID = req.params(":userId");
         if(this.matchService.getUserStore().isUser(userID)) {
             res.status(200);
@@ -154,7 +153,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Profile create(final Request req, final Response res) {
+    public Object create(final Request req, final Response res) {
         String userID = req.params(":userId");
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().isUser(userID) && !this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
@@ -185,7 +184,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Profile getProfile(final Request req, final Response res) {
+    public Object getProfile(final Request req, final Response res) {
         String userID = req.params(":userId");
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
@@ -208,7 +207,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public List<Profile> getFeed(final Request req, final Response res) {
+    public Object getFeed(final Request req, final Response res) {
         String userID = req.params(":userId");
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
@@ -231,12 +230,12 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public List<Conversation> getConvos(final Request req, final Response res) {
+    public Object getConvos(final Request req, final Response res) {
         String userID = req.params(":userId");
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
             res.status(200);
-            return this.conversationStore.getUserConversations(userID);
+            //return this.conversationStore.getUserConversations(userID);
         }
         res.status(400);
         return null;
@@ -262,22 +261,22 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Conversation getConvo(final Request req, final Response res) {
-        String userID = req.params(":userId");
-        String convoUserId = req.params(":matchId");
-        if(userID.equals(convoUserId)) {
-            res.status(401);
-            return null;
-        }
-        if(this.matchService.getUserStore().isUser(userID)
-                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
-            Conversation convo = this.conversationStore.getUserConversation(userID, convoUserId);
-            if (convo != null) {
-                res.status(200);
-                return convo;
-            }
-        }
-        res.status(400);
+    public Object getConvo(final Request req, final Response res) {
+//        String userID = req.params(":userId");
+//        String convoUserId = req.params(":matchId");
+//        if(userID.equals(convoUserId)) {
+//            res.status(401);
+//            return null;
+//        }
+//        if(this.matchService.getUserStore().isUser(userID)
+//                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
+//            //Conversation convo = this.conversationStore.getUserConversation(userID, convoUserId);
+//            if (convo != null) {
+//                res.status(200);
+//                return convo;
+//            }
+//        }
+//        res.status(400);
         return null;
     }
 
@@ -296,15 +295,15 @@ public class Handler {
 //        return null;
 //    }
     public Object sendMessage(final Request req, final Response res) {
-        String userID = req.params(":userId");
-        String convoUserId = req.params(":matchId");
-        String message = req.body();
-        if (this.matchService.getUserStore().isUser(userID) && this.matchService.getUserStore().isUser(convoUserId)
-                && this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
-            this.conversationStore.getUserConversation(userID, convoUserId).sendMessage(userID, Message.Message_Type.TEXT, message);
-            return null;
-        }
-        res.status(400);
+//        String userID = req.params(":userId");
+//        String convoUserId = req.params(":matchId");
+//        String message = req.body();
+//        if (this.matchService.getUserStore().isUser(userID) && this.matchService.getUserStore().isUser(convoUserId)
+//                && this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
+//            this.conversationStore.getUserConversation(userID, convoUserId).sendMessage(userID, Message.Message_Type.TEXT, message);
+//            return null;
+//        }
+//        res.status(400);
         return null;
     }
 
@@ -336,7 +335,7 @@ public class Handler {
                 && this.matchService.getUserStore().getUserFromId(likedUserID).hasProfile()) {
             boolean match = this.matchService.getMatchStore().addLike(userID, likedUserID);
             if (match) {
-                this.conversationStore.addConversation(new Conversation(userID, likedUserID));
+                //this.conversationStore.addConversation(new Conversation(userID, likedUserID));
             }
             res.status(200);
             return null;
@@ -397,7 +396,7 @@ public class Handler {
         if(this.matchService.getUserStore().isUser(userID) && this.matchService.getUserStore().isUser(unmatchedUserID)
                 && this.matchService.getMatchStore().isMatch(userID, unmatchedUserID)) {
             this.matchService.getMatchStore().unmatch(userID, unmatchedUserID);
-            this.conversationStore.deleteConversation(userID, unmatchedUserID);
+            //this.conversationStore.deleteConversation(userID, unmatchedUserID);
             res.status(200);
             return null;
         }
