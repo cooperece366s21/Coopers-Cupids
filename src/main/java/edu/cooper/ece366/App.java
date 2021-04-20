@@ -7,6 +7,8 @@ import static spark.Spark.options;
 import static spark.Spark.post;
 
 import java.util.List;
+
+import edu.cooper.ece366.auth.Cookies;
 import spark.ResponseTransformer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,34 +38,6 @@ public class App
         Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
         CoopidsJdbi.setupSchema(jdbi, schemaPath);
 
-        UserStore store = new UserStoreMySQL(jdbi);
-        store.addUser(new User("test1", "test1", false));
-        store.addProfile(new Profile("test1", "mark", 21, "google.com", "im interesting", "NY", "making apps"));
-        store.addUser(new User("test2", "test2", false));
-        store.addProfile(new Profile("test2", "andrew", 21, "google.com", "im interesting", "NY", "making apps"));
-        store.addUser(new User("test3", "test3", false));
-        store.addProfile(new Profile("test3", "shine", 21, "google.com", "im interesting", "NY", "making apps"));
-
-        MatchStore store1 = new MatchStoreMySQL(jdbi);
-        store1.addLike("test1", "test2");
-        store1.addDislike("test1", "test3");
-        store1.addLike("test3", "test1");
-        store1.addLike("test3", "test2");
-        MatchFeedService service = new MatchFeedServiceSQL(store1, store);
-
-        List<Profile> feed = service.getUserFeed("test2", 15);
-        for (Profile f : feed) {
-            System.out.println(f.getName());
-        }
-        store1.addLike("test2", "test1");
-        System.out.println(store1.isMatch("test1", "test2"));
-        System.out.println(store1.isMatch("test1", "test3"));
-
-        feed = service.getUserFeed("test2", 15);
-        for (Profile f : feed) {
-            System.out.println(f.getName());
-        }
-
         Gson gson = new GsonBuilder().setLenient().create();
 
         ResponseTransformer responseTransformer = model -> {
@@ -78,6 +52,7 @@ public class App
         Handler handler = new Handler(
                             new MatchFeedServiceSQL(new MatchStoreMySQL(jdbi), new UserStoreMySQL(jdbi)),
                             new ConversationStoreMySQL(jdbi),
+                            new Cookies(jdbi),
                             gson);
 
         options(
@@ -112,7 +87,7 @@ public class App
         // doesnt need a get method (can be done in frontend)
         post("/logout", handler::logout, responseTransformer);
         // may delete since same as below
-        get("/me", handler::me, responseTransformer);
+        // get("/me", handler::me, responseTransformer);
         // TODO
         // may add post method for changing userID/password in the future
         get("/user/:userId", handler::getUser, responseTransformer);

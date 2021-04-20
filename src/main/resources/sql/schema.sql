@@ -25,7 +25,7 @@ create table if not exists cookies (
 create table if not exists messages (
     from_userID varchar(32) not null,
     to_userID varchar(32) not null,
-    messageType enum('TEXT', 'IMAGE', 'GIF') not null,
+    messageType enum('MATCH','TEXT', 'IMAGE', 'GIF') not null,
     messageText text(4096) not null,
     timestamp DATETIME not null,
     foreign key (from_userID) references users(userID),
