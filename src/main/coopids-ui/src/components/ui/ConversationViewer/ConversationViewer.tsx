@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Conversation} from "../../../services/api";
-import {Box, Flex, FormControl, Heading, Input, Stack, Text} from "@chakra-ui/react";
+import {Box, Heading, Stack, Text} from "@chakra-ui/react";
 import SendMessageForm from "../SendMessageForm/SendMessageForm";
 
 type ConversationViewerProps = {current_conversation: Conversation | null;

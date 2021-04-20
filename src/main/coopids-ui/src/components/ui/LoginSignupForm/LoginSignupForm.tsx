@@ -4,8 +4,9 @@ import api from "../../../services/api";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 // Sets types
-type FormProps = {};
-type FormState = {username: string; password: string, is_loading: boolean, form_type: "Signup" | "Login", api_error: boolean};
+type FormProps = {update_login: () => void};
+type FormState = {username: string; password: string, is_loading: boolean,
+                  form_type: "Signup" | "Login", api_error: boolean};
 
 class LoginSignupForm extends Component<FormProps, FormState> {
     constructor(props: FormProps) {
@@ -30,6 +31,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
             // UPDATE PAGE
             this.setState({api_error: false, is_loading: false})
             // TODO: REDIRECT
+            this.props.update_login();
         }
         // ERROR
         else {
