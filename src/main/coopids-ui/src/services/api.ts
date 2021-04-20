@@ -20,11 +20,9 @@ export type Profile = {
 };
 
 export type Conversation = {
-    user1ID: string;
-    // user1_name: string;
-    user2ID: string;
-    // user2_name: string;
-    messages: Message[];
+    userID: string,
+    name: string,
+    photo: string
 };
 
 enum MType {'TEXT', 'IMAGE', 'GIF'}
@@ -250,9 +248,9 @@ export async function getAllConversations(): Promise<Conversation[]> {
 
 /* Expecting in response:
        header: userID / cookie
-       body: Conversation (See Conversation type above)
+       body: Array of type Message (See Message type above)
  */
-export async function getUserConversation(with_userID: string): Promise<Conversation> {
+export async function getUserConversation(with_userID: string): Promise<Message[]> {
     const userID = getCurrentUserID();
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${with_userID}`, {
         method: 'GET',
