@@ -30,8 +30,9 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
     render() {
         const conversationButtons = this.props.conversations.map((value, index) => {
             return (
+                // TODO: Add picture as icon next to name
                 <Button onClick={() => this.props.updateVisibleConversation(index)} key={`Conversation ${index}`}>
-                    {value.user1ID === this.props.current_userID ? value.user2ID : value.user1ID}
+                    {value.name}
                 </Button>
             )
         })
