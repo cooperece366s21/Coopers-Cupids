@@ -47,6 +47,8 @@ type loginResponse = {
 // Functions
 // ---------
 
+// Stores the UserID (for requests) and an auth token (for authentication) in local storage
+
 // Auth Token
 function getUserToken(): string {
     return localStorage.getItem("current_user_auth_token") || "";
@@ -56,32 +58,35 @@ function setUserToken(token: string): void {
     localStorage.setItem("current_user_auth_token", token);
 }
 
-// Local Storage
+// UserID
 export function getCurrentUserID(): string {
     return localStorage.getItem("current_user") || "";
 }
 
-// For now this will use the userID as the authentication value.
-// In the future it will use some sort of cookie value / hash to authenticate user
-function setCurrentUserID(user: User): void {
-    localStorage.setItem("current_user", user.userID);
+
+function setCurrentUserID(userID: string): void {
+    localStorage.setItem("current_user", userID);
 }
 
+// TODO: Check header on response to verify source
+
 /*  Expecting in response:
-        header: userID / cookie
+        header: Cookie / Auth Token
         body: User (See User type above)
  */
 export async function signup(username: string, password: string): Promise<loginResponse> {
     const resp = await fetch(`${BACKEND_URL}/signup`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: getCurrentUserID(), 'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'username': username, 'password': password})
     })
 
     if(resp.ok) {
         const user: User = await resp.json()
-        setCurrentUserID(user);
+        // Should never get back null, but need to keep TypeScript happy
+        setUserToken(resp.headers.get("auth_token") || "");
+        setCurrentUserID(user.userID);
         return {user: user, status: "Success"};
     } else {
         return {error: resp.status.toString(), status: "Failure"};
@@ -89,41 +94,49 @@ export async function signup(username: string, password: string): Promise<loginR
 }
 
 /*  Expecting in response:
-        header: userID / cookie
+        header: Cookie / Auth Token
         body: User (See User type above)
  */
 export async function login(username: string, password: string): Promise<loginResponse> {
     const resp = await fetch(`${BACKEND_URL}/login`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: getCurrentUserID(), 'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'username': username, 'password': password})
     });
 
     if(resp.ok) {
         const user: User = await resp.json()
-        setCurrentUserID(user);
+        // Should never get back null, but need to keep TypeScript happy
+        setUserToken(resp.headers.get("auth_token") || "");
+        setCurrentUserID(user.userID);
         return {user: user, status: "Success"};
     } else {
         return {error: resp.status.toString(), status: "Failure"};
     }
 }
 
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
 export async function logout(): Promise<boolean> {
     const resp = await fetch(`${BACKEND_URL}/logout`, {
         method: 'POST',
-        headers: {userID: getCurrentUserID()}
+        headers: {auth_token: getUserToken()}
     });
 
     return resp.ok;
 }
 
 // THIS NEEDS A HANDLER ENDPOINT
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
 export async function updatePassword(password: string): Promise<boolean> {
     const resp = await fetch(`${BACKEND_URL}/TODO`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: getCurrentUserID(), 'Content-Type': 'application/json'},
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify({'password': password})
     })
 
@@ -131,35 +144,29 @@ export async function updatePassword(password: string): Promise<boolean> {
 }
 
 /* Expecting in response:
-       header: userID / cookie
+       header: Cookie / Auth Token
        body: User (See User type above)
  */
 export async function getCurrentUser(): Promise<User | null> {
-    const resp = await fetch(`${BACKEND_URL}/me`, {
-        method: 'GET',
-        headers: {userID: getCurrentUserID()}
-    });
-
-    return resp.ok ? await resp.json() : null;
+    return getUserFromID(getCurrentUserID());
 }
 
 /* Expecting in response:
-       header: userID / cookie
+       header: Cookie / Auth Token
        body: User (See User type above)
  */
 export async function getUserFromID(userID: string): Promise<User | null> {
     const resp = await fetch(`${BACKEND_URL}/user/${userID}`, {
         method: 'GET',
-        headers: {userID: getCurrentUserID()}
+        headers: {auth_token: getUserToken()}
     });
 
     return resp.ok ? await resp.json() : null;
 }
 
 // Will either create new profile if none exists, or will update fields in profile
-// In future maybe only send updated fields instead of all?
 /* Expecting in response:
-       header: userID / cookie
+       header: Cookie / Auth Token
        body: Profile (See Profile type above)
  */
 export async function setUserProfile(profile: Profile): Promise<Profile | null> {
@@ -168,7 +175,7 @@ export async function setUserProfile(profile: Profile): Promise<Profile | null> 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/create`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: userID, 'Content-Type': 'application/json'},
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify(profile)
     });
 
@@ -180,52 +187,58 @@ export async function getCurrentUserProfile(): Promise<Profile | null> {
 }
 
 /* Expecting in response:
-       header: userID / cookie
+       header: Cookie / Auth Token
        body: Profile (See Profile type above)
  */
 export async function getUserProfile(userID: string): Promise<Profile | null> {
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/profile`, {
         method: 'GET',
-        headers: {userID: getCurrentUserID()}
+        headers: {auth_token: getUserToken()}
     })
 
     return resp.ok ? await resp.json() : null;
 }
 
 /* Expecting in response:
-       header: userID / cookie
+       header: Cookie / Auth Token
        body: Array of type Profile (See Profile type above)
  */
 export async function getFeed(): Promise<Profile[]> {
     const userID = getCurrentUserID();
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/feed`, {
         method: 'GET',
-        headers: {userID: userID}
+        headers: {auth_token: getUserToken()}
     })
 
     return resp.ok ? await resp.json() : null;
 }
 
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
 export async function like(liked_userID: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/feed/like`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: userID, 'Content-Type': 'application/json'},
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify({liked_userID: liked_userID})
     });
 
     return resp.ok;
 }
 
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
 export async function dislike(disliked_userID: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/feed/dislike`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: userID, 'Content-Type': 'application/json'},
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify({disliked_userID: disliked_userID})
     });
 
@@ -233,53 +246,59 @@ export async function dislike(disliked_userID: string): Promise<boolean> {
 }
 
 /* Expecting in response:
-       header: userID / cookie
+       header: Cookie / Auth Token
        body: Array of type Conversation (See Conversation type above)
  */
 export async function getAllConversations(): Promise<Conversation[]> {
     const userID = getCurrentUserID();
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos`, {
         method: 'GET',
-        headers: {userID: userID}
+        headers: {auth_token: getUserToken()}
     })
 
     return resp.ok ? await resp.json() : null;
 }
 
 /* Expecting in response:
-       header: userID / cookie
+       header: Cookie / Auth Token
        body: Array of type Message (See Message type above)
  */
 export async function getUserConversation(with_userID: string): Promise<Message[]> {
     const userID = getCurrentUserID();
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${with_userID}`, {
         method: 'GET',
-        headers: {userID: userID}
+        headers: {auth_token: getUserToken()}
     })
 
     return resp.ok ? await resp.json() : null;
 }
 
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
 export async function sendMessage(to_userID: string, message: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${to_userID}/send`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: userID, 'Content-Type': 'application/json'},
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify({to_userID: to_userID, message: message})
     });
 
     return resp.ok;
 }
 
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
 export async function unmatch(unmatched_userID: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${unmatched_userID}/unmatch`, {
         method: 'POST',
         mode: 'cors',
-        headers: {userID: userID, 'Content-Type': 'application/json'},
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify({unmatched_userID: unmatched_userID})
     });
 
