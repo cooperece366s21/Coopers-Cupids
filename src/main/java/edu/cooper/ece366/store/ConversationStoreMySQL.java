@@ -39,7 +39,7 @@ public class ConversationStoreMySQL implements ConversationStore {
     public List<Message> getUserConversation(String userID, String convoUserID) {
         return this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT * FROM messages WHERE (from_userID = ? AND to_userID = ?) " +
-                        "OR (to_userID = ? AND from_userID = ?) ORDER BY timestamp DESC")
+                        "OR (to_userID = ? AND from_userID = ?) ORDER BY timestamp ASC")
                         .bind(0, userID)
                         .bind(1, convoUserID)
                         .bind(2, userID)
