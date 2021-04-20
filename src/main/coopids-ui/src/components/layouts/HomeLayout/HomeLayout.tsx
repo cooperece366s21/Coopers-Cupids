@@ -1,12 +1,23 @@
 import React, {Component} from "react";
+import {Heading, Stack} from "@chakra-ui/react";
+import LoginSignupForm from "../../ui/LoginSignupForm/LoginSignupForm";
 
-type HomeLayoutProps = {};
+type HomeLayoutProps = {is_logged_in: boolean, update_login: () => void};
 type HomeLayoutState = {};
 
 class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
+    constructor(props: HomeLayoutProps) {
+        super(props);
+    }
 
     render() {
-        return null
+        return (
+                <Stack>
+                    <Heading>Welcome to Cooper's Cupids</Heading>
+                    <Heading>We're here to make your love life better</Heading>
+                    {this.props.is_logged_in ? null : <LoginSignupForm update_login={this.props.update_login }/>}
+                </Stack>
+            );
     }
 }
 
