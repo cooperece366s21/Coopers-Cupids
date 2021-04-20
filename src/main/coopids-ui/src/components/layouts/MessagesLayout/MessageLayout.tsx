@@ -5,7 +5,7 @@ import {Conversation, getAllConversations, getCurrentUserID, sendMessage} from "
 import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
 
 type MessageLayoutProps = {};
-type MessageLayoutState = {conversations: Conversation[]; is_loaded: boolean, conversation_displayed: number | null};
+type MessageLayoutState = {conversations: Conversation[]; is_loaded: boolean; conversation_displayed: number | null};
 
 // TODO: Update conversation every minute or so, or add a refresh button
 class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {

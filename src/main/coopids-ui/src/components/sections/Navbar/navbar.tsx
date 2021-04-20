@@ -1,10 +1,10 @@
 import React, {Component} from "react";
-import {Box, Flex, Stack} from "@chakra-ui/react";
+import {Box, Button, Flex, Stack} from "@chakra-ui/react";
 import NavBarToggleButton from "../../ui/NavBarToggleButton/NavBarToggleButton";
 import NavBarLink from "../../ui/NavbarLink/NavBarLink";
 
 // Sets types
-type NavBarProps = {is_logged_in: boolean};
+type NavBarProps = {is_logged_in: boolean; update_login: () => void};
 type NavBarState = {isOpen: boolean};
 
 class NavBar extends Component<NavBarProps, NavBarState> {
@@ -19,7 +19,7 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     // TODO: Only show home page when not logged in
     render() {
         return (
-            <Flex as="nav" align="center" justify="space-between" wrap="wrap" w="100%" mb={8} p={8}>
+            <Flex as="nav" align="center" justify="space-between" wrap="wrap" w="fill" mb={8} p={8}>
                 <NavBarToggleButton onToggle={this.toggleNavBar} isOpen={this.state.isOpen} />
                 <Box display={{ base: this.state.isOpen ? "block" : "none", md: "block" }}
                      flexBasis={{ base: "100%", md: "auto" }}>
@@ -35,7 +35,9 @@ class NavBar extends Component<NavBarProps, NavBarState> {
                         {this.props.is_logged_in ?
                             <NavBarLink linkTo={"/Messages"}>Messages</NavBarLink>
                             : null }
-
+                        {this.props.is_logged_in ?
+                            <Button onClick={this.props.update_login}>Logout</Button>
+                            : null }
                     </Stack>
                 </Box>
                 {/* TODO: Add settings icon for "change password" and "logout" */}

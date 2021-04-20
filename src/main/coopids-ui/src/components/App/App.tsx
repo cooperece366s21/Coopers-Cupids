@@ -26,7 +26,7 @@ class App extends Component<AppProps, AppState> {
     return (
         <BrowserRouter>
           <div className="App">
-            <NavBar is_logged_in={this.state.is_logged_in}/>
+            <NavBar is_logged_in={this.state.is_logged_in} update_login={this.update_login}/>
             <Switch>
               <Route exact path="/" render={() =>
                   (<HomeLayout is_logged_in={this.state.is_logged_in} update_login={this.update_login} />)

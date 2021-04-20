@@ -5,8 +5,8 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 // Sets types
 type FormProps = {update_login: () => void};
-type FormState = {username: string; password: string, is_loading: boolean,
-                  form_type: "Signup" | "Login", api_error: boolean};
+type FormState = {username: string; password: string; is_loading: boolean,
+                  form_type: "Signup" | "Login"; api_error: boolean};
 
 class LoginSignupForm extends Component<FormProps, FormState> {
     constructor(props: FormProps) {
@@ -16,6 +16,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
 
     // Makes API Call on button click
     onSubmit = async () => {
+        this.props.update_login(); return;
         this.setState({is_loading: true});
 
         // Checks for empty fields
@@ -67,7 +68,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                         <Heading>{header_text}</Heading>
                     </Box>
                     <Box my={4} textAlign="left">
-                        <form onSubmit={e => e.preventDefault()}>
+                        <form onSubmit={e => {e.preventDefault(); this.onSubmit()}}>
                             <Stack spacing={4}>
                                 {/* Error Message */}
                                 {this.state.api_error && <ErrorMessage message={error_message} />}
@@ -89,7 +90,6 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                                         boxShadow='sm'
                                         _hover={{boxShadow: 'md'}}
                                         _active={{boxShadow: 'lg'}}
-                                        onClick={this.onSubmit}
                                         isLoading={this.state.is_loading}>
                                     {this.state.form_type === "Signup" ? "Create Account" : "Login"}
                                 </Button>
