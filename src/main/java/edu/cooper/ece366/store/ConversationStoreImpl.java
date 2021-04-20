@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-import edu.cooper.ece366.model.Conversation;
+//import edu.cooper.ece366.model.Conversation;
 
 //public class ConversationStoreImpl implements ConversationStore {
 //    // Maps userID -> {Conversations}
