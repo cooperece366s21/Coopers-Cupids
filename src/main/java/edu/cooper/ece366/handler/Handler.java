@@ -1,5 +1,7 @@
 package edu.cooper.ece366.handler;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
 import java.nio.charset.StandardCharsets;
@@ -12,18 +14,21 @@ import com.google.common.reflect.TypeToken;
 import edu.cooper.ece366.model.Message;
 import edu.cooper.ece366.model.Profile;
 import edu.cooper.ece366.model.User;
+import edu.cooper.ece366.auth.Cookies;
 import edu.cooper.ece366.service.MatchFeedService;
 import edu.cooper.ece366.store.ConversationStore;
 
 public class Handler {
     private final MatchFeedService matchService;
     private final ConversationStore conversationStore;
+    private final Cookies cookies;
     private final Gson gson;
 
     // Constructor
-    public Handler(MatchFeedService feedService, ConversationStore convStore, Gson gson) {
+    public Handler(MatchFeedService feedService, ConversationStore convStore, Cookies cookies, Gson gson) {
         this.matchService = feedService;
         this.conversationStore = convStore;
+        this.cookies = cookies;
         this.gson = gson;
     }
 
@@ -44,13 +49,16 @@ public class Handler {
     public Object signup(final Request req, final Response res) {
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().isUser(info.get("username"))) {
+            // user already exists
             res.status(400);
             return null;
         }
         this.matchService.getUserStore().addUser(new User(info.get("username"),
-                Hashing.sha256().hashString(info.get("password"), StandardCharsets.UTF_8).toString()));
+                Hashing.sha256().hashString(info.get("password"), StandardCharsets.UTF_8).toString(), false));
         User user = this.matchService.getUserStore().getUserFromId(info.get("username"));
-        res.status(200);
+        String cookie = this.cookies.assignCookie(user.getUserID());
+        res.header("auth_token", cookie);
+        res.status(201);
         return user;
     }
 
@@ -70,10 +78,11 @@ public class Handler {
 //    }
     public Object login(final Request req, final Response res) {
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
-        if(this.matchService.getUserStore().isUser(info.get("username"))
-                && this.matchService.getUserStore().validateUser(info.get("username"),
+        if(this.matchService.getUserStore().validateUser(info.get("username"),
                 Hashing.sha256().hashString(info.get("password"), StandardCharsets.UTF_8).toString())) {
             User user = this.matchService.getUserStore().getUserFromId(info.get("username"));
+            String cookie = this.cookies.assignCookie(user.getUserID());
+            res.header("auth_token", cookie);
             res.status(200);
             return user;
         }
@@ -87,7 +96,21 @@ public class Handler {
 //        return null;
 //    }
     public Object logout(final Request req, final Response res) {
-        res.status(200);
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            res.status(401);
+            return null;
+        }
+        String userID = this.cookies.getUser(cookie);
+        if (userID != null) {
+            // if cookies is valid, delete it
+            // potential to log others out since not checking userID against anything
+            // worry about later
+            this.cookies.deleteCookie(cookie, userID);
+            res.status(200);
+            return null;
+        }
+        res.status(400);
         return null;
     }
 
@@ -102,15 +125,6 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Object me(final Request req, final Response res) {
-        String userID = req.body();
-        if (this.matchService.getUserStore().isUser(userID)) {
-            res.status(200);
-            return this.matchService.getUserStore().getUserFromId(userID);
-        }
-        res.status(400);
-        return null;
-    }
 
     // Function to get the users account
     // Take argument through URL
@@ -125,10 +139,24 @@ public class Handler {
 //    }
     public Object getUser(final Request req, final Response res) {
         String userID = req.params(":userId");
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
         if(this.matchService.getUserStore().isUser(userID)) {
+            res.header("auth_token", cookie);
             res.status(200);
             return this.matchService.getUserStore().getUserFromId(userID);
         }
+        // shouldnt get here
         res.status(400);
         return null;
     }
@@ -155,19 +183,34 @@ public class Handler {
 //    }
     public Object create(final Request req, final Response res) {
         String userID = req.params(":userId");
-        Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
-        if(this.matchService.getUserStore().isUser(userID) && !this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
-            Profile profile = this.matchService.getUserStore().getProfileFromId(userID);
-            profile.setName(info.get("name"));
-            profile.setAge(Integer.parseInt(info.get("age")));
-            profile.setPhoto(info.get("photo"));
-            profile.setBio(info.get("bio"));
-            profile.setLocation(info.get("location"));
-            profile.setInterests(info.get("interests"));
-            this.matchService.getUserStore().getUserFromId(userID).createdProfile();
-            res.status(200);
-            return profile;
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
         }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
+        // if got here user should exist but check to prevent null error
+        if(this.matchService.getUserStore().isUser(userID) &&
+                !this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
+            this.matchService.getUserStore().addProfile(new Profile(userID,
+                                                                        info.get("name"),
+                                                                        Integer.parseInt(info.get("age")),
+                                                                        info.get("photo"),
+                                                                        info.get("bio"),
+                                                                        info.get("location"),
+                                                                        info.get("interests")));
+            res.header("auth_token", cookie);
+            res.status(201);
+            return this.matchService.getUserStore().getProfileFromId(userID);
+        }
+        // should only get here if profile already exists (dont log them out)
+        res.header("auth_token", cookie);
         res.status(400);
         return null;
     }
@@ -186,11 +229,26 @@ public class Handler {
 //    }
     public Object getProfile(final Request req, final Response res) {
         String userID = req.params(":userId");
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
+            res.header("auth_token", cookie);
             res.status(200);
             return this.matchService.getUserStore().getProfileFromId(userID);
         }
+        // should only get here if doesnt have profile (dont log them out)
+        res.header("auth_token", cookie);
         res.status(400);
         return null;
     }
@@ -209,11 +267,26 @@ public class Handler {
 //    }
     public Object getFeed(final Request req, final Response res) {
         String userID = req.params(":userId");
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
+            res.header("auth_token", cookie);
             res.status(200);
             return this.matchService.getUserFeed(userID, 25);
         }
+        // should only get here if doesnt have profile (dont log them out)
+        res.header("auth_token", cookie);
         res.status(400);
         return null;
     }
@@ -232,11 +305,31 @@ public class Handler {
 //    }
     public Object getConvos(final Request req, final Response res) {
         String userID = req.params(":userId");
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
+            List<String> convoIds = this.conversationStore.getUserConversations(userID);
+            List<Profile> convoProfs = new ArrayList<>();
+            for (String id : convoIds) {
+                convoProfs.add(this.matchService.getUserStore().getProfileFromId(id));
+            }
+            res.header("auth_token", cookie);
             res.status(200);
-            //return this.conversationStore.getUserConversations(userID);
+            return convoProfs;
         }
+        // should only get here if doesnt have profile (dont log them out)
+        res.header("auth_token", cookie);
         res.status(400);
         return null;
     }
@@ -262,21 +355,38 @@ public class Handler {
 //        return null;
 //    }
     public Object getConvo(final Request req, final Response res) {
-//        String userID = req.params(":userId");
-//        String convoUserId = req.params(":matchId");
-//        if(userID.equals(convoUserId)) {
-//            res.status(401);
-//            return null;
-//        }
-//        if(this.matchService.getUserStore().isUser(userID)
-//                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
-//            //Conversation convo = this.conversationStore.getUserConversation(userID, convoUserId);
-//            if (convo != null) {
-//                res.status(200);
-//                return convo;
-//            }
-//        }
-//        res.status(400);
+        String userID = req.params(":userId");
+        String convoUserId = req.params(":matchId");
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        if (userID.equals(convoUserId)) {
+            // person wants to unmatch themselves (bad request, dont log out)
+            res.header("auth_token", cookie);
+            res.status(400);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
+        if(this.matchService.getUserStore().isUser(userID)
+                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
+                && this.matchService.getUserStore().isUser(convoUserId)
+                && this.matchService.getUserStore().getUserFromId(convoUserId).hasProfile()
+                && this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
+            res.header("auth_token", cookie);
+            res.status(200);
+            return this.conversationStore.getUserConversation(userID, convoUserId);
+        }
+        // should only get here if doesnt have profile or didnt match (dont log them out)
+        res.header("auth_token", cookie);
+        res.status(400);
         return null;
     }
 
@@ -295,15 +405,44 @@ public class Handler {
 //        return null;
 //    }
     public Object sendMessage(final Request req, final Response res) {
-//        String userID = req.params(":userId");
-//        String convoUserId = req.params(":matchId");
-//        String message = req.body();
-//        if (this.matchService.getUserStore().isUser(userID) && this.matchService.getUserStore().isUser(convoUserId)
-//                && this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
-//            this.conversationStore.getUserConversation(userID, convoUserId).sendMessage(userID, Message.Message_Type.TEXT, message);
-//            return null;
-//        }
-//        res.status(400);
+        String userID = req.params(":userId");
+        String convoUserId = req.params(":matchId");
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        if (userID.equals(convoUserId)) {
+            // person wants to unmatch themselves (bad request, dont log out)
+            res.header("auth_token", cookie);
+            res.status(400);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
+        if(this.matchService.getUserStore().isUser(userID)
+                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
+                && this.matchService.getUserStore().isUser(convoUserId)
+                && this.matchService.getUserStore().getUserFromId(convoUserId).hasProfile()
+                && this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
+            // in the future add different message types
+            this.conversationStore.sendMessage(new Message(userID,
+                                                            convoUserId,
+                                                            Message.Message_Type.TEXT,
+                                                            req.body(),
+                                                            new Timestamp(System.currentTimeMillis())));
+            res.header("auth_token", cookie);
+            res.status(200);
+            return null;
+        }
+        // should only get here if doesnt have profile or didnt match (dont log them out)
+        res.header("auth_token", cookie);
+        res.status(400);
         return null;
     }
 
@@ -328,18 +467,44 @@ public class Handler {
 //    }
     public Object like(final Request req, final Response res) {
         String userID = req.params(":userId");
-        String likedUserID = req.body();
+        String likeUserId = req.body();
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        if (userID.equals(likeUserId)) {
+            // person wants to unmatch themselves (bad request, dont log out)
+            res.header("auth_token", cookie);
+            res.status(400);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
-                && this.matchService.getUserStore().isUser(likedUserID)
-                && this.matchService.getUserStore().getUserFromId(likedUserID).hasProfile()) {
-            boolean match = this.matchService.getMatchStore().addLike(userID, likedUserID);
-            if (match) {
-                //this.conversationStore.addConversation(new Conversation(userID, likedUserID));
+                && this.matchService.getUserStore().isUser(likeUserId)
+                && this.matchService.getUserStore().getUserFromId(likeUserId).hasProfile()) {
+            if (this.matchService.getMatchStore().addLike(userID, likeUserId)) {
+                // returns true if there is match, in which case add empty message to messages table
+                // so that matched user will come up in getConversations call
+                this.conversationStore.sendMessage(new Message(userID,
+                                                                likeUserId,
+                                                                Message.Message_Type.MATCH,
+                                                                "",
+                                                                new Timestamp(System.currentTimeMillis())));
             }
+            res.header("auth_token", cookie);
             res.status(200);
             return null;
         }
+        // should only get here if doesnt have profile (dont log them out)
+        res.header("auth_token", cookie);
         res.status(400);
         return null;
     }
@@ -362,15 +527,36 @@ public class Handler {
 //    }
     public Object dislike(final Request req, final Response res) {
         String userID = req.params(":userId");
-        String dislikedUserID = req.body();
+        String dislikeUserId = req.body();
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        if (userID.equals(dislikeUserId)) {
+            // person wants to unmatch themselves (bad request, dont log out)
+            res.header("auth_token", cookie);
+            res.status(400);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
-                && this.matchService.getUserStore().isUser(dislikedUserID)
-                && this.matchService.getUserStore().getUserFromId(dislikedUserID).hasProfile()) {
-            this.matchService.getMatchStore().addDislike(userID, dislikedUserID);
+                && this.matchService.getUserStore().isUser(dislikeUserId)
+                && this.matchService.getUserStore().getUserFromId(dislikeUserId).hasProfile()) {
+            this.matchService.getMatchStore().addDislike(userID, dislikeUserId);
+            res.header("auth_token", cookie);
             res.status(200);
             return null;
         }
+        // should only get here if doesnt have profile (dont log them out)
+        res.header("auth_token", cookie);
         res.status(400);
         return null;
     }
@@ -392,14 +578,37 @@ public class Handler {
 //    }
     public Object unmatch(final Request req, final Response res) {
         String userID = req.params(":userId");
-        String unmatchedUserID = req.params(":matchId");
-        if(this.matchService.getUserStore().isUser(userID) && this.matchService.getUserStore().isUser(unmatchedUserID)
-                && this.matchService.getMatchStore().isMatch(userID, unmatchedUserID)) {
-            this.matchService.getMatchStore().unmatch(userID, unmatchedUserID);
-            //this.conversationStore.deleteConversation(userID, unmatchedUserID);
+        String unmatchUserId = req.params(":matchId");
+        String cookie = req.headers("auth_token");
+        if (cookie == null) {
+            // no cookie provided
+            res.status(401);
+            return null;
+        }
+        if (!this.cookies.verifyCookie(cookie, userID)) {
+            // malicious access, login timeout, or random user/cookie
+            res.status(401);
+            return null;
+        }
+        if (userID.equals(unmatchUserId)) {
+            // person wants to unmatch themselves (bad request, dont log out)
+            res.header("auth_token", cookie);
+            res.status(400);
+            return null;
+        }
+        // if got here user should exist but check to prevent null error
+        if(this.matchService.getUserStore().isUser(userID)
+                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
+                && this.matchService.getUserStore().isUser(unmatchUserId)
+                && this.matchService.getUserStore().getUserFromId(unmatchUserId).hasProfile()
+                && this.matchService.getMatchStore().isMatch(userID, unmatchUserId)) {
+            this.matchService.getMatchStore().unmatch(userID, unmatchUserId);
+            res.header("auth_token", cookie);
             res.status(200);
             return null;
         }
+        // should only get here if doesnt have profile or didnt match (dont log them out)
+        res.header("auth_token", cookie);
         res.status(400);
         return null;
     }

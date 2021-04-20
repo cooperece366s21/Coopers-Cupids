@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 public class Message {
     // Enum for message type
     public enum Message_Type {
+        MATCH,
         TEXT,
         IMAGE,
         GIF

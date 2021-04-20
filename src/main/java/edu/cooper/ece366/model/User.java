@@ -11,12 +11,6 @@ public class User {
     // --------
 
     // Constructor
-    public User(String uid, String password) {
-        this.hasProfile = false;
-        this.userID = uid;
-        this.password = password;
-    }
-
     public User(String uid, String password, boolean hp) {
         this.hasProfile = hp;
         this.userID = uid;

@@ -75,6 +75,11 @@
       <version>4.13</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>edu.cooper.ece366</groupId>
+          <artifactId>Coopids</artifactId>
+          <version>1.0-SNAPSHOT</version>
+      </dependency>
   </dependencies>
 
   <build>

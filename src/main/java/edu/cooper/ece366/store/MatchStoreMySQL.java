@@ -22,6 +22,7 @@ public class MatchStoreMySQL implements MatchStore {
                         .mapTo(String.class)
                         .findOne());
         if (lod.isPresent()) {
+            // cant change decision
             // decision was already handled (matched if necessary)
             return false;
         }
@@ -56,6 +57,7 @@ public class MatchStoreMySQL implements MatchStore {
                         .bind(1, dislikedUserID)
                         .mapTo(String.class)
                         .findOne());
+        // cant change decision
         if (lod.isEmpty()) {
             this.jdbi.useHandle(handle ->
                     handle.execute("INSERT INTO likes_dislikes (from_userID, to_userID, like_dislike) VALUES (?, ?, 'DISLIKE')",
@@ -65,19 +67,18 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public void unmatch(String userID, String unmatchedUserID) {
-        Optional<String> oneID = this.jdbi.withHandle(handle ->
-                handle.createQuery("SELECT userID1 FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)")
-                        .bind(0, userID)
-                        .bind(1, unmatchedUserID)
-                        .bind(2, userID)
-                        .bind(3, unmatchedUserID)
-                        .mapTo(String.class)
-                        .findOne());
-        if (oneID.isPresent()) {
-            this.jdbi.useHandle(handle ->
-                    handle.execute("DELETE FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)",
-                            userID, unmatchedUserID, userID, unmatchedUserID));
-        }
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)",
+                        userID,
+                        unmatchedUserID,
+                        userID,
+                        unmatchedUserID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM messages WHERE (from_userID = ? AND to_userID = ?) OR (to_userID = ? AND from_userID = ?)",
+                        userID,
+                        unmatchedUserID,
+                        userID,
+                        unmatchedUserID));
     }
 
     // Returns list of userIDs that user has liked

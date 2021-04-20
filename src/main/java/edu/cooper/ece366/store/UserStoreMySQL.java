@@ -67,19 +67,18 @@ public class UserStoreMySQL implements UserStore {
     @Override
     public void deleteUser(String userID) {
         if (isUser(userID)) {
-            User user = getUserFromId(userID);
             this.jdbi.useHandle(handle ->
                     handle.execute("DELETE FROM users WHERE userID = ?", userID));
-            if (user.hasProfile()) {
-                this.jdbi.useHandle(handle ->
-                        handle.execute("DELETE FROM profiles WHERE userID = ?", userID));
-                this.jdbi.useHandle(handle ->
-                        handle.execute("DELETE FROM likes_dislikes WHERE from_userID = ? OR to_userID = ?", userID, userID));
-                this.jdbi.useHandle(handle ->
-                        handle.execute("DELETE FROM matches WHERE userID1 = ? OR userID2 = ?", userID, userID));
-                this.jdbi.useHandle(handle ->
-                        handle.execute("DELETE FROM messages WHERE from_userID = ? OR to_userID = ?", userID, userID));
-            }
+            this.jdbi.useHandle(handle ->
+                    handle.execute("DELETE FROM cookies WHERE userID = ?", userID));
+            this.jdbi.useHandle(handle ->
+                    handle.execute("DELETE FROM profiles WHERE userID = ?", userID));
+            this.jdbi.useHandle(handle ->
+                    handle.execute("DELETE FROM likes_dislikes WHERE from_userID = ? OR to_userID = ?", userID, userID));
+            this.jdbi.useHandle(handle ->
+                    handle.execute("DELETE FROM matches WHERE userID1 = ? OR userID2 = ?", userID, userID));
+            this.jdbi.useHandle(handle ->
+                    handle.execute("DELETE FROM messages WHERE from_userID = ? OR to_userID = ?", userID, userID));
         }
     }
 
