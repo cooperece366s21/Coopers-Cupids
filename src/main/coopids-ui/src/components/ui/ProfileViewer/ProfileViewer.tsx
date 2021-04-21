@@ -7,27 +7,27 @@ import {
 import ErrorMessage from "../../ui/ErrorMessage/ErrorMessage";
 import {Profile} from "../../../services/api";
 
-type ProfileViewerProps = {is_editing: boolean; profile: Profile;
-                           has_profile: boolean; editProfile: (new_profile: Profile) => void};
-type ProfileViewerState = {error: boolean, is_loading: boolean, editedProfile: Profile};
+type ProfileViewerProps = {isEditing: boolean; profile: Profile;
+                           hasProfile: boolean; editProfile: (newProfile: Profile) => void};
+type ProfileViewerState = {error: boolean, isLoading: boolean, editedProfile: Profile};
 
 class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
     constructor(props: ProfileViewerProps) {
         super(props);
-        this.state = {error: false, is_loading: false, editedProfile: {...this.props.profile}}
+        this.state = {error: false, isLoading: false, editedProfile: {...this.props.profile}}
     }
 
-    onSubmit = async (new_profile: Profile) => {
-        this.setState({is_loading: true});
+    onSubmit = async (newProfile: Profile) => {
+        this.setState({isLoading: true});
 
-        await this.props.editProfile(new_profile);
+        await this.props.editProfile(newProfile);
 
-        this.setState({is_loading: false});
+        this.setState({isLoading: false});
     }
 
     render() {
             // If editing, show form instead
-            if(this.props.is_editing) {
+            if(this.props.isEditing) {
 
                 return (
                     <Box p={8} maxWidth="500px" borderWidth={1} borderRadius={8} boxShadow="lg">
@@ -117,9 +117,9 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                             boxShadow='sm'
                                             _hover={{boxShadow: 'md'}}
                                             _active={{boxShadow: 'lg'}}
-                                            isLoading={this.state.is_loading}
+                                            isLoading={this.state.isLoading}
                                     >
-                                        {this.props.has_profile ? "Update Profile" : "Create Profile"}
+                                        {this.props.hasProfile ? "Update Profile" : "Create Profile"}
                                     </Button>
                                 </Stack>
                             </form>
@@ -130,7 +130,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
 
             // Will only pull a non-profiled user if current user
             // In future will take some profile info at sign-up which can be added to later on
-            if(!this.props.has_profile) {
+            if(!this.props.hasProfile) {
                 return (<Heading>You do not have a profile.<br/>Please click the button below to get started.</Heading>)
             } else {
                 return (

@@ -6,7 +6,7 @@ export const BACKEND_URL = "http://localhost:4567";
 
 export type User = {
     userID: string;
-    has_profile: boolean;
+    hasProfile: boolean;
 };
 
 export type Profile = {
@@ -28,8 +28,8 @@ export type Conversation = {
 enum MType {'TEXT', 'IMAGE', 'GIF'}
 
 export type Message = {
-    from_userID: string;
-    to_userID: string;
+    fromUserID: string;
+    toUserID: string;
     messageType: MType;
     messageText: string;
     timestamp: Date;
@@ -108,9 +108,8 @@ export async function signup(username: string, password: string): Promise<loginR
 export async function login(username: string, password: string): Promise<loginResponse> {
     const resp = await fetch(`${BACKEND_URL}/login`, {
         method: 'POST',
-        credentials: 'include',
         mode: 'cors',
-        headers: {'Content-Type': 'application/json', "Access-Control-Allow-Headers": 'auth_key'},
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'username': username, 'password': password})
     });
 
@@ -137,10 +136,10 @@ export async function logout(): Promise<boolean> {
     return resp.ok;
 }
 
-// THIS NEEDS A HANDLER ENDPOINT
 /* Expecting in response:
         Nothing - Just looking at status
  */
+//TODO: THIS NEEDS A HANDLER ENDPOINT
 export async function updatePassword(password: string): Promise<boolean> {
     const resp = await fetch(`${BACKEND_URL}/TODO`, {
         method: 'POST',
@@ -225,14 +224,14 @@ export async function getFeed(): Promise<Profile[]> {
 /* Expecting in response:
         Nothing - Just looking at status
  */
-export async function like(liked_userID: string): Promise<boolean> {
+export async function like(likedUserID: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/feed/like`, {
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
-        body: JSON.stringify({liked_userID: liked_userID})
+        body: JSON.stringify({liked_userID: likedUserID})
     });
 
     return resp.ok;
@@ -241,14 +240,14 @@ export async function like(liked_userID: string): Promise<boolean> {
 /* Expecting in response:
         Nothing - Just looking at status
  */
-export async function dislike(disliked_userID: string): Promise<boolean> {
+export async function dislike(dislikedUserID: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/feed/dislike`, {
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
-        body: JSON.stringify({disliked_userID: disliked_userID})
+        body: JSON.stringify({disliked_userID: dislikedUserID})
     });
 
     return resp.ok;
@@ -272,9 +271,9 @@ export async function getAllConversations(): Promise<Conversation[]> {
        header: Cookie / Auth Token
        body: Array of type Message (See Message type above)
  */
-export async function getUserConversation(with_userID: string): Promise<Message[]> {
+export async function getUserConversation(withUserID: string): Promise<Message[]> {
     const userID = getCurrentUserID();
-    const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${with_userID}`, {
+    const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${withUserID}`, {
         method: 'GET',
         headers: {auth_token: getUserToken()}
     })
@@ -285,10 +284,10 @@ export async function getUserConversation(with_userID: string): Promise<Message[
 /* Expecting in response:
         Nothing - Just looking at status
  */
-export async function sendMessage(to_userID: string, message: string): Promise<boolean> {
+export async function sendMessage(toUserID: string, message: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
-    const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${to_userID}/send`, {
+    const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${toUserID}/send`, {
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
@@ -301,14 +300,14 @@ export async function sendMessage(to_userID: string, message: string): Promise<b
 /* Expecting in response:
         Nothing - Just looking at status
  */
-export async function unmatch(unmatched_userID: string): Promise<boolean> {
+export async function unmatch(unmatchedUserID: string): Promise<boolean> {
     const userID = getCurrentUserID();
 
-    const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${unmatched_userID}/unmatch`, {
+    const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${unmatchedUserID}/unmatch`, {
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
-        body: JSON.stringify({unmatched_userID: unmatched_userID})
+        body: JSON.stringify({unmatched_userID: unmatchedUserID})
     });
 
     return resp.ok;

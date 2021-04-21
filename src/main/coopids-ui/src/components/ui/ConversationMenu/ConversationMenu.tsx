@@ -13,18 +13,17 @@ import {
 import {Conversation} from "../../../services/api";
 
 type ConversationMenuProps = {conversations: Conversation[];
-                              updateVisibleConversation: (new_conversation: number | null) => void;
-                              current_userID: string};
-type ConversationMenuState = {is_open: boolean};
+                              updateVisibleConversation: (newConversation: number | null) => void;};
+type ConversationMenuState = {isOpen: boolean};
 
 class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuState> {
     constructor(props: ConversationMenuProps) {
         super(props);
-        this.state = {is_open: false};
+        this.state = {isOpen: false};
     }
 
     drawerOnClick = () => {
-        this.setState({is_open: !this.state.is_open});
+        this.setState({isOpen: !this.state.isOpen});
     }
 
     render() {
@@ -55,7 +54,7 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
                         <Button onClick={this.drawerOnClick}>
                             Conversations
                         </Button>
-                        <Drawer isOpen={this.state.is_open} onClose={()=>{}} placement="left">
+                        <Drawer isOpen={this.state.isOpen} onClose={()=>{}} placement="left">
                             <DrawerOverlay>
                                 <DrawerContent>
                                     <DrawerHeader borderBottomWidth="1px">Conversations</DrawerHeader>

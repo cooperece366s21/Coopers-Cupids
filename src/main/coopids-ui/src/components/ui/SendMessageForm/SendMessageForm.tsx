@@ -1,26 +1,26 @@
 import React, {Component} from 'react';
 import {Button, Flex, FormControl, Input} from "@chakra-ui/react";
 
-type SendMessageFormProps = {sendMessage: (to_userID: string, new_message: string) => void;
-                             to_userID: string};
-type SendMessageFormState = {new_message: string};
+type SendMessageFormProps = {sendMessage: (toUserID: string, newMessage: string) => void;
+                             toUserID: string};
+type SendMessageFormState = {newMessage: string};
 
 class SendMessageForm extends Component<SendMessageFormProps,SendMessageFormState> {
     constructor(props: SendMessageFormProps) {
         super(props);
-        this.state = {new_message: ""};
+        this.state = {newMessage: ""};
     }
 
     render() {
         return (
             <form onSubmit={e => {e.preventDefault();
-                            this.props.sendMessage(this.props.to_userID,  this.state.new_message);
-                            this.setState({new_message: ""});}}
+                            this.props.sendMessage(this.props.toUserID,  this.state.newMessage);
+                            this.setState({newMessage: ""});}}
             >
                 <Flex>
                     <FormControl isRequired float="left">
-                        <Input type="text" value={this.state.new_message} aria-label="Message-Input"
-                               onChange={e => this.setState({new_message: e.currentTarget.value})}
+                        <Input type="text" value={this.state.newMessage} aria-label="Message-Input"
+                               onChange={e => this.setState({newMessage: e.currentTarget.value})}
                         />
                     </FormControl>
                     {/* Send Message Button */}

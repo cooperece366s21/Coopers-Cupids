@@ -12,43 +12,43 @@ import {
 import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
 
 type MessageLayoutProps = {};
-// Conversation_displayed is the index in conversations[] of the conversation the user wants to see
-type MessageLayoutState = {conversations: Conversation[]; is_loaded: boolean;
-                           conversation_displayed: number | null; current_conversation: Message[]};
+// conversationDisplayed is the index in conversations[] of the conversation the user wants to see
+type MessageLayoutState = {conversations: Conversation[]; isLoaded: boolean;
+                           conversationDisplayed: number | null; currentConversation: Message[]};
 
 // TODO: Update conversation every minute or so, or add a refresh button
 class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     constructor(props: MessageLayoutProps) {
         super(props);
-        this.state = {conversations: [], is_loaded: false, conversation_displayed: null, current_conversation: []};
+        this.state = {conversations: [], isLoaded: false, conversationDisplayed: null, currentConversation: []};
     }
 
     async componentDidMount() {
-        const conversation_resp = await getAllConversations();
-        this.setState({conversations: conversation_resp, is_loaded: true,
-                            conversation_displayed: null, current_conversation: []});
+        const conversationResp = await getAllConversations();
+        this.setState({conversations: conversationResp, isLoaded: true,
+                            conversationDisplayed: null, currentConversation: []});
     }
 
     // Changes the conversation shown
-    updateConversationViewer = async (new_conversation: number | null) => {
-        if(new_conversation === null) {
-            this.setState({conversation_displayed: new_conversation});
+    updateConversationViewer = async (newConversation: number | null) => {
+        if(newConversation === null) {
+            this.setState({conversationDisplayed: newConversation});
         } else {
-            const messages = await getUserConversation(this.state.conversations[new_conversation].userID);
-            this.setState({current_conversation: messages, conversation_displayed: new_conversation});
+            const messages = await getUserConversation(this.state.conversations[newConversation].userID);
+            this.setState({currentConversation: messages, conversationDisplayed: newConversation});
         }
     }
 
-    sendMessage = async (to_userID: string, new_message: string) => {
-        await sendMessage(to_userID, new_message);
-        const messages = await getUserConversation(to_userID);
-        this.setState({current_conversation: messages});
+    sendMessage = async (toUserID: string, newMessage: string) => {
+        await sendMessage(toUserID, newMessage);
+        const messages = await getUserConversation(toUserID);
+        this.setState({currentConversation: messages});
     }
 
     render() {
-        const current_userID = getCurrentUserID();
+        const currentUserID = getCurrentUserID();
 
-        if(!this.state.is_loaded) {
+        if(!this.state.isLoaded) {
             return (
                 <Heading>Loading Conversations...</Heading>
             )
@@ -58,14 +58,13 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
             <Flex pl={4}>
                 <ConversationMenu conversations={this.state.conversations}
                                   updateVisibleConversation={this.updateConversationViewer}
-                                  current_userID={current_userID}
                 />
-                <ConversationViewer current_conversation={this.state.conversation_displayed === null ?
+                <ConversationViewer currentConversation={this.state.conversationDisplayed === null ?
                                                           null :
-                                                          this.state.current_conversation}
-                                    to_user_info={this.state.conversation_displayed === null ?
-                                                  null : this.state.conversations[this.state.conversation_displayed]}
-                                    current_userID={current_userID} sendMessage={this.sendMessage}
+                                                          this.state.currentConversation}
+                                    toUserInfo={this.state.conversationDisplayed === null ?
+                                                  null : this.state.conversations[this.state.conversationDisplayed]}
+                                    currentUserID={currentUserID} sendMessage={this.sendMessage}
                 />
             </Flex>
         );

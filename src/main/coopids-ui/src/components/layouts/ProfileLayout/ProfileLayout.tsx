@@ -5,45 +5,45 @@ import ProfileViewer from "../../ui/ProfileViewer/ProfileViewer";
 import {Profile, getCurrentUserProfile, setUserProfile} from "../../../services/api";
 
 type ProfileLayoutProps = {};
-type ProfileLayoutState = {is_editing: boolean; profile: Profile; has_profile: boolean};
+type ProfileLayoutState = {isEditing: boolean; profile: Profile; hasProfile: boolean};
 
 class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
     constructor(props: ProfileLayoutProps) {
         super(props);
-        this.state = {is_editing: false, has_profile: false, profile: {} as Profile};
+        this.state = {isEditing: false, hasProfile: false, profile: {} as Profile};
     }
 
     async componentDidMount() {
         const json = await getCurrentUserProfile();
 
         if(json != null) {
-            this.setState({is_editing: false, profile: json, has_profile: true})
+            this.setState({isEditing: false, profile: json, hasProfile: true})
         }
     }
 
     onEditButtonClick = () => {
-        this.setState({is_editing: true});
+        this.setState({isEditing: true});
     }
 
-    updateProfile = async (new_profile: Profile) => {
-        const json = await setUserProfile(new_profile);
+    updateProfile = async (newProfile: Profile) => {
+        const json = await setUserProfile(newProfile);
         // Should never be null if we're updating the profile
         // Only checking to make TypeScript happy
         if(json != null) {
-            this.setState({profile: json, has_profile: true, is_editing: false});
+            this.setState({profile: json, hasProfile: true, isEditing: false});
         }
     }
 
     render() {
         return (
             <Stack width="full" align="center" justifyContent="center" spacing={4}>
-                <ProfileViewer is_editing={this.state.is_editing} profile={this.state.profile}
-                               has_profile={this.state.has_profile} editProfile={this.updateProfile}/>
+                <ProfileViewer isEditing={this.state.isEditing} profile={this.state.profile}
+                               hasProfile={this.state.hasProfile} editProfile={this.updateProfile}/>
                 {/* Edit Button */}
                 {/*This button is separate, so the ProfileViewer Component can be reused on the feed page*/}
-                {!this.state.is_editing ?
+                {!this.state.isEditing ?
                     <Box>
-                        <EditButton has_profile={this.state.has_profile} onClick={this.onEditButtonClick}/>
+                        <EditButton hasProfile={this.state.hasProfile} onClick={this.onEditButtonClick}/>
                     </Box>
                     : null
                 }

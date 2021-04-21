@@ -4,41 +4,42 @@ import {Button, Flex, Heading, Spacer, Stack} from "@chakra-ui/react";
 import ProfileViewer from "../../ui/ProfileViewer/ProfileViewer";
 
 type FeedLayoutProps = {};
-type FeedLayoutState = {feed_list: Profile[], current_user: number};
+type FeedLayoutState = {feedList: Profile[], currentUser: number};
 
 class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
     constructor(props: FeedLayoutProps) {
         super(props);
-        this.state = {feed_list: [], current_user: 1};
+        this.state = {feedList: [], currentUser: 1};
     }
 
     async componentDidMount() {
         const feed = await getFeed();
-        this.setState({feed_list: feed, current_user: 0});
+        this.setState({feedList: feed, currentUser: 0});
     }
 
     async updateFeed() {
         // Checks if ran out of feed
-        if(this.state.current_user >= this.state.feed_list.length-1) {
+        if(this.state.currentUser >= this.state.feedList.length-1) {
             const feed = await getFeed();
-            this.setState({feed_list: feed, current_user: 0});
+            this.setState({feedList: feed, currentUser: 0});
         } else {
-            this.setState({current_user: this.state.current_user + 1});
+            this.setState({currentUser: this.state.currentUser + 1});
         }
     }
 
     likeClick = async () => {
-        await like(this.state.feed_list[this.state.current_user].userID);
-        this.updateFeed();
+        await like(this.state.feedList[this.state.currentUser].userID);
+        await this.updateFeed();
     }
 
     dislikeClick = async () => {
-        await dislike(this.state.feed_list[this.state.current_user].userID);
-        this.updateFeed();
+        await dislike(this.state.feedList[this.state.currentUser].userID);
+        await this.updateFeed();
     }
 
     render() {
-        if(this.state.current_user >= this.state.feed_list.length) {
+        // TODO: Put different headers when loading vs. empty
+        if(this.state.currentUser >= this.state.feedList.length) {
             return (
                 <Heading>Loading Feed...</Heading>
             )
@@ -47,8 +48,8 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
         return (
                 // TODO: Only show this if current user has a profile
                 <Stack width="full" align="center" justifyContent="center" spacing={4}>
-                    <ProfileViewer is_editing={false} profile={this.state.feed_list[this.state.current_user]}
-                                   has_profile={true} editProfile={()=>{}} />
+                    <ProfileViewer isEditing={false} profile={this.state.feedList[this.state.currentUser]}
+                                   hasProfile={true} editProfile={()=>{}} />
                     <Flex w={"50%"} pt={4}>
                         <Button colorScheme="yellow" float="left" type="submit" w={"40%"}
                                 onClick={this.dislikeClick}>

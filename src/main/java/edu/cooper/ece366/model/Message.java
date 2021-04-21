@@ -13,8 +13,8 @@ public class Message {
 
     // Variables
     // ---------
-    private final String sender;
-    private final String receiver;
+    private final String fromUserID;
+    private final String toUserID;
     private final Message_Type messageType;
     private final String messageText;
     private final Timestamp timestamp;
@@ -22,16 +22,16 @@ public class Message {
     // Methods
     // -------
     public Message(String sender, String receiver, Message_Type type, String text, Timestamp date) {
-        this.sender = sender;
-        this.receiver = receiver;
+        this.fromUserID = sender;
+        this.toUserID = receiver;
         this.messageType = type;
         this.messageText = text;
         this.timestamp = date;
     }
 
-    public String getSender() { return this.sender; }
+    public String getSender() { return this.fromUserID; }
 
-    public String getReceiver() { return this.receiver; }
+    public String getReceiver() { return this.toUserID; }
 
     public Message_Type getMessageType() { return this.messageType; }
 

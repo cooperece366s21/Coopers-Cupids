@@ -4,7 +4,7 @@ import NavBarToggleButton from "../../ui/NavBarToggleButton/NavBarToggleButton";
 import NavBarLink from "../../ui/NavbarLink/NavBarLink";
 
 // Sets types
-type NavBarProps = {is_logged_in: boolean; update_login: () => void};
+type NavBarProps = {isLoggedIn: boolean; updateLogin: () => void};
 type NavBarState = {isOpen: boolean};
 
 class NavBar extends Component<NavBarProps, NavBarState> {
@@ -26,17 +26,17 @@ class NavBar extends Component<NavBarProps, NavBarState> {
                     <Stack spacing={8} align="center" justify={["center", "space-between", "flex-end", "flex-end"]}
                         direction={["column", "row", "row", "row"]} pt={[4, 4, 0, 0]}>
                         <NavBarLink linkTo={"/"}>Home</NavBarLink>
-                        {this.props.is_logged_in ?
+                        {this.props.isLoggedIn ?
                             <NavBarLink linkTo={"/Profile"}>Profile</NavBarLink>
                             : null }
-                        {this.props.is_logged_in ?
+                        {this.props.isLoggedIn ?
                             <NavBarLink linkTo={"/Feed"}>Feed</NavBarLink>
                             : null }
-                        {this.props.is_logged_in ?
+                        {this.props.isLoggedIn ?
                             <NavBarLink linkTo={"/Messages"}>Messages</NavBarLink>
                             : null }
-                        {this.props.is_logged_in ?
-                            <Button onClick={this.props.update_login}>Logout</Button>
+                        {this.props.isLoggedIn ?
+                            <Button onClick={this.props.updateLogin}>Logout</Button>
                             : null }
                     </Stack>
                 </Box>

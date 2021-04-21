@@ -30,7 +30,7 @@ public class App
         String jdbcUrl = "jdbc:mysql://127.0.0.1:3306/coopids";
         String schemaPath = "src/main/resources/sql/schema.sql";
 
-        Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "root", "123456");
+        Jdbi jdbi = CoopidsJdbi.create(jdbcUrl, "coopers_cupids", "PeterCooper#1");
         CoopidsJdbi.setupSchema(jdbi, schemaPath);
 
         Gson gson = new GsonBuilder().setLenient().create();
@@ -71,6 +71,7 @@ public class App
                 (req, res) -> {
                     res.header("Access-Control-Allow-Origin", "*");
                     res.header("Access-Control-Allow-Headers", "*");
+                    res.header("Access-Control-Expose-Headers", "*");
                     res.type("application/json");
                 });
 

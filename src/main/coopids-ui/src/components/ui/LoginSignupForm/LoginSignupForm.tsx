@@ -4,73 +4,73 @@ import api from "../../../services/api";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 // Sets types
-type FormProps = {update_login: () => void};
-type FormState = {username: string; password: string; is_loading: boolean,
-                  form_type: "Signup" | "Login"; api_error: boolean};
+type FormProps = {updateLogin: () => void};
+type FormState = {username: string; password: string; isLoading: boolean,
+                  formType: "Signup" | "Login"; apiError: boolean};
 
 class LoginSignupForm extends Component<FormProps, FormState> {
     constructor(props: FormProps) {
         super(props);
-        this.state = {username: "", password: "", is_loading: false, form_type: "Signup", api_error: false};
+        this.state = {username: "", password: "", isLoading: false, formType: "Signup", apiError: false};
     }
 
     // Makes API Call on button click
     onSubmit = async () => {
-        this.setState({is_loading: true});
+        this.setState({isLoading: true});
 
         // Checks for empty fields
         if(this.state.username === "" || this.state.password === "") {
-            this.setState({api_error: false, is_loading: false});
+            this.setState({apiError: false, isLoading: false});
             return;
         }
 
-        const resp = this.state.form_type === "Signup" ? await api.signup(this.state.username, this.state.password)
+        const resp = this.state.formType === "Signup" ? await api.signup(this.state.username, this.state.password)
                                                        : await api.login(this.state.username, this.state.password);
 
         if(resp.status === "Success") {
             // UPDATE PAGE
-            this.setState({api_error: false, is_loading: false})
+            this.setState({apiError: false, isLoading: false})
             // TODO: REDIRECT
-            this.props.update_login();
+            this.props.updateLogin();
         }
         // ERROR
         else {
             // Clears saved values
-            this.setState({username: "", password: "", is_loading: false, api_error: true});
+            this.setState({username: "", password: "", isLoading: false, apiError: true});
         }
 
     }
 
-    // TODO: Disable button while API is loading request (when is_loading = true)
+    // TODO: Disable button while API is loading request (when isLoading = true)
     getFormSwitchText = () => {
-        const form_switch_text = this.state.form_type === "Signup" ? "Already have an account?"
+        const formSwitchText = this.state.formType === "Signup" ? "Already have an account?"
                                                                    : "Don't have an account?";
 
-        const new_form_type = this.state.form_type === "Signup" ? "Login" : "Signup";
-        const onFormSwitchTextClick = () => {this.setState({form_type: new_form_type, api_error: false})};
+        const newFormType = this.state.formType === "Signup" ? "Login" : "Signup";
+        const onFormSwitchTextClick = () => {this.setState({formType: newFormType, apiError: false})};
         return (
             <Link textAlign="center" _hover={{textDecoration: 'None'}} onClick={e => {e.preventDefault(); onFormSwitchTextClick();}}>
-                {form_switch_text}
+                {formSwitchText}
             </Link>
         )
     }
 
     render() {
-        const header_text = this.state.form_type === "Signup" ? "Sign Up" : "Welcome Back";
-        const error_message = this.state.form_type === "Signup" ? "Username already taken"
+        const headerText = this.state.formType === "Signup" ? "Sign Up" : "Welcome Back";
+        const errorMessage = this.state.formType === "Signup" ? "Username already taken"
                                                                 : "Invalid username or password";
 
         return (
             <Flex width="full" align="center" justifyContent="center">
                 <Box p={8} maxWidth="500px" borderWidth={1} borderRadius={8} boxShadow="lg">
                     <Box textAlign="center">
-                        <Heading>{header_text}</Heading>
+                        <Heading>{headerText}</Heading>
                     </Box>
                     <Box my={4} textAlign="left">
                         <form onSubmit={e => {e.preventDefault(); this.onSubmit()}}>
                             <Stack spacing={4}>
                                 {/* Error Message */}
-                                {this.state.api_error && <ErrorMessage message={error_message} />}
+                                {this.state.apiError && <ErrorMessage message={errorMessage} />}
                                 {/* Username Field */}
                                 <FormControl isRequired>
                                     <FormLabel>Username</FormLabel>
@@ -89,8 +89,8 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                                         boxShadow='sm'
                                         _hover={{boxShadow: 'md'}}
                                         _active={{boxShadow: 'lg'}}
-                                        isLoading={this.state.is_loading}>
-                                    {this.state.form_type === "Signup" ? "Create Account" : "Login"}
+                                        isLoading={this.state.isLoading}>
+                                    {this.state.formType === "Signup" ? "Create Account" : "Login"}
                                 </Button>
                                 {/* Switch Form Type (Between login & signup) */}
                                 {this.getFormSwitchText()}
