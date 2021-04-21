@@ -24,7 +24,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     }
 
     async componentDidMount() {
-        const conversationResp = await getAllConversations();
+        const conversationResp = await getAllConversations() || [];
         this.setState({conversations: conversationResp, isLoaded: true,
                             conversationDisplayed: null, currentConversation: []});
     }

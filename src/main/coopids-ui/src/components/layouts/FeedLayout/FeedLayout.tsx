@@ -13,7 +13,7 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
     }
 
     async componentDidMount() {
-        const feed = await getFeed();
+        const feed = await getFeed() || [];
         this.setState({feedList: feed, currentUser: 0});
     }
 
@@ -38,7 +38,13 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
     }
 
     render() {
-        // TODO: Put different headers when loading vs. empty
+        // TODO: Maybe differentiate empty vs no profile based on null response from API
+        // API gives [] when empty, null when no profile
+        if(this.state.feedList.length === 0) {
+            return (
+                <Heading>Feed is empty<br/>Please create a profile or convince your friends to join Coopids</Heading>
+            )
+        }
         if(this.state.currentUser >= this.state.feedList.length) {
             return (
                 <Heading>Loading Feed...</Heading>
