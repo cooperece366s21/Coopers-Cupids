@@ -128,6 +128,9 @@ export async function login(username: string, password: string): Promise<loginRe
         Nothing - Just looking at status
  */
 export async function logout(): Promise<boolean> {
+    setCurrentUserID("");
+    setUserToken("");
+
     const resp = await fetch(`${BACKEND_URL}/logout`, {
         method: 'POST',
         headers: {auth_token: getUserToken()}
