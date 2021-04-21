@@ -423,6 +423,7 @@ public class Handler {
             res.status(400);
             return null;
         }
+        Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         // if got here and if in the match table, user should exist and have profile
         if(this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
             // TODO
@@ -430,7 +431,7 @@ public class Handler {
             this.conversationStore.sendMessage(new Message(userID,
                                                             convoUserId,
                                                             Message.Message_Type.TEXT,
-                                                            req.body(),
+                                                            info.get("message"),
                                                             new Timestamp(System.currentTimeMillis())));
             res.header("auth_token", cookie);
             res.status(200);
@@ -463,7 +464,8 @@ public class Handler {
 //    }
     public Object like(final Request req, final Response res) {
         String userID = req.params(":userId");
-        String likeUserId = req.body();
+        Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
+        String likeUserId = info.get("liked_userID");
         String cookie = req.headers("auth_token");
         if (cookie == null) {
             // no cookie provided
@@ -523,7 +525,8 @@ public class Handler {
 //    }
     public Object dislike(final Request req, final Response res) {
         String userID = req.params(":userId");
-        String dislikeUserId = req.body();
+        Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
+        String dislikeUserId = info.get("disliked_userID");
         String cookie = req.headers("auth_token");
         if (cookie == null) {
             // no cookie provided
