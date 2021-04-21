@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Hashtable;
 import java.nio.charset.StandardCharsets;
 
-import edu.cooper.ece366.response.ProfileResponse;
 import spark.Request;
 import spark.Response;
 import com.google.gson.Gson;
@@ -20,6 +19,7 @@ import edu.cooper.ece366.auth.Cookies;
 import edu.cooper.ece366.service.MatchFeedService;
 import edu.cooper.ece366.store.ConversationStore;
 import edu.cooper.ece366.response.UserResponse;
+import edu.cooper.ece366.response.ProfileResponse;
 
 public class Handler {
     private final MatchFeedService matchService;
