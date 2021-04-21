@@ -3,7 +3,7 @@ import {Conversation, Message} from "../../../services/api";
 import {Box, Heading, Stack, Text} from "@chakra-ui/react";
 import SendMessageForm from "../SendMessageForm/SendMessageForm";
 
-type ConversationViewerProps = {current_conversation: Message[] | null; to_user_info: Conversation;
+type ConversationViewerProps = {current_conversation: Message[] | null; to_user_info: Conversation | null;
                                 current_userID: string; sendMessage: (to_userID: string, new_message: string) => void};
 type ConversationViewerState = {};
 
@@ -38,7 +38,7 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
     }
 
     render() {
-        if (this.props.current_conversation === null) {
+        if (this.props.current_conversation === null || this.props.to_user_info === null) {
             return (
                 <Heading pl={2}>Please pick a conversation to display</Heading>
             );

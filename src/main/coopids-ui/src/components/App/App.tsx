@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './App.css';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
-import NavBar from "../sections/Navbar/Navbar";
+import NavBar from "../sections/Navbar/navbar";
 import ProfileLayout from "../layouts/ProfileLayout/ProfileLayout";
 import FeedLayout from "../layouts/FeedLayout/FeedLayout";
 import MessageLayout from "../layouts/MessagesLayout/MessageLayout";
@@ -31,9 +31,15 @@ class App extends Component<AppProps, AppState> {
               <Route exact path="/" render={() =>
                   (<HomeLayout is_logged_in={this.state.is_logged_in} update_login={this.update_login} />)
               } />
-              <Route exact path="/Profile" component={ProfileLayout} />
-              <Route exact path="/Feed" component={FeedLayout} />
-              <Route exact path="/Messages" component={MessageLayout} />
+              {this.state.is_logged_in ?
+                  <Route exact path="/Profile" component={ProfileLayout} />
+                  : null}
+              {this.state.is_logged_in ?
+                <Route exact path="/Feed" component={FeedLayout} />
+                  : null}
+              {this.state.is_logged_in ?
+                  <Route exact path="/Messages" component={MessageLayout} />
+                  : null}
             </Switch>
           </div>
         </BrowserRouter>

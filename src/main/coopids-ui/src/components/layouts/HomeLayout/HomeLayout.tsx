@@ -6,9 +6,6 @@ type HomeLayoutProps = {is_logged_in: boolean; update_login: () => void};
 type HomeLayoutState = {};
 
 class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
-    constructor(props: HomeLayoutProps) {
-        super(props);
-    }
 
     render() {
         return (

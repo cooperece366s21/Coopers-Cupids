@@ -45,6 +45,7 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
         }
 
         return (
+                // TODO: Only show this if current user has a profile
                 <Stack width="full" align="center" justifyContent="center" spacing={4}>
                     <ProfileViewer is_editing={false} profile={this.state.feed_list[this.state.current_user]}
                                    has_profile={true} editProfile={()=>{}} />

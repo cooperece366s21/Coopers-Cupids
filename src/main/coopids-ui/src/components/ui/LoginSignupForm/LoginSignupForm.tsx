@@ -16,7 +16,6 @@ class LoginSignupForm extends Component<FormProps, FormState> {
 
     // Makes API Call on button click
     onSubmit = async () => {
-        this.props.update_login(); return;
         this.setState({is_loading: true});
 
         // Checks for empty fields

@@ -31,8 +31,12 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
 
     // Changes the conversation shown
     updateConversationViewer = async (new_conversation: number | null) => {
-        const messages = await getUserConversation(this.state.conversations[new_conversation].userID);
-        this.setState({current_conversation: messages, conversation_displayed: new_conversation});
+        if(new_conversation === null) {
+            this.setState({conversation_displayed: new_conversation});
+        } else {
+            const messages = await getUserConversation(this.state.conversations[new_conversation].userID);
+            this.setState({current_conversation: messages, conversation_displayed: new_conversation});
+        }
     }
 
     sendMessage = async (to_userID: string, new_message: string) => {
@@ -59,7 +63,8 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                 <ConversationViewer current_conversation={this.state.conversation_displayed === null ?
                                                           null :
                                                           this.state.current_conversation}
-                                    to_user_info={this.state.conversations[this.state.conversation_displayed]}
+                                    to_user_info={this.state.conversation_displayed === null ?
+                                                  null : this.state.conversations[this.state.conversation_displayed]}
                                     current_userID={current_userID} sendMessage={this.sendMessage}
                 />
             </Flex>
