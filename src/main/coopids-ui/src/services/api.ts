@@ -86,7 +86,7 @@ export async function signup(username: string, password: string): Promise<loginR
     const resp = await fetch(`${BACKEND_URL}/signup`, {
         method: 'POST',
         mode: 'cors',
-        headers: {'Content-Type': 'application/json', "Access-Control-Allow-Headers": 'auth_key'},
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'username': username, 'password': password})
     })
 

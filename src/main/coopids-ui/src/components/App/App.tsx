@@ -26,7 +26,9 @@ class App extends Component<AppProps, AppState> {
   }
 
   update_login = () => {
-    logout();
+    if(this.state.isLoggedIn) {
+      logout();
+    }
     this.setState({isLoggedIn: !this.state.isLoggedIn});
   }
 
