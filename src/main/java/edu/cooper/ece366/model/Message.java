@@ -17,7 +17,7 @@ public class Message {
     private final String receiver;
     private final Message_Type messageType;
     private final String messageText;
-    private final Timestamp timestamp; // TODO: Change to Date Type in future
+    private final Timestamp timestamp;
 
     // Methods
     // -------

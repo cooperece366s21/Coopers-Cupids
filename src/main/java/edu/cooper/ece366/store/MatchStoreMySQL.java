@@ -51,6 +51,7 @@ public class MatchStoreMySQL implements MatchStore {
         if (userID.equals(dislikedUserID)) {
             return;
         }
+        // logic for if user already made decision on this other user
         Optional<String> lod = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT like_dislike FROM likes_dislikes WHERE from_userID = ? AND to_userID = ?")
                         .bind(0, userID)

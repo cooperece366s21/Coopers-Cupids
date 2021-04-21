@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
 import java.nio.charset.StandardCharsets;
+
+import edu.cooper.ece366.response.ProfileResponse;
 import spark.Request;
 import spark.Response;
 import com.google.gson.Gson;
@@ -17,6 +19,7 @@ import edu.cooper.ece366.model.User;
 import edu.cooper.ece366.auth.Cookies;
 import edu.cooper.ece366.service.MatchFeedService;
 import edu.cooper.ece366.store.ConversationStore;
+import edu.cooper.ece366.response.UserResponse;
 
 public class Handler {
     private final MatchFeedService matchService;
@@ -46,7 +49,7 @@ public class Handler {
 //        res.status(200);
 //        return user;
 //    }
-    public Object signup(final Request req, final Response res) {
+    public UserResponse signup(final Request req, final Response res) {
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().isUser(info.get("username"))) {
             // user already exists
@@ -55,7 +58,7 @@ public class Handler {
         }
         this.matchService.getUserStore().addUser(new User(info.get("username"),
                 Hashing.sha256().hashString(info.get("password"), StandardCharsets.UTF_8).toString(), false));
-        User user = this.matchService.getUserStore().getUserFromId(info.get("username"));
+        UserResponse user = new UserResponse(this.matchService.getUserStore().getUserFromId(info.get("username")));
         String cookie = this.cookies.assignCookie(user.getUserID());
         res.header("auth_token", cookie);
         res.status(201);
@@ -76,11 +79,11 @@ public class Handler {
 //        res.status(401);
 //        return null;
 //    }
-    public Object login(final Request req, final Response res) {
+    public UserResponse login(final Request req, final Response res) {
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
         if(this.matchService.getUserStore().validateUser(info.get("username"),
                 Hashing.sha256().hashString(info.get("password"), StandardCharsets.UTF_8).toString())) {
-            User user = this.matchService.getUserStore().getUserFromId(info.get("username"));
+            UserResponse user = new UserResponse(this.matchService.getUserStore().getUserFromId(info.get("username")));
             String cookie = this.cookies.assignCookie(user.getUserID());
             res.header("auth_token", cookie);
             res.status(200);
@@ -137,7 +140,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Object getUser(final Request req, final Response res) {
+    public UserResponse getUser(final Request req, final Response res) {
         String userID = req.params(":userId");
         String cookie = req.headers("auth_token");
         if (cookie == null) {
@@ -154,10 +157,10 @@ public class Handler {
         if(this.matchService.getUserStore().isUser(userID)) {
             res.header("auth_token", cookie);
             res.status(200);
-            return this.matchService.getUserStore().getUserFromId(userID);
+            return new UserResponse(this.matchService.getUserStore().getUserFromId(userID));
         }
         // shouldnt get here
-        res.status(400);
+        res.status(500);
         return null;
     }
 
@@ -181,7 +184,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Object create(final Request req, final Response res) {
+    public Profile create(final Request req, final Response res) {
         String userID = req.params(":userId");
         String cookie = req.headers("auth_token");
         if (cookie == null) {
@@ -227,7 +230,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Object getProfile(final Request req, final Response res) {
+    public Profile getProfile(final Request req, final Response res) {
         String userID = req.params(":userId");
         String cookie = req.headers("auth_token");
         if (cookie == null) {
@@ -265,7 +268,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Object getFeed(final Request req, final Response res) {
+    public List<Profile> getFeed(final Request req, final Response res) {
         String userID = req.params(":userId");
         String cookie = req.headers("auth_token");
         if (cookie == null) {
@@ -303,7 +306,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Object getConvos(final Request req, final Response res) {
+    public List<ProfileResponse> getConvos(final Request req, final Response res) {
         String userID = req.params(":userId");
         String cookie = req.headers("auth_token");
         if (cookie == null) {
@@ -320,9 +323,9 @@ public class Handler {
         if(this.matchService.getUserStore().isUser(userID)
                 && this.matchService.getUserStore().getUserFromId(userID).hasProfile()) {
             List<String> convoIds = this.conversationStore.getUserConversations(userID);
-            List<Profile> convoProfs = new ArrayList<>();
+            List<ProfileResponse> convoProfs = new ArrayList<>();
             for (String id : convoIds) {
-                convoProfs.add(this.matchService.getUserStore().getProfileFromId(id));
+                convoProfs.add(new ProfileResponse(this.matchService.getUserStore().getProfileFromId(id)));
             }
             res.header("auth_token", cookie);
             res.status(200);
@@ -354,7 +357,7 @@ public class Handler {
 //        res.status(400);
 //        return null;
 //    }
-    public Object getConvo(final Request req, final Response res) {
+    public List<Message> getConvo(final Request req, final Response res) {
         String userID = req.params(":userId");
         String convoUserId = req.params(":matchId");
         String cookie = req.headers("auth_token");
@@ -374,12 +377,8 @@ public class Handler {
             res.status(400);
             return null;
         }
-        // if got here user should exist but check to prevent null error
-        if(this.matchService.getUserStore().isUser(userID)
-                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
-                && this.matchService.getUserStore().isUser(convoUserId)
-                && this.matchService.getUserStore().getUserFromId(convoUserId).hasProfile()
-                && this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
+        // if got here and if in the match table, user should exist and have profile
+        if(this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
             res.header("auth_token", cookie);
             res.status(200);
             return this.conversationStore.getUserConversation(userID, convoUserId);
@@ -424,12 +423,9 @@ public class Handler {
             res.status(400);
             return null;
         }
-        // if got here user should exist but check to prevent null error
-        if(this.matchService.getUserStore().isUser(userID)
-                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
-                && this.matchService.getUserStore().isUser(convoUserId)
-                && this.matchService.getUserStore().getUserFromId(convoUserId).hasProfile()
-                && this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
+        // if got here and if in the match table, user should exist and have profile
+        if(this.matchService.getMatchStore().isMatch(userID, convoUserId)) {
+            // TODO
             // in the future add different message types
             this.conversationStore.sendMessage(new Message(userID,
                                                             convoUserId,
@@ -480,7 +476,7 @@ public class Handler {
             return null;
         }
         if (userID.equals(likeUserId)) {
-            // person wants to unmatch themselves (bad request, dont log out)
+            // person wants to like themselves (bad request, dont log out)
             res.header("auth_token", cookie);
             res.status(400);
             return null;
@@ -540,7 +536,7 @@ public class Handler {
             return null;
         }
         if (userID.equals(dislikeUserId)) {
-            // person wants to unmatch themselves (bad request, dont log out)
+            // person wants to dislike themselves (bad request, dont log out)
             res.header("auth_token", cookie);
             res.status(400);
             return null;
@@ -596,12 +592,8 @@ public class Handler {
             res.status(400);
             return null;
         }
-        // if got here user should exist but check to prevent null error
-        if(this.matchService.getUserStore().isUser(userID)
-                && this.matchService.getUserStore().getUserFromId(userID).hasProfile()
-                && this.matchService.getUserStore().isUser(unmatchUserId)
-                && this.matchService.getUserStore().getUserFromId(unmatchUserId).hasProfile()
-                && this.matchService.getMatchStore().isMatch(userID, unmatchUserId)) {
+        // if got here and if in the match table, user should exist and have profile
+        if(this.matchService.getMatchStore().isMatch(userID, unmatchUserId)) {
             this.matchService.getMatchStore().unmatch(userID, unmatchUserId);
             res.header("auth_token", cookie);
             res.status(200);
