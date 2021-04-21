@@ -1,5 +1,5 @@
 // Backend url to make requests from
-export const BACKEND_URL = "";
+export const BACKEND_URL = "http://localhost:4567";
 
 // Types
 // -----
@@ -49,6 +49,8 @@ type loginResponse = {
 
 // Stores the UserID (for requests) and an auth token (for authentication) in local storage
 
+// TODO: Reset local storage on logout
+// TODO: Store auth token expiration
 // Auth Token
 function getUserToken(): string {
     return localStorage.getItem("current_user_auth_token") || "";
@@ -68,6 +70,12 @@ function setCurrentUserID(userID: string): void {
     localStorage.setItem("current_user", userID);
 }
 
+// TODO: Add error code that indicates user needs to sign in again
+// Checks if values are still present in local storage
+export function isStillSignedIn() {
+    return getUserToken() !== "" && getCurrentUserID() !== "";
+}
+
 // TODO: Check header on response to verify source
 
 /*  Expecting in response:
@@ -78,7 +86,7 @@ export async function signup(username: string, password: string): Promise<loginR
     const resp = await fetch(`${BACKEND_URL}/signup`, {
         method: 'POST',
         mode: 'cors',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', "Access-Control-Allow-Headers": 'auth_key'},
         body: JSON.stringify({'username': username, 'password': password})
     })
 
@@ -100,8 +108,9 @@ export async function signup(username: string, password: string): Promise<loginR
 export async function login(username: string, password: string): Promise<loginResponse> {
     const resp = await fetch(`${BACKEND_URL}/login`, {
         method: 'POST',
+        credentials: 'include',
         mode: 'cors',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', "Access-Control-Allow-Headers": 'auth_key'},
         body: JSON.stringify({'username': username, 'password': password})
     });
 
@@ -283,7 +292,7 @@ export async function sendMessage(to_userID: string, message: string): Promise<b
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
-        body: JSON.stringify({to_userID: to_userID, message: message})
+        body: JSON.stringify({message: message})
     });
 
     return resp.ok;
@@ -307,6 +316,7 @@ export async function unmatch(unmatched_userID: string): Promise<boolean> {
 
 const exports = {
     getCurrentUserID,
+    isStillSignedIn,
     signup,
     login,
     logout,
