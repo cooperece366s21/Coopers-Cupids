@@ -6,6 +6,7 @@ import ProfileLayout from "../layouts/ProfileLayout/ProfileLayout";
 import FeedLayout from "../layouts/FeedLayout/FeedLayout";
 import MessageLayout from "../layouts/MessagesLayout/MessageLayout";
 import HomeLayout from "../layouts/HomeLayout/HomeLayout";
+import {isStillSignedIn} from "../../services/api";
 
 // Sets types
 type AppProps = {};
@@ -14,10 +15,16 @@ type AppState = {is_logged_in: boolean};
 class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
+    // TODO: Update is_logged_in based on local_storage values
     this.state = {is_logged_in: false};
   }
 
-  // TODO: Add logout button
+  componentDidMount() {
+    if(isStillSignedIn()) {
+      this.setState({is_logged_in: true});
+    }
+  }
+
   update_login = () => {
     this.setState({is_logged_in: !this.state.is_logged_in});
   }
