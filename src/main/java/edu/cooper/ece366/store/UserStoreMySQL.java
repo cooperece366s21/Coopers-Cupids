@@ -54,32 +54,30 @@ public class UserStoreMySQL implements UserStore {
     }
 
     // Adds user
+    // Existence checked in handler
     @Override
     public void addUser(User user) {
-        if (!isUser(user.getUserID())) {
-            this.jdbi.useHandle(handle ->
-                    handle.execute("INSERT INTO users (userID, password, hasProfile) VALUES (?, ?, ?)",
-                            user.getUserID(), user.getPassword(), user.hasProfile()));
-        }
+        this.jdbi.useHandle(handle ->
+                handle.execute("INSERT INTO users (userID, password, hasProfile) VALUES (?, ?, ?)",
+                        user.getUserID(), user.getPassword(), user.hasProfile()));
     }
 
     // Deletes User
+    // No need for existence checking, if doesnt exist nothing deleted
     @Override
     public void deleteUser(String userID) {
-        if (isUser(userID)) {
-            this.jdbi.useHandle(handle ->
-                    handle.execute("DELETE FROM users WHERE userID = ?", userID));
-            this.jdbi.useHandle(handle ->
-                    handle.execute("DELETE FROM cookies WHERE userID = ?", userID));
-            this.jdbi.useHandle(handle ->
-                    handle.execute("DELETE FROM profiles WHERE userID = ?", userID));
-            this.jdbi.useHandle(handle ->
-                    handle.execute("DELETE FROM likes_dislikes WHERE from_userID = ? OR to_userID = ?", userID, userID));
-            this.jdbi.useHandle(handle ->
-                    handle.execute("DELETE FROM matches WHERE userID1 = ? OR userID2 = ?", userID, userID));
-            this.jdbi.useHandle(handle ->
-                    handle.execute("DELETE FROM messages WHERE from_userID = ? OR to_userID = ?", userID, userID));
-        }
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM users WHERE userID = ?", userID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM cookies WHERE userID = ?", userID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM profiles WHERE userID = ?", userID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM likes_dislikes WHERE from_userID = ? OR to_userID = ?", userID, userID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM matches WHERE userID1 = ? OR userID2 = ?", userID, userID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM messages WHERE from_userID = ? OR to_userID = ?", userID, userID));
     }
 
     // Returns list of users for feed
@@ -120,47 +118,39 @@ public class UserStoreMySQL implements UserStore {
         return userFeed;
     }
 
+    // Adds profile
+    // User/Profile existence checked in handler
     @Override
     public void addProfile(Profile profile) {
-        if (isUser(profile.getUserID())) {
-            User user = getUserFromId(profile.getUserID());
-            if (!user.hasProfile()) {
-                this.jdbi.useHandle(handle ->
-                        handle.execute("INSERT INTO profiles (userID, name, age, photo, bio, location, interests) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                                profile.getUserID(),
-                                profile.getName(),
-                                profile.getAge(),
-                                profile.getPhoto(),
-                                profile.getBio(),
-                                profile.getLocation(),
-                                profile.getInterests()));
-                this.jdbi.useHandle(handle ->
-                        handle.execute("UPDATE users SET hasProfile = true WHERE userID = ?",
-                                profile.getUserID()));
-            }
-        }
+        this.jdbi.useHandle(handle ->
+                handle.execute("INSERT INTO profiles (userID, name, age, photo, bio, location, interests) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        profile.getUserID(),
+                        profile.getName(),
+                        profile.getAge(),
+                        profile.getPhoto(),
+                        profile.getBio(),
+                        profile.getLocation(),
+                        profile.getInterests()));
+        this.jdbi.useHandle(handle ->
+                handle.execute("UPDATE users SET hasProfile = true WHERE userID = ?",
+                        profile.getUserID()));
     }
 
+    // Gets profile
+    // User/Profile existence checked in handler
     @Override
     public Profile getProfileFromId(String userID) {
-        if(isUser(userID)) {
-            User user = getUserFromId(userID);
-            if (user.hasProfile()) {
-                return this.jdbi.withHandle(handle ->
-                        handle.createQuery("SELECT * FROM profiles WHERE userID = ?")
-                                .bind(0, user.getUserID())
-                                .map((rs, ctx) ->
-                                        new Profile(rs.getString("userID"),
-                                                rs.getString("name"),
-                                                rs.getInt("age"),
-                                                rs.getString("photo"),
-                                                rs.getString("bio"),
-                                                rs.getString("location"),
-                                                rs.getString("interests")))
-                                .one());
-            }
-            return null;
-        }
-        return null;
+        return this.jdbi.withHandle(handle ->
+                handle.createQuery("SELECT * FROM profiles WHERE userID = ?")
+                        .bind(0, userID)
+                        .map((rs, ctx) ->
+                                new Profile(rs.getString("userID"),
+                                        rs.getString("name"),
+                                        rs.getInt("age"),
+                                        rs.getString("photo"),
+                                        rs.getString("bio"),
+                                        rs.getString("location"),
+                                        rs.getString("interests")))
+                        .one());
     }
 }

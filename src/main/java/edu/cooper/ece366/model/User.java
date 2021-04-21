@@ -17,16 +17,10 @@ public class User {
         this.password = password;
     }
 
-    public void createdProfile() { this.hasProfile = true; }
-
-    public void deletedProfile() { this.hasProfile = false; }
-
     public boolean hasProfile() { return this.hasProfile; }
 
     public String getUserID() { return this.userID; }
 
     public String getPassword() { return this.password; }
-
-    public boolean checkPass(String password) { return password.equals(this.password); }
 }
 

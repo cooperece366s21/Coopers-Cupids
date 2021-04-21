@@ -82,6 +82,7 @@ public class Cookies {
         return null;
     }
 
+    // No need for existence checking, if doesnt exist nothing deleted
     public void deleteCookie(String cookie, String userID) {
         this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM cookies WHERE cookie = ? AND userID = ?", cookie, userID));

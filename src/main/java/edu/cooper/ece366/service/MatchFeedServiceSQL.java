@@ -25,8 +25,7 @@ public class MatchFeedServiceSQL implements MatchFeedService {
                             .stream()
                             .map(this.userStore::getProfileFromId)
                             .filter(user -> !this.matchStore.isMatch(user.getUserID(), userID) // already matched
-                                && !this.matchStore.getDislikes(userID).contains(user.getUserID()) // user disliked person that likes them
-                                && this.userStore.getUserFromId(user.getUserID()).hasProfile()) // make sure they have a profile
+                                && !this.matchStore.getDislikes(userID).contains(user.getUserID())) // user disliked person that likes them
                             .collect(Collectors.toList());
 
         int prevFeedSize = userFeed.size(), attempts = 0;
@@ -35,7 +34,6 @@ public class MatchFeedServiceSQL implements MatchFeedService {
             userFeed.addAll(this.userStore.feedUsers(numUsers)
                                 .stream()
                                 .filter(user -> !userFeed.contains(user)
-                                    && this.userStore.getUserFromId(user.getUserID()).hasProfile()
                                     && !this.matchStore.getLikes(userID).contains(user.getUserID())
                                     && !this.matchStore.getDislikes(userID).contains(user.getUserID())
                                     && !this.matchStore.getDislikes(user.getUserID()).contains(userID)
