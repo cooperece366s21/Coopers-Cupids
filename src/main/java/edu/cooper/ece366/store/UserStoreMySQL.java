@@ -67,8 +67,6 @@ public class UserStoreMySQL implements UserStore {
     @Override
     public void deleteUser(String userID) {
         this.jdbi.useHandle(handle ->
-                handle.execute("DELETE FROM users WHERE userID = ?", userID));
-        this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM cookies WHERE userID = ?", userID));
         this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM profiles WHERE userID = ?", userID));
@@ -78,6 +76,8 @@ public class UserStoreMySQL implements UserStore {
                 handle.execute("DELETE FROM matches WHERE userID1 = ? OR userID2 = ?", userID, userID));
         this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM messages WHERE from_userID = ? OR to_userID = ?", userID, userID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM users WHERE userID = ?", userID));
     }
 
     // Returns list of users for feed
