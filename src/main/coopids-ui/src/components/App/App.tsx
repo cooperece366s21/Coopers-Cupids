@@ -6,7 +6,7 @@ import ProfileLayout from "../layouts/ProfileLayout/ProfileLayout";
 import FeedLayout from "../layouts/FeedLayout/FeedLayout";
 import MessageLayout from "../layouts/MessagesLayout/MessageLayout";
 import HomeLayout from "../layouts/HomeLayout/HomeLayout";
-import {isStillSignedIn} from "../../services/api";
+import {isStillSignedIn, logout} from "../../services/api";
 
 // Sets types
 type AppProps = {};
@@ -26,10 +26,24 @@ class App extends Component<AppProps, AppState> {
   }
 
   update_login = () => {
+    if(this.state.isLoggedIn) {
+      logout();
+    }
     this.setState({isLoggedIn: !this.state.isLoggedIn});
   }
 
   render() {
+    if(!this.state.isLoggedIn) {
+      return (
+          <BrowserRouter>
+            <div className="App">
+              <NavBar isLoggedIn={this.state.isLoggedIn} updateLogin={this.update_login}/>
+              <HomeLayout isLoggedIn={this.state.isLoggedIn} updateLogin={this.update_login} />
+            </div>
+          </BrowserRouter>
+      );
+    }
+
     return (
         <BrowserRouter>
           <div className="App">
@@ -38,15 +52,9 @@ class App extends Component<AppProps, AppState> {
               <Route exact path="/" render={() =>
                   (<HomeLayout isLoggedIn={this.state.isLoggedIn} updateLogin={this.update_login} />)
               } />
-              {this.state.isLoggedIn ?
-                  <Route exact path="/Profile" component={ProfileLayout} />
-                  : null}
-              {this.state.isLoggedIn ?
-                <Route exact path="/Feed" component={FeedLayout} />
-                  : null}
-              {this.state.isLoggedIn ?
-                  <Route exact path="/Messages" component={MessageLayout} />
-                  : null}
+              <Route exact path="/Profile" component={ProfileLayout} />
+              <Route exact path="/Feed" component={FeedLayout} />
+              <Route exact path="/Messages" component={MessageLayout} />
             </Switch>
           </div>
         </BrowserRouter>
