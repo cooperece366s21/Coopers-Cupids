@@ -1,5 +1,6 @@
 create table if not exists users (
     userID varchar(32) primary key not null,
+    email varchar(32) unique key not null,
     password varchar(256) not null,
     hasProfile bool not null
 );
