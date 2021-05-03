@@ -36,11 +36,12 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
 
     render() {
         return (
-            <Stack width="full" align="center" justifyContent="center" spacing={4}>
+            <Stack width="full" align="center" justifyContent="center" spacing={4}
+                   pt={8} pb={20} backgroundColor="#F2BBC1">
                 <ProfileViewer isEditing={this.state.isEditing} profile={this.state.profile}
                                hasProfile={this.state.hasProfile} editProfile={this.updateProfile}/>
                 {/* Edit Button */}
-                {/*This button is separate, so the ProfileViewer Component can be reused on the feed page*/}
+                {/* This button is separate, so the ProfileViewer Component can be reused on the feed page */}
                 {!this.state.isEditing ?
                     <Box>
                         <EditButton hasProfile={this.state.hasProfile} onClick={this.onEditButtonClick}/>

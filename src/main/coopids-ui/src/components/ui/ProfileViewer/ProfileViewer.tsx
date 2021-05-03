@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {
     Box, Stack, Image, Text, Heading, FormControl, FormLabel, Input,
     NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, Button, Textarea
+    NumberDecrementStepper, Button, Textarea, Grid, GridItem
 } from "@chakra-ui/react";
 import ErrorMessage from "../../ui/ErrorMessage/ErrorMessage";
 import {Profile} from "../../../services/api";
@@ -134,44 +134,34 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                 return (<Heading>You do not have a profile.<br/>Please click the button below to get started.</Heading>)
             } else {
                 return (
-                    <Stack spacing={6}>
+                    <Grid templateColumns="repeat(2,auto)" w="fill" align="center">
                         {/* Profile Picture */}
-                        <Box>
+                        <GridItem>
                             <Image src={this.props.profile.photo || undefined} alt={`${this.props.profile.name} Profile Picture`} />
-                        </Box>
+                        </GridItem>
+
                         {/* Name */}
-                        <Box>
-                            <Text><b>NAME:</b> {this.props.profile.name}</Text>
-                        </Box>
-                        {/* Age */}
-                        {this.props.profile.age ?
-                            <Box>
-                                <Text><b>AGE:</b> {this.props.profile.age}</Text>
-                            </Box> 
-                            : null 
-                        }
+                        <GridItem>
+                            <Text>Hi! My name is {this.props.profile.name}!</Text>
+                        </GridItem>
+
+                        {/* Age & Location*/}
+                        <GridItem colSpan={2}>
+                            <Text>I am <b>{this.props.profile.age} years old</b> and currently located
+                                in <b>{this.props.profile.location}</b></Text>
+                        </GridItem>
+
                         {/* Bio */}
-                        {this.props.profile.bio ?
-                            <Box>
-                                <Text><b>BIO:</b> {this.props.profile.bio}</Text>
-                            </Box> 
-                            : null 
-                        }
-                        {/* Location */}
-                        {this.props.profile.location ?
-                            <Box>
-                                <Text><b>LOCATION:</b> {this.props.profile.location}</Text>
-                            </Box> 
-                            : null 
-                        }
+                        <GridItem colSpan={2}>
+                            <Text><b>Here's a little about me:</b> {this.props.profile.bio}</Text>
+                        </GridItem>
+
                         {/* Interests */}
-                        {this.props.profile.interests ?
-                            <Box>
-                                <Text><b>INTERESTS:</b> {this.props.profile.interests}</Text>
-                            </Box> 
-                            : null 
-                        }
-                    </Stack>
+                        <GridItem colSpan={2}>
+                            <Text><b>My interests include:</b> {this.props.profile.interests}</Text>
+                        </GridItem>
+
+                    </Grid>
                 )
             }
     }
