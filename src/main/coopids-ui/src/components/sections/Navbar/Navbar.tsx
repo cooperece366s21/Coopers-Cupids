@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Box, Button, Grid, Stack} from "@chakra-ui/react";
+import {Button, Grid, GridItem, Image, Stack} from "@chakra-ui/react";
 import NavBarToggleButton from "../../ui/NavBarToggleButton/NavBarToggleButton";
 import NavBarLink from "../../ui/NavbarLink/NavBarLink";
 
@@ -22,12 +22,17 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     // TODO: Only show home page when not logged in
     render() {
         return (
-            <Grid as="nav" w="fill" mb={8} p={8}>
+            <Grid as="nav" w="fill" mb={8} p={8} templateColumns="repeat(2,auto)">
+                <GridItem display="inline" justifySelf="flex-start" pl={4}>
+                    <NavBarLink linkTo={"/"} onPageChange={this.closeNavBar}>
+                        <Image src="images/Coopids_logo_large.png" width="9em"/>
+                    </NavBarLink>
+                </GridItem>
                 <NavBarToggleButton onToggle={this.toggleNavBar} isOpen={this.state.isOpen} />
-                <Box display={{ base: this.state.isOpen ? "block" : "none", md: "block" }}>
-                    <Stack spacing={[4,4,8,8]} align="center" justify={["center", "center", "flex-end", "flex-end"]}
-                        direction={["column", "column", "row", "row"]}>
-                        <NavBarLink linkTo={"/"} onPageChange={this.closeNavBar}>Home</NavBarLink>
+                <GridItem display={{ base: this.state.isOpen ? "block" : "none", md: "block" }}>
+                    <Stack spacing={[4,4,10,20]} align="center" justify={["center", "center", "flex-end", "flex-end"]}
+                        direction={["column", "column", "row", "row"]} pt={5} pr={4}>
+                        {/*<NavBarLink linkTo={"/"} onPageChange={this.closeNavBar}>Home</NavBarLink>*/}
                         {this.props.isLoggedIn ?
                             <NavBarLink linkTo={"/Profile"} onPageChange={this.closeNavBar}>Profile</NavBarLink>
                             : null }
@@ -38,11 +43,11 @@ class NavBar extends Component<NavBarProps, NavBarState> {
                             <NavBarLink linkTo={"/Messages"} onPageChange={this.closeNavBar}>Messages</NavBarLink>
                             : null }
                         {this.props.isLoggedIn ?
-                            <Button pt={0} onClick={() => {this.closeNavBar();this.props.updateLogin();}}>Logout</Button>
+                            <Button pt={0} _hover={{background: "#F2BBC1", color: "white"}} onClick={() => {this.closeNavBar();this.props.updateLogin();}}>Logout</Button>
                             : null }
                     </Stack>
-                </Box>
-                {/* TODO: Add settings icon for "change password" and "logout" */}
+                </GridItem>
+                {/* TODO: Add settings icon for "change email" & "change password"*/}
             </Grid>
         );
     }

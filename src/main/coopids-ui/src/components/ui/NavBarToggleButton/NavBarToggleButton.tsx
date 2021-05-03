@@ -9,7 +9,7 @@ class NavBarToggleButton extends Component<ToggleProps, ToggleState> {
     render() {
         return (
             <GridItem display={{base: "inline", md: "none"}} onClick={this.props.onToggle}
-                justifySelf="flex-end">
+                justifySelf="flex-end" pt={7}>
                 {this.props.isOpen ? <CloseIcon boxSize={4} /> : <HamburgerIcon boxSize={6} />}
             </GridItem>
         );
