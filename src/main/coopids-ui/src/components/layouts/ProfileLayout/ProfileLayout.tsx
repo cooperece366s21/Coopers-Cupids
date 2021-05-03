@@ -36,8 +36,7 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
 
     render() {
         return (
-            <Stack width="full" align="center" justifyContent="center" spacing={4}
-                   pt={8} pb={20} backgroundColor="#F2BBC1">
+            <Stack width="full" align="center" justifyContent="center" spacing={4} pt={8} pb={20}>
                 <ProfileViewer isEditing={this.state.isEditing} profile={this.state.profile}
                                hasProfile={this.state.hasProfile} editProfile={this.updateProfile}/>
                 {/* Edit Button */}

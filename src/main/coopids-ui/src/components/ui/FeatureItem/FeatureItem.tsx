@@ -13,13 +13,13 @@ class FeatureItem extends Component<FeatureItemProps,FeatureItemState> {
                 <Grid templateColumns="repeat(2,auto)" w={"80%"}>
                     <GridItem align="left" mr={6}>
                         {/* Chooses icon depending on input */}
-                        {this.props.iconType == "profile" ?
+                        {this.props.iconType === "profile" ?
                             <FaRegUserCircle size={80}/>
-                        :this.props.iconType == "users" ?
+                        :this.props.iconType === "users" ?
                             <FaUsers size={80}/>
-                        :this.props.iconType == "match-making" ?
+                        :this.props.iconType === "match-making" ?
                             <BiSitemap size={80}/>
-                        :this.props.iconType == "messages" ?
+                        :this.props.iconType === "messages" ?
                             <FaRegComments size={80}/>
                         : null }
                     </GridItem>
