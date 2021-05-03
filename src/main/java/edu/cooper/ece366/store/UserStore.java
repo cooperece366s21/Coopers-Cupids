@@ -7,6 +7,13 @@ import edu.cooper.ece366.model.Profile;
 
 public interface UserStore {
 
+    // returns a userID not in use
+    String assignUserId();
+
+    // checks whether email is already in user
+    // returns false if email not used
+    boolean checkEmail(String email);
+
     // Checks if password is correct
     boolean validateUser(String userID, String password);
 
@@ -25,7 +32,24 @@ public interface UserStore {
     // Returns list of users for feed
     List<Profile> feedUsers(int numUsers);
 
+    // method to add a profile for a user
     void addProfile(Profile profile);
 
+    // returns the email from id
+    String getEmailFromId(String userID);
+
+    // returns the id from email
+    String getIdFromEmail(String email);
+
+    // returns profile from id
     Profile getProfileFromId(String userID);
+
+    // method to update email
+    void updateEmail(String userID, String email);
+
+    // method to update password
+    void updatePassword(String userID, String password);
+
+    // method to update profile
+    void updateProfile(Profile profile);
 }

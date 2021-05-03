@@ -7,9 +7,7 @@ import org.jdbi.v3.core.Jdbi;
 
 public class CoopidsJdbi {
 
-    public static Jdbi create(String jdbcUrl, String user, String pass) {
-        return Jdbi.create(jdbcUrl, user, pass);
-    }
+    public static Jdbi create(String jdbcUrl, String user, String pass) { return Jdbi.create(jdbcUrl, user, pass); }
 
     public static void setupSchema(Jdbi jdbi, String sqlFilePath) {
         File schemaFile = new File(sqlFilePath);

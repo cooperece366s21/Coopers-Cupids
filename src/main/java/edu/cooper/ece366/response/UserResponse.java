@@ -3,15 +3,15 @@ package edu.cooper.ece366.response;
 import edu.cooper.ece366.model.User;
 
 public class UserResponse {
-    private final String userID;
+    private final String email;
     private final boolean hasProfile;
 
     public UserResponse(User user) {
-        this.userID = user.getUserID();
+        this.email = user.getEmail();
         this.hasProfile = user.hasProfile();
     }
 
-    public String getUserID() { return this.userID; }
+    public String getEmail() { return this.email; }
 
     public boolean hasProfile() { return this.hasProfile; }
 }

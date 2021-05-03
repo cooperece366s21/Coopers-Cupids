@@ -26,7 +26,7 @@ create table if not exists cookies (
 create table if not exists messages (
     from_userID varchar(32) not null,
     to_userID varchar(32) not null,
-    messageType enum('MATCH','TEXT', 'IMAGE', 'GIF') not null,
+    messageType enum('MATCH', 'TEXT', 'IMAGE', 'GIF') not null,
     messageText text(4096) not null,
     timestamp DATETIME not null,
     foreign key (from_userID) references users(userID),
@@ -40,13 +40,4 @@ create table if not exists likes_dislikes (
     primary key (from_userID, to_userID),
     foreign key (from_userID) references users(userID),
     foreign key (to_userID) references users(userID)
-);
-
-create table if not exists matches (
-    userID1 varchar(32) not null,
-    userID2 varchar(32) not null,
-    primary key (userID1, userID2),
-    unique key (userID2, userID1),
-    foreign key (userID1) references users(userID),
-    foreign key (userID2) references users(userID)
 );
