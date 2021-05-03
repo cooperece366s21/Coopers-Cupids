@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {
     Box, Stack, Image, Text, Heading, FormControl, FormLabel, Input,
     NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, Button, Textarea, Grid, GridItem
+    NumberDecrementStepper, Button, Textarea, Grid, GridItem, Flex
 } from "@chakra-ui/react";
 import ErrorMessage from "../../ui/ErrorMessage/ErrorMessage";
 import {Profile} from "../../../services/api";
@@ -131,36 +131,43 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
             // Will only pull a non-profiled user if current user
             // In future will take some profile info at sign-up which can be added to later on
             if(!this.props.hasProfile) {
-                return (<Heading>You do not have a profile.<br/>Please click the button below to get started.</Heading>)
+                return (<Heading>You do not have a profile.<br/>
+                    Please click the button below to get started.</Heading>);
             } else {
                 return (
-                    <Grid templateColumns="repeat(2,auto)" w="fill" align="center">
+                    <Grid templateColumns="repeat(2,auto)" w="100%">
                         {/* Profile Picture */}
-                        <GridItem>
-                            <Image src={this.props.profile.photo || undefined} alt={`${this.props.profile.name} Profile Picture`} />
+                        <GridItem colSpan={[2,2,1,1]} m={4} justifySelf="center">
+                            <Image borderRadius="full" src={this.props.profile.photo || undefined}
+                                   alt={`${this.props.profile.name} Profile Picture`}
+                                   boxSize={["15em","15em","18em","22em"]} fit="cover"/>
                         </GridItem>
 
                         {/* Name */}
-                        <GridItem>
-                            <Text>Hi! My name is {this.props.profile.name}!</Text>
+                        <GridItem colSpan={[2,2,1,1]} justifySelf={["center","center","left","left"]} m={4}>
+                            <Flex h={"100%"} alignItems={"center"}>
+                                <Text fontSize="2xl" lineHeight={2}>
+                                    {/* TODO: Change first line depending on profile page vs feed */}
+                                    Hi ____!<br/>
+                                    My name is {this.props.profile.name}!</Text>
+                            </Flex>
                         </GridItem>
 
                         {/* Age & Location*/}
-                        <GridItem colSpan={2}>
-                            <Text>I am <b>{this.props.profile.age} years old</b> and currently located
+                        <GridItem colSpan={2} mb={4} mt={[0,0,4,6]}>
+                            <Text fontSize="lg" lineHeight={2}>I am <b>{this.props.profile.age} years old</b> and currently located
                                 in <b>{this.props.profile.location}</b></Text>
                         </GridItem>
 
                         {/* Bio */}
-                        <GridItem colSpan={2}>
-                            <Text><b>Here's a little about me:</b> {this.props.profile.bio}</Text>
+                        <GridItem colSpan={2} mb={4}>
+                            <Text fontSize="lg" lineHeight={2}><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
                         </GridItem>
 
                         {/* Interests */}
                         <GridItem colSpan={2}>
-                            <Text><b>My interests include:</b> {this.props.profile.interests}</Text>
+                            <Text fontSize="lg" lineHeight={2}><b>My interests include:</b> {this.props.profile.interests}</Text>
                         </GridItem>
-
                     </Grid>
                 )
             }
