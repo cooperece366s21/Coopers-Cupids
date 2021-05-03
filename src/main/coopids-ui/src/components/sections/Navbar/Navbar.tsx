@@ -21,7 +21,8 @@ class NavBar extends Component<NavBarProps, NavBarState> {
 
     render() {
         return (
-            <Grid as="nav" w="fill" p={6} templateColumns="repeat(2,auto)" borderBottom={"solid #cfcdcc .5px"}>
+            <Grid as="nav" w="fill" p={6} templateColumns="repeat(2,auto)" borderBottom={"solid #cfcdcc .5px"}
+                  backgroundColor={"#ffffff"}>
                 {/* Logo */}
                 <GridItem display="inline" justifySelf="flex-start" pl={4}>
                     <NavBarLink linkTo={"/"} onPageChange={this.closeNavBar}>

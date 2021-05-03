@@ -10,7 +10,7 @@ class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
 
     render() {
         return (
-                <Stack spacing={2} pt={8} pb={20} backgroundColor="#F2BBC1">
+                <Stack spacing={2} pt={8} pb={20}>
                     <Heading>Welcome to Cooper's Cupids</Heading>
                     <Heading pb={6}>We're here to make your love life better</Heading>
                     {this.props.isLoggedIn ? null : <LoginSignupForm updateLogin={this.props.updateLogin }/>}
