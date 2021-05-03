@@ -8,7 +8,8 @@ type NavBarLinkState = {};
 class NavBarLink extends Component<NavBarLinkProps,NavBarLinkState> {
     render() {
         return (
-            <Link as={RouterLink} to={this.props.linkTo} onClick={this.props.onPageChange}>
+            <Link as={RouterLink} to={this.props.linkTo} onClick={this.props.onPageChange}
+                  _focus={{outline: "none"}} _hover={{textDecoration: "none", color: "#F2BBC1"}}>
                 <Text display="block">
                     {this.props.children}
                 </Text>
