@@ -1,9 +1,7 @@
 package edu.cooper.ece366.store;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+
 import org.jdbi.v3.core.Jdbi;
 
 import edu.cooper.ece366.model.User;
@@ -13,29 +11,52 @@ public class UserStoreMySQL implements UserStore {
     private final Jdbi jdbi;
 
     // Constructor
-    public UserStoreMySQL(final Jdbi jdbi) {
-        this.jdbi = jdbi;
+    public UserStoreMySQL(final Jdbi jdbi) { this.jdbi = jdbi; }
+
+    @Override
+    public String assignUserId() {
+        String userID = UUID.randomUUID().toString().replace("-", "");
+        List<String> presentIds = this.jdbi.withHandle(handle ->
+                handle.createQuery("SELECT userID FROM users")
+                        .mapTo(String.class)
+                        .list());
+        while (presentIds.contains(userID)) {
+            userID = UUID.randomUUID().toString().replace("-", "");
+            // Requery just in case of update
+            presentIds = this.jdbi.withHandle(handle ->
+                    handle.createQuery("SELECT userID FROM users")
+                            .mapTo(String.class)
+                            .list());
+        }
+        return userID;
     }
 
     @Override
-    public boolean validateUser(String userID, String password) {
+    public boolean checkEmail(String email) {
+        List<String> presentEmails = this.jdbi.withHandle(handle ->
+                handle.createQuery("SELECT email FROM users")
+                        .mapTo(String.class)
+                        .list());
+        return presentEmails.contains(email);
+    }
+
+    @Override
+    public boolean validateUser(String email, String password) {
         Optional<String> dbPass = this.jdbi.withHandle(handle ->
-                handle.createQuery("SELECT password FROM users WHERE userID = ?")
-                        .bind(0, userID)
+                handle.createQuery("SELECT password FROM users WHERE email = ?")
+                        .bind(0, email)
                         .mapTo(String.class)
                         .findOne());
         return dbPass.isPresent() && dbPass.get().equals(password);
     }
 
-    // Checks if UserID is taken
     @Override
     public boolean isUser(String userID) {
-        Optional<String> dbUserID = this.jdbi.withHandle(handle ->
-                handle.createQuery("SELECT userID FROM users WHERE userID = ?")
-                        .bind(0, userID)
+        List<String> presentIDs = this.jdbi.withHandle(handle ->
+                handle.createQuery("SELECT userID FROM users")
                         .mapTo(String.class)
-                        .findOne());
-        return dbUserID.isPresent();
+                        .list());
+        return presentIDs.contains(userID);
     }
 
     // Returns user matching ID
@@ -47,6 +68,7 @@ public class UserStoreMySQL implements UserStore {
                         .bind(0, userID)
                         .map((rs, ctx) ->
                                 new User(rs.getString("userID"),
+                                        rs.getString("email"),
                                         rs.getString("password"),
                                         rs.getBoolean("hasProfile")))
                         .findOne());
@@ -58,8 +80,8 @@ public class UserStoreMySQL implements UserStore {
     @Override
     public void addUser(User user) {
         this.jdbi.useHandle(handle ->
-                handle.execute("INSERT INTO users (userID, password, hasProfile) VALUES (?, ?, ?)",
-                        user.getUserID(), user.getPassword(), user.hasProfile()));
+                handle.execute("INSERT INTO users (userID, email, password, hasProfile) VALUES (?, ?, ?, ?)",
+                        user.getUserID(), user.getEmail(), user.getPassword(), user.hasProfile()));
     }
 
     // Deletes User
@@ -72,8 +94,6 @@ public class UserStoreMySQL implements UserStore {
                 handle.execute("DELETE FROM profiles WHERE userID = ?", userID));
         this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM likes_dislikes WHERE from_userID = ? OR to_userID = ?", userID, userID));
-        this.jdbi.useHandle(handle ->
-                handle.execute("DELETE FROM matches WHERE userID1 = ? OR userID2 = ?", userID, userID));
         this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM messages WHERE from_userID = ? OR to_userID = ?", userID, userID));
         this.jdbi.useHandle(handle ->
@@ -136,6 +156,24 @@ public class UserStoreMySQL implements UserStore {
                         profile.getUserID()));
     }
 
+    @Override
+    public String getEmailFromId(String userID) {
+        return this.jdbi.withHandle(handle ->
+                handle.createQuery("SELECT email FROM users WHERE userID = ?")
+                        .bind(0, userID)
+                        .mapTo(String.class)
+                        .one());
+    }
+
+    @Override
+    public String getIdFromEmail(String email) {
+        return this.jdbi.withHandle(handle ->
+                handle.createQuery("SELECT userID FROM users WHERE email = ?")
+                        .bind(0, email)
+                        .mapTo(String.class)
+                        .one());
+    }
+
     // Gets profile
     // User/Profile existence checked in handler
     @Override
@@ -152,5 +190,30 @@ public class UserStoreMySQL implements UserStore {
                                         rs.getString("location"),
                                         rs.getString("interests")))
                         .one());
+    }
+
+    @Override
+    public void updateEmail(String userID, String email) {
+        this.jdbi.useHandle(handle ->
+                handle.execute("UPDATE users SET email = ? WHERE userID = ?", email, userID));
+    }
+
+    @Override
+    public void updatePassword(String userID, String password) {
+        this.jdbi.useHandle(handle ->
+                handle.execute("UPDATE users SET password = ? WHERE userID = ?", password, userID));
+    }
+
+    @Override
+    public void updateProfile(Profile profile) {
+        this.jdbi.useHandle(handle ->
+                handle.execute("UPDATE profiles SET name = ?, age = ?, photo = ?, bio = ?, location = ?, interests = ? WHERE userID = ?",
+                        profile.getName(),
+                        profile.getAge(),
+                        profile.getPhoto(),
+                        profile.getBio(),
+                        profile.getLocation(),
+                        profile.getInterests(),
+                        profile.getUserID()));
     }
 }

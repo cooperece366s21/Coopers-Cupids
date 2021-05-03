@@ -36,13 +36,7 @@ public class MatchStoreMySQL implements MatchStore {
                             .bind(1, userID)
                             .mapTo(String.class)
                             .findOne());
-            if (likedlod.isPresent() && likedlod.get().equals("LIKE")) {
-                this.jdbi.useHandle(handle ->
-                        handle.execute("INSERT INTO matches (userID1, userID2) VALUES (?, ?)",
-                                userID, likedUserID));
-                return true;
-            }
-            return false;
+            return likedlod.isPresent() && likedlod.get().equals("LIKE");
         }
     }
 
@@ -68,12 +62,6 @@ public class MatchStoreMySQL implements MatchStore {
 
     @Override
     public void unmatch(String userID, String unmatchedUserID) {
-        this.jdbi.useHandle(handle ->
-                handle.execute("DELETE FROM matches WHERE (userID1 = ? and userID2 = ?) OR (userID2 = ? AND userID1 = ?)",
-                        userID,
-                        unmatchedUserID,
-                        userID,
-                        unmatchedUserID));
         this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM messages WHERE (from_userID = ? AND to_userID = ?) OR (to_userID = ? AND from_userID = ?)",
                         userID,
@@ -119,24 +107,20 @@ public class MatchStoreMySQL implements MatchStore {
     // If none, returns empty list
     @Override
     public List<String> getMatches(String userID) {
-        List<String> matches1 = this.jdbi.withHandle(handle ->
-                handle.createQuery("SELECT userID1 FROM matches WHERE userID2 = ?")
+        return this.jdbi.withHandle(handle ->
+                handle.createQuery("SELECT filt.userID FROM (SELECT CASE WHEN m.from_userID= ? THEN m.to_userID " +
+                        "WHEN m.to_userID = ? THEN m.from_userID END AS userID FROM messages m) filt WHERE filt.userID " +
+                        "IS NOT NULL GROUP BY filt.userID")
                         .bind(0, userID)
                         .mapTo(String.class)
                         .list());
-        List<String> matches2 = this.jdbi.withHandle(handle ->
-                handle.createQuery("SELECT userID2 FROM matches WHERE userID1 = ?")
-                        .bind(0, userID)
-                        .mapTo(String.class)
-                        .list());
-        matches1.addAll(matches2);
-        return matches1;
     }
 
     @Override
     public boolean isMatch(String userID, String matchUserID) {
         Optional<String> match = this.jdbi.withHandle(handle ->
-                handle.createQuery("SELECT userID1 FROM matches WHERE (userID1 = ? AND userID2 = ?) OR (userID2 = ? AND userID1 = ?)")
+                handle.createQuery("SELECT to_userID FROM messages WHERE ((to_userID = ? AND from_userID = ?) OR (from_userID = ? AND to_userID = ?)) " +
+                        "AND messageType = 'MATCH'")
                         .bind(0, userID)
                         .bind(1, matchUserID)
                         .bind(2, userID)

@@ -11,8 +11,8 @@ public class Profile {
     private String location; // Can be updated to different data-type later
     private String interests;
 
-    public Profile(String uid, String name, int age, String photo, String bio, String loc, String ints) {
-        this.userID = uid;
+    public Profile(String userID, String name, int age, String photo, String bio, String loc, String ints) {
+        this.userID = userID;
         this.name = name;
         this.age = age;
         this.photo = photo;

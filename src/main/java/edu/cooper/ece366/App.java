@@ -6,12 +6,12 @@ import static spark.Spark.initExceptionHandler;
 import static spark.Spark.options;
 import static spark.Spark.post;
 
-import edu.cooper.ece366.auth.Cookies;
 import spark.ResponseTransformer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jdbi.v3.core.Jdbi;
 
+import edu.cooper.ece366.auth.Cookies;
 import edu.cooper.ece366.service.MatchFeedServiceSQL;
 import edu.cooper.ece366.handler.Handler;
 import edu.cooper.ece366.store.*;
@@ -84,24 +84,27 @@ public class App
         post("/logout", handler::logout, responseTransformer);
         // may delete since same as below
         // get("/me", handler::me, responseTransformer);
-        // TODO
-        // may add post method for changing userID/password in the future
-        get("/user/:userId", handler::getUser, responseTransformer);
+        get("/user/:email", handler::getUser, responseTransformer);
+        // requests password ("password")
+        post("/user/:email/delete", handler::deleteAccount, responseTransformer);
+        // requests password (for verification) ("password") and new email ("email") in body
+        post("/user/:email/editEmail", handler::changeEmail, responseTransformer);
+        // requests old password (for verification) ("old_password") and new password ("new_password") in body
+        post("/user/:email/editPassword", handler::changePassword, responseTransformer);
         // doesnt need a get method (can be done in frontend)
-        post("/user/:userId/create", handler::create, responseTransformer);
-        // TODO
-        // may add post method for changing userID/password in the future
-        get("/user/:userId/profile", handler::getProfile, responseTransformer);
+        post("/user/:email/create", handler::create, responseTransformer);
+        get("/user/:email/profile", handler::getProfile, responseTransformer);
+        post("/user/:email/profile/edit", handler::editProfile, responseTransformer);
         // no post method needed (use like/dislike as necessary)
-        get("/user/:userId/feed", handler::getFeed, responseTransformer);
-        post("/user/:userId/feed/like", handler::like, responseTransformer);
-        post("/user/:userId/feed/dislike", handler::dislike, responseTransformer);
+        get("/user/:email/feed", handler::getFeed, responseTransformer);
+        post("/user/:email/feed/like", handler::like, responseTransformer);
+        post("/user/:email/feed/dislike", handler::dislike, responseTransformer);
         // doesnt need post method (cant create new conversation without match)
-        get("/user/:userId/convos", handler::getConvos, responseTransformer);
+        get("/user/:email/convos", handler::getConvos, responseTransformer);
         // doesnt need post method (use send to post/send message)
-        get("/user/:userId/convos/:matchId", handler::getConvo, responseTransformer);
-        post("/user/:userId/convos/:matchId/send", handler::sendMessage, responseTransformer);
+        get("/user/:email/convos/:matchId", handler::getConvo, responseTransformer);
+        post("/user/:email/convos/:matchId/send", handler::sendMessage, responseTransformer);
         // doesnt need get method needed
-        post("/user/:userId/convos/:matchId/unmatch", handler::unmatch, responseTransformer);
+        post("/user/:email/convos/:matchId/unmatch", handler::unmatch, responseTransformer);
     }
 }

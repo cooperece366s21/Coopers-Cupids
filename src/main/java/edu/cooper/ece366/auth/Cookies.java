@@ -11,9 +11,8 @@ public class Cookies {
 
     public Cookies(final Jdbi jdbi) { this.jdbi = jdbi; }
 
-    // should add method to purge expired cookies, right now only delete on logout or login timeout
-
     public String assignCookie(String userID) {
+        // purge cookies whenever a new one is created
         purgeCookies();
         String cookie = UUID.randomUUID().toString().replace("-", "");
         List<String> presentCookies = this.jdbi.withHandle(handle ->
@@ -38,61 +37,49 @@ public class Cookies {
     }
 
     public boolean verifyCookie(String cookie, String userID) {
-        purgeCookies();
         Optional<String> uid = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT userID FROM cookies WHERE cookie = ?")
                         .bind(0, cookie)
                         .mapTo(String.class)
                         .findOne());
-//        if (uid.isPresent() && uid.get().equals(userID)) {
-//            Timestamp timestamp = this.jdbi.withHandle(handle ->
-//                    handle.createQuery("SELECT expire FROM cookies WHERE cookie = ?")
-//                            .bind(0, cookie)
-//                            .mapTo(Timestamp.class)
-//                            .one());
-//            if (timestamp.after(new Timestamp(System.currentTimeMillis()))) {
-//                return true;
-//            }
-//            else {
-//                deleteCookie(cookie, userID);
-//                return false;
-//            }
-//        }
         if (uid.isPresent() && uid.get().equals(userID)) {
-            return true;
+            Timestamp timestamp = this.jdbi.withHandle(handle ->
+                    handle.createQuery("SELECT expire FROM cookies WHERE cookie = ?")
+                            .bind(0, cookie)
+                            .mapTo(Timestamp.class)
+                            .one());
+            if (timestamp.after(new Timestamp(System.currentTimeMillis()))) {
+                return true;
+            }
+            else {
+                deleteCookie(cookie, userID);
+                return false;
+            }
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     public String getUser(String cookie) {
-        purgeCookies();
         Optional<String> uid = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT userID FROM cookies WHERE cookie = ?")
                         .bind(0, cookie)
                         .mapTo(String.class)
                         .findOne());
-//        if (uid.isPresent()) {
-//            Timestamp timestamp = this.jdbi.withHandle(handle ->
-//                    handle.createQuery("SELECT expire FROM cookies WHERE cookie = ?")
-//                            .bind(0, cookie)
-//                            .mapTo(Timestamp.class)
-//                            .one());
-//            if (timestamp.after(new Timestamp(System.currentTimeMillis()))) {
-//                return uid.get();
-//            }
-//            else {
-//                deleteCookie(cookie, uid.get());
-//                return null;
-//            }
-//        }
-        if(uid.isPresent()) {
-            return uid.get();
+        if (uid.isPresent()) {
+            Timestamp timestamp = this.jdbi.withHandle(handle ->
+                    handle.createQuery("SELECT expire FROM cookies WHERE cookie = ?")
+                            .bind(0, cookie)
+                            .mapTo(Timestamp.class)
+                            .one());
+            if (timestamp.after(new Timestamp(System.currentTimeMillis()))) {
+                return uid.get();
+            }
+            else {
+                deleteCookie(cookie, uid.get());
+                return null;
+            }
         }
-        else {
-            return null;
-        }
+        return null;
     }
 
     // No need for existence checking, if doesnt exist nothing deleted
