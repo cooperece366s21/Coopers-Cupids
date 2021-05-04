@@ -7,8 +7,10 @@ import {
 import ErrorMessage from "../../ui/ErrorMessage/ErrorMessage";
 import {Profile} from "../../../services/api";
 
-type ProfileViewerProps = {isEditing: boolean; profile: Profile;
+// currName is used to change text based on own profile vs feed viewing
+type ProfileViewerProps = {isEditing: boolean; profile: Profile; currName: string;
                            hasProfile: boolean; editProfile: (newProfile: Profile) => void};
+// editedProfile stores the updated profile before it is sent to the backend
 type ProfileViewerState = {error: boolean, isLoading: boolean, editedProfile: Profile};
 
 class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
@@ -129,13 +131,24 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
             }
 
             // Will only pull a non-profiled user if current user
-            // In future will take some profile info at sign-up which can be added to later on
             if(!this.props.hasProfile) {
-                return (<Heading>You do not have a profile.<br/>
-                    Please click the button below to get started.</Heading>);
+                return (<Heading>You do not have a profile yet.<br/>
+                    Please click the button below to get started on your journey.</Heading>);
             } else {
+                // Checks whether this is current user's profile or viewing feed
+                // Affects text seen
+                // Done here and stored, to save space below
+                const ownProfile = this.props.currName === this.props.profile.name;
                 return (
                     <Grid templateColumns="repeat(2,auto)" w="100%">
+                        {/* Intro text*/}
+                        {ownProfile ?
+                            <GridItem colSpan={2} m={4}>
+                                <Text fontSize="xl" lineHeight={2}>The more you include on your profile,
+                                    the faster the coopids can find you a match!</Text>
+                            </GridItem>
+                        : null}
+
                         {/* Profile Picture */}
                         <GridItem colSpan={[2,2,1,1]} m={4} justifySelf="center">
                             <Image borderRadius="full" src={this.props.profile.photo || undefined}
@@ -146,27 +159,27 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                         {/* Name */}
                         <GridItem colSpan={[2,2,1,1]} justifySelf={["center","center","left","left"]} m={4}>
                             <Flex h={"100%"} alignItems={"center"}>
-                                <Text fontSize="2xl" lineHeight={2}>
-                                    {/* TODO: Change first line depending on profile page vs feed */}
-                                    Hi ____!<br/>
+                                <Text fontSize="4xl" lineHeight={2}>
+                                    {!ownProfile ? `Hi ${this.props.currName}! `
+                                    : null}
                                     My name is {this.props.profile.name}!</Text>
                             </Flex>
                         </GridItem>
 
                         {/* Age & Location*/}
                         <GridItem colSpan={2} mb={4} mt={[0,0,4,6]}>
-                            <Text fontSize="lg" lineHeight={2}>I am <b>{this.props.profile.age} years old</b> and currently located
+                            <Text fontSize="2xl" lineHeight={2}>I am <b>{this.props.profile.age} years old</b> and currently located
                                 in <b>{this.props.profile.location}</b></Text>
                         </GridItem>
 
                         {/* Bio */}
                         <GridItem colSpan={2} mb={4}>
-                            <Text fontSize="lg" lineHeight={2}><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
+                            <Text fontSize="2xl" lineHeight={2}><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
                         </GridItem>
 
                         {/* Interests */}
                         <GridItem colSpan={2}>
-                            <Text fontSize="lg" lineHeight={2}><b>My interests include:</b> {this.props.profile.interests}</Text>
+                            <Text fontSize="2xl" lineHeight={2}><b>My interests include:</b> {this.props.profile.interests}</Text>
                         </GridItem>
                     </Grid>
                 )
