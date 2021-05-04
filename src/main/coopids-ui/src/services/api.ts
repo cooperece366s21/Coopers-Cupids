@@ -1,5 +1,8 @@
 // Backend url to make requests from
-export const BACKEND_URL = "http://localhost:4567";
+import App from "../components/App/App";
+
+const BACKEND_URL = "http://localhost:4567";
+const COOKIE_EXP_CODE = 401;
 
 // Types
 // -----
@@ -47,11 +50,18 @@ type loginResponse = {
 // Functions
 // ---------
 
-// Stores the UserID (for requests) and an auth token (for authentication) in local storage
+// Checks if cookie has expired
+function checkCookieExpiration(status: number) {
+    // Checks status in response
+    if(status === COOKIE_EXP_CODE) {
+        // Clears local storage
+        setCurrentUserID("");
+        setUserToken("");
+    }
+}
 
-// TODO: Reset local storage on logout
-// TODO: Store auth token expiration
 // Auth Token
+// Stores the UserID (for requests) and an auth token (for authentication) in local storage
 function getUserToken(): string {
     return localStorage.getItem("current_user_auth_token") || "";
 }
@@ -70,7 +80,6 @@ function setCurrentUserID(userID: string): void {
     localStorage.setItem("current_user", userID);
 }
 
-// TODO: Add error code that indicates user needs to sign in again
 // Checks if values are still present in local storage
 export function isStillSignedIn() {
     return getUserToken() !== "" && getCurrentUserID() !== "";
@@ -88,7 +97,7 @@ export async function signup(username: string, password: string): Promise<loginR
         mode: 'cors',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'username': username, 'password': password})
-    })
+    });
 
     if(resp.ok) {
         const user: User = await resp.json()
@@ -149,7 +158,9 @@ export async function updatePassword(password: string): Promise<boolean> {
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify({'password': password})
-    })
+    });
+
+    checkCookieExpiration(resp.status);
 
     return resp.ok;
 }
@@ -172,6 +183,8 @@ export async function getUserFromID(userID: string): Promise<User | null> {
         headers: {auth_token: getUserToken()}
     });
 
+    checkCookieExpiration(resp.status);
+
     return resp.ok ? await resp.json() : null;
 }
 
@@ -190,6 +203,8 @@ export async function setUserProfile(profile: Profile): Promise<Profile | null> 
         body: JSON.stringify(profile)
     });
 
+    checkCookieExpiration(resp.status);
+
     return resp.ok ? await resp.json() : null;
 }
 
@@ -205,7 +220,9 @@ export async function getUserProfile(userID: string): Promise<Profile | null> {
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/profile`, {
         method: 'GET',
         headers: {auth_token: getUserToken()}
-    })
+    });
+
+    checkCookieExpiration(resp.status);
 
     return resp.ok ? await resp.json() : null;
 }
@@ -220,6 +237,8 @@ export async function getFeed(): Promise<Profile[]> {
         method: 'GET',
         headers: {auth_token: getUserToken()}
     })
+
+    checkCookieExpiration(resp.status);
 
     return resp.ok ? await resp.json() : null;
 }
@@ -237,6 +256,8 @@ export async function like(likedUserID: string): Promise<boolean> {
         body: JSON.stringify({liked_userID: likedUserID})
     });
 
+    checkCookieExpiration(resp.status);
+
     return resp.ok;
 }
 
@@ -253,6 +274,8 @@ export async function dislike(dislikedUserID: string): Promise<boolean> {
         body: JSON.stringify({disliked_userID: dislikedUserID})
     });
 
+    checkCookieExpiration(resp.status);
+
     return resp.ok;
 }
 
@@ -265,7 +288,9 @@ export async function getAllConversations(): Promise<Conversation[]> {
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos`, {
         method: 'GET',
         headers: {auth_token: getUserToken()}
-    })
+    });
+
+    checkCookieExpiration(resp.status);
 
     return resp.ok ? await resp.json() : null;
 }
@@ -279,7 +304,9 @@ export async function getUserConversation(withUserID: string): Promise<Message[]
     const resp = await fetch(`${BACKEND_URL}/user/${userID}/convos/${withUserID}`, {
         method: 'GET',
         headers: {auth_token: getUserToken()}
-    })
+    });
+
+    checkCookieExpiration(resp.status);
 
     return resp.ok ? await resp.json() : null;
 }
@@ -297,6 +324,8 @@ export async function sendMessage(toUserID: string, message: string): Promise<bo
         body: JSON.stringify({message: message})
     });
 
+    checkCookieExpiration(resp.status);
+
     return resp.ok;
 }
 
@@ -312,6 +341,8 @@ export async function unmatch(unmatchedUserID: string): Promise<boolean> {
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
         body: JSON.stringify({unmatched_userID: unmatchedUserID})
     });
+
+    checkCookieExpiration(resp.status);
 
     return resp.ok;
 }

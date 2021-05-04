@@ -11,7 +11,7 @@ import {
 } from "../../../services/api";
 import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
 
-type MessageLayoutProps = {};
+type MessageLayoutProps = {checkCookieExpiration: () => void};
 // conversationDisplayed is the index in conversations[] of the conversation the user wants to see
 type MessageLayoutState = {conversations: Conversation[]; isLoaded: boolean;
                            conversationDisplayed: number | null; currentConversation: Message[]};
@@ -25,6 +25,10 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
 
     async componentDidMount() {
         const conversationResp = await getAllConversations() || [];
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
         this.setState({conversations: conversationResp, isLoaded: true,
                             conversationDisplayed: null, currentConversation: []});
     }
@@ -35,6 +39,10 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
             this.setState({conversationDisplayed: newConversation});
         } else {
             const messages = await getUserConversation(this.state.conversations[newConversation].userID);
+
+            // Checks if cookies expired (request failed)
+            this.props.checkCookieExpiration();
+
             this.setState({currentConversation: messages, conversationDisplayed: newConversation});
         }
     }
@@ -42,6 +50,10 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     sendMessage = async (toUserID: string, newMessage: string) => {
         await sendMessage(toUserID, newMessage);
         const messages = await getUserConversation(toUserID);
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
         this.setState({currentConversation: messages});
     }
 

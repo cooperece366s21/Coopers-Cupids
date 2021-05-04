@@ -4,7 +4,7 @@ import EditButton from "../../ui/EditButton/EditButton";
 import ProfileViewer from "../../ui/ProfileViewer/ProfileViewer";
 import {Profile, getCurrentUserProfile, setUserProfile} from "../../../services/api";
 
-type ProfileLayoutProps = {};
+type ProfileLayoutProps = {checkCookieExpiration: () => void};
 type ProfileLayoutState = {isEditing: boolean; profile: Profile; hasProfile: boolean};
 
 class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
@@ -15,6 +15,9 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
 
     async componentDidMount() {
         const json = await getCurrentUserProfile();
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
 
         if(json != null) {
             this.setState({isEditing: false, profile: json, hasProfile: true})
@@ -27,6 +30,10 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
 
     updateProfile = async (newProfile: Profile) => {
         const json = await setUserProfile(newProfile);
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
         // Should never be null if we're updating the profile
         // Only checking to make TypeScript happy
         if(json != null) {
@@ -49,7 +56,7 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
                     : null
                 }
             </Stack>
-        )
+        );
     }
 }
 

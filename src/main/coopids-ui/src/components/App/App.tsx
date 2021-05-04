@@ -25,11 +25,20 @@ class App extends Component<AppProps, AppState> {
     }
   }
 
-  update_login = () => {
+  updateLogin = () => {
     if(this.state.isLoggedIn) {
       logout();
     }
     this.setState({isLoggedIn: !this.state.isLoggedIn});
+  }
+
+  // Checks if cookies have expired
+  // Resets state when cookies expire
+  // Should be called whenever a request is made
+  CheckCookieExpiration = () => {
+    if(!isStillSignedIn()) {
+      this.setState({isLoggedIn: false});
+    }
   }
 
   render() {
@@ -37,8 +46,8 @@ class App extends Component<AppProps, AppState> {
       return (
           <BrowserRouter>
             <div className="App">
-              <NavBar isLoggedIn={this.state.isLoggedIn} updateLogin={this.update_login}/>
-              <HomeLayout isLoggedIn={this.state.isLoggedIn} updateLogin={this.update_login} />
+              <NavBar isLoggedIn={this.state.isLoggedIn} updateLogin={this.updateLogin}/>
+              <HomeLayout isLoggedIn={this.state.isLoggedIn} updateLogin={this.updateLogin} />
             </div>
           </BrowserRouter>
       );
@@ -47,14 +56,20 @@ class App extends Component<AppProps, AppState> {
     return (
         <BrowserRouter>
           <div className="App">
-            <NavBar isLoggedIn={this.state.isLoggedIn} updateLogin={this.update_login}/>
+            <NavBar isLoggedIn={this.state.isLoggedIn} updateLogin={this.updateLogin}/>
             <Switch>
               <Route exact path="/" render={() =>
-                  (<HomeLayout isLoggedIn={this.state.isLoggedIn} updateLogin={this.update_login} />)
+                  (<HomeLayout isLoggedIn={this.state.isLoggedIn} updateLogin={this.updateLogin} />)
               } />
-              <Route exact path="/Profile" component={ProfileLayout} />
-              <Route exact path="/Feed" component={FeedLayout} />
-              <Route exact path="/Messages" component={MessageLayout} />
+              <Route exact path="/Profile" render={() =>
+                  (<ProfileLayout checkCookieExpiration={this.CheckCookieExpiration}/>)
+              } />
+              <Route exact path="/Feed" render={() =>
+                  (<FeedLayout checkCookieExpiration={this.CheckCookieExpiration}/>)
+              } />
+              <Route exact path="/Messages" render={() =>
+                  (<MessageLayout checkCookieExpiration={this.CheckCookieExpiration}/>)
+              } />
             </Switch>
           </div>
         </BrowserRouter>

@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {dislike, getCurrentUserProfile, getFeed, like, Profile} from "../../../services/api";
-import {Button, Flex, Heading, Spacer, Stack, Text} from "@chakra-ui/react";
+import {Button, Flex, Heading, Spacer, Stack} from "@chakra-ui/react";
 import ProfileViewer from "../../ui/ProfileViewer/ProfileViewer";
 
-type FeedLayoutProps = {};
+type FeedLayoutProps = {checkCookieExpiration: () => void};
 // name is the name of current user (used for customized text)
 // curentFeedUser is the index of the current user being viewed in the feedList
 type FeedLayoutState = {userName: string | undefined; feedList: Profile[]; currentFeedUser: number; isLoading: boolean};
@@ -18,6 +18,9 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
         const feed = await getFeed() || [];
         const profile = await getCurrentUserProfile();
 
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
         this.setState({userName: profile != null ? profile.name : undefined, feedList: feed,
             currentFeedUser: 0, isLoading: false});
     }
@@ -26,6 +29,10 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
         // Checks if ran out of feed
         if(this.state.currentFeedUser >= this.state.feedList.length-1) {
             const feed = await getFeed();
+
+            // Checks if cookies expired (request failed)
+            this.props.checkCookieExpiration();
+
             this.setState({feedList: feed, currentFeedUser: 0, isLoading: false});
         } else {
             this.setState({currentFeedUser: this.state.currentFeedUser + 1, isLoading: false});
