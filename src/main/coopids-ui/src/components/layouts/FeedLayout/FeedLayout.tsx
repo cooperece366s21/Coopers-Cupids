@@ -55,7 +55,7 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
                 // TODO: Only show this if current user has a profile
                 <Stack width="full" align="center" justifyContent="center" spacing={4}>
                     <ProfileViewer isEditing={false} profile={this.state.feedList[this.state.currentUser]}
-                                   hasProfile={true} editProfile={()=>{}} />
+                                   currName={"Peter"} hasProfile={true} editProfile={()=>{}} />
                     <Flex w={"50%"} pt={4}>
                         <Button colorScheme="yellow" float="left" type="submit" w={"40%"}
                                 onClick={this.dislikeClick}>

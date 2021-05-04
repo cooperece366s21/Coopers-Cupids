@@ -147,11 +147,12 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                 <Text fontSize="xl" lineHeight={2}>The more you include on your profile,
                                     the faster the coopids can find you a match!</Text>
                             </GridItem>
-                        : null}
+                            : <GridItem colSpan={2} m={4} mt={8}></GridItem>}
 
                         {/* Profile Picture */}
                         <GridItem colSpan={[2,2,1,1]} m={4} justifySelf="center">
                             <Image borderRadius="full" src={this.props.profile.photo || undefined}
+                                   fallbackSrc={"images/Temp_Profile.jpg"}
                                    alt={`${this.props.profile.name} Profile Picture`}
                                    boxSize={["15em","15em","18em","22em"]} fit="cover"/>
                         </GridItem>
@@ -159,10 +160,16 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                         {/* Name */}
                         <GridItem colSpan={[2,2,1,1]} justifySelf={["center","center","left","left"]} m={4}>
                             <Flex h={"100%"} alignItems={"center"}>
-                                <Text fontSize="4xl" lineHeight={2}>
-                                    {!ownProfile ? `Hi ${this.props.currName}! `
-                                    : null}
-                                    My name is {this.props.profile.name}!</Text>
+                                {/* Adds custom greeting message to feed */}
+                                {!ownProfile ?
+                                    <Text fontSize="4xl" lineHeight={2}>
+                                        Hi {this.props.currName}!
+                                        <br/>My name is {this.props.profile.name}!
+                                    </Text>
+                                :   <Text fontSize="4xl" lineHeight={2}>
+                                        My name is {this.props.profile.name}!
+                                    </Text>
+                                }
                             </Flex>
                         </GridItem>
 
