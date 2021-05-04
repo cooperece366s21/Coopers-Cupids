@@ -47,6 +47,9 @@ class NavBar extends Component<NavBarProps, NavBarState> {
                             <NavBarLink linkTo={"/Messages"} onPageChange={this.closeNavBar}>Messages</NavBarLink>
                             : null }
                         {this.props.isLoggedIn ?
+                            <NavBarLink linkTo={"/Settings"} onPageChange={this.closeNavBar}>Settings</NavBarLink>
+                            : null }
+                        {this.props.isLoggedIn ?
                             <Button pt={0} _hover={{background: "#F2BBC1", color: "white"}} onClick={() => {this.closeNavBar();this.props.updateLogin();}}>Logout</Button>
                             : null }
                     </Stack>

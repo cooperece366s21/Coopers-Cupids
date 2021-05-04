@@ -7,6 +7,7 @@ import FeedLayout from "../layouts/FeedLayout/FeedLayout";
 import MessageLayout from "../layouts/MessagesLayout/MessageLayout";
 import HomeLayout from "../layouts/HomeLayout/HomeLayout";
 import {isStillSignedIn, logout} from "../../services/api";
+import SettingsLayout from "../layouts/SettingsLayout/SettingsLayout";
 
 // Sets types
 type AppProps = {};
@@ -69,6 +70,9 @@ class App extends Component<AppProps, AppState> {
               } />
               <Route exact path="/Messages" render={() =>
                   (<MessageLayout checkCookieExpiration={this.CheckCookieExpiration}/>)
+              } />
+              <Route exact path="/Settings" render={() =>
+                  (<SettingsLayout checkCookieExpiration={this.CheckCookieExpiration}/>)
               } />
             </Switch>
           </div>
