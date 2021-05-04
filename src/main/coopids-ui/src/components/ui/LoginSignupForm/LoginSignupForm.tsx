@@ -62,7 +62,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
 
         return (
             <Flex width="full" align="center" justifyContent="center">
-                <Box p={8} maxWidth="500px" borderWidth={1} borderRadius={8} boxShadow="lg">
+                <Box p={8} maxWidth="500px" borderWidth={1} borderRadius={8} boxShadow="lg" borderColor="#FFFFFF">
                     <Box textAlign="center">
                         <Heading>{headerText}</Heading>
                     </Box>
@@ -73,22 +73,25 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                                 {this.state.apiError && <ErrorMessage message={errorMessage} />}
                                 {/* Username Field */}
                                 <FormControl isRequired>
-                                    <FormLabel>Username</FormLabel>
-                                    <Input type="email" placeholder="Username" value={this.state.username} aria-label="Username"
+                                    <FormLabel>Email Address</FormLabel>
+                                    <Input type="email" placeholder="Cooopers@Cupids.com" value={this.state.username}
+                                           aria-label="Email"  borderColor="#FFFFFF"
                                            onChange={e => this.setState({username: e.currentTarget.value})}/>
                                 </FormControl>
                                 {/* Password Field */}
                                 <FormControl isRequired>
                                     <FormLabel>Password</FormLabel>
                                     <Input type="password" placeholder="*******" value={this.state.password}
-                                           aria-label="Password"
+                                           aria-label="Password" borderColor="#FFFFFF"
                                            onChange={e => this.setState({password: e.currentTarget.value})}/>
                                 </FormControl>
                                 {/* Submit Button */}
                                 <Button width="full"
                                         type="submit"
                                         boxShadow='sm'
-                                        _hover={{boxShadow: 'md'}}
+                                        backgroundColor={"#FFFFFF"}
+                                        _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1",
+                                            color: "#FFFFFF", border: "1px solid white"}}
                                         _active={{boxShadow: 'lg'}}
                                         isLoading={this.state.isLoading}>
                                     {this.state.formType === "Signup" ? "Create Account" : "Login"}
