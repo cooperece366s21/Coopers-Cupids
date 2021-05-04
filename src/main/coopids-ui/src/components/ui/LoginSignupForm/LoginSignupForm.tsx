@@ -1,39 +1,44 @@
 import React, {Component} from "react";
-import {Box, Button, Flex, FormControl, FormLabel, Heading, Input, Stack, Link} from "@chakra-ui/react";
+import {
+    Box,
+    Button,
+    Flex,
+    FormControl,
+    FormLabel,
+    Heading,
+    Input,
+    Stack,
+    Link,
+    InputRightElement, InputGroup
+} from "@chakra-ui/react";
 import api from "../../../services/api";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
 // Sets types
 type FormProps = {updateLogin: () => void};
 type FormState = {username: string; password: string; isLoading: boolean,
-                  formType: "Signup" | "Login"; apiError: boolean};
+                  formType: "Signup" | "Login"; apiError: boolean, showPassword: boolean};
 
 class LoginSignupForm extends Component<FormProps, FormState> {
     constructor(props: FormProps) {
         super(props);
-        this.state = {username: "", password: "", isLoading: false, formType: "Login", apiError: false};
+        this.state = {username: "", password: "", isLoading: false, formType: "Login",
+            apiError: false, showPassword: false};
     }
 
     // Makes API Call on button click
     onSubmit = async () => {
         this.setState({isLoading: true});
 
-        // Checks for empty fields
-        if(this.state.username === "" || this.state.password === "") {
-            this.setState({apiError: false, isLoading: false});
-            return;
-        }
-
         const resp = this.state.formType === "Signup" ? await api.signup(this.state.username, this.state.password)
-                                                       : await api.login(this.state.username, this.state.password);
+                                                      : await api.login(this.state.username, this.state.password);
 
         if(resp.status === "Success") {
-            // UPDATE PAGE
+            // Updates page
             this.setState({apiError: false, isLoading: false})
-            // TODO: REDIRECT
             this.props.updateLogin();
         }
-        // ERROR
+        // Error
         else {
             // Clears saved values
             this.setState({username: "", password: "", isLoading: false, apiError: true});
@@ -41,7 +46,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
 
     }
 
-    // TODO: Disable button while API is loading request (when isLoading = true)
+    // Creates and returns button to switch forms (login <--> signup)
     getFormSwitchText = () => {
         const formSwitchText = this.state.formType === "Signup" ? "Already have an account?"
                                                                    : "Don't have an account?";
@@ -49,10 +54,16 @@ class LoginSignupForm extends Component<FormProps, FormState> {
         const newFormType = this.state.formType === "Signup" ? "Login" : "Signup";
         const onFormSwitchTextClick = () => {this.setState({formType: newFormType, apiError: false})};
         return (
-            <Link textAlign="center" _hover={{textDecoration: 'None'}} onClick={e => {e.preventDefault(); onFormSwitchTextClick();}}>
+            <Link textAlign="center" _hover={{textDecoration: 'None'}}
+            onClick={e => {e.preventDefault(); onFormSwitchTextClick();}}>
                 {formSwitchText}
             </Link>
         )
+    }
+
+    // Toggles password visibility
+    togglePasswordVisibility = () => {
+        this.setState({showPassword: !this.state.showPassword});
     }
 
     render() {
@@ -76,14 +87,27 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                                     <FormLabel>Email Address</FormLabel>
                                     <Input type="email" placeholder="Cooopers@Cupids.com" value={this.state.username}
                                            aria-label="Email"  borderColor="#FFFFFF"
-                                           onChange={e => this.setState({username: e.currentTarget.value})}/>
+                                           onChange={e => this.setState({username: e.currentTarget.value})}
+                                    focusBorderColor="#0087C5"/>
                                 </FormControl>
                                 {/* Password Field */}
                                 <FormControl isRequired>
                                     <FormLabel>Password</FormLabel>
-                                    <Input type="password" placeholder="*******" value={this.state.password}
-                                           aria-label="Password" borderColor="#FFFFFF"
-                                           onChange={e => this.setState({password: e.currentTarget.value})}/>
+                                    <InputGroup>
+                                        <Input type={this.state.showPassword ? "text" : "password"}
+                                               placeholder="*******" value={this.state.password}
+                                               aria-label="Password" borderColor="#FFFFFF"
+                                               onChange={e => this.setState({password: e.currentTarget.value})}/>
+                                        <InputRightElement width="4.5rem">
+                                            <Button h="1.75rem" size="sm" onClick={this.togglePasswordVisibility}
+                                                    _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1",
+                                                        color: "#FFFFFF", border: "1px solid white"}}
+                                                    backgroundColor={"#FFFFFF"} focusBorderColor="#0087C5"
+                                                    _focus={{outline: "none"}}>
+                                                {this.state.showPassword ? "Hide" : "Show"}
+                                            </Button>
+                                        </InputRightElement>
+                                    </InputGroup>
                                 </FormControl>
                                 {/* Submit Button */}
                                 <Button width="full"
@@ -93,6 +117,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                                         _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1",
                                             color: "#FFFFFF", border: "1px solid white"}}
                                         _active={{boxShadow: 'lg'}}
+                                        _focus={{outline: "none"}}
                                         isLoading={this.state.isLoading}>
                                     {this.state.formType === "Signup" ? "Create Account" : "Login"}
                                 </Button>
