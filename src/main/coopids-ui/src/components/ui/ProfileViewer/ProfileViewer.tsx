@@ -140,14 +140,14 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                 // Done here and stored, to save space below
                 const ownProfile = this.props.currName === this.props.profile.name;
                 return (
-                    <Grid templateColumns="repeat(2,auto)" w="100%">
+                    <Grid templateColumns="repeat(2,auto)" w="100%" maxW={"1200px"}>
                         {/* Intro text*/}
                         {ownProfile ?
                             <GridItem colSpan={2} m={4}>
                                 <Text fontSize="xl" lineHeight={2}>The more you include on your profile,
                                     the faster the coopids can find you a match!</Text>
                             </GridItem>
-                            : <GridItem colSpan={2} m={4} mt={8}></GridItem>}
+                            : <GridItem colSpan={2} m={4} mt={8}>{/* Just to take up the same space */}</GridItem>}
 
                         {/* Profile Picture */}
                         <GridItem colSpan={[2,2,1,1]} m={4} justifySelf="center">
