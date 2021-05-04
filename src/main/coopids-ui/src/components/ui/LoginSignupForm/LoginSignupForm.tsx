@@ -11,7 +11,7 @@ type FormState = {username: string; password: string; isLoading: boolean,
 class LoginSignupForm extends Component<FormProps, FormState> {
     constructor(props: FormProps) {
         super(props);
-        this.state = {username: "", password: "", isLoading: false, formType: "Signup", apiError: false};
+        this.state = {username: "", password: "", isLoading: false, formType: "Login", apiError: false};
     }
 
     // Makes API Call on button click
@@ -74,13 +74,14 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                                 {/* Username Field */}
                                 <FormControl isRequired>
                                     <FormLabel>Username</FormLabel>
-                                    <Input type="name" placeholder="Username" value={this.state.username} aria-label="Username"
+                                    <Input type="email" placeholder="Username" value={this.state.username} aria-label="Username"
                                            onChange={e => this.setState({username: e.currentTarget.value})}/>
                                 </FormControl>
                                 {/* Password Field */}
                                 <FormControl isRequired>
                                     <FormLabel>Password</FormLabel>
-                                    <Input type="password" placeholder="*******" value={this.state.password} aria-label="Password"
+                                    <Input type="password" placeholder="*******" value={this.state.password}
+                                           aria-label="Password"
                                            onChange={e => this.setState({password: e.currentTarget.value})}/>
                                 </FormControl>
                                 {/* Submit Button */}
