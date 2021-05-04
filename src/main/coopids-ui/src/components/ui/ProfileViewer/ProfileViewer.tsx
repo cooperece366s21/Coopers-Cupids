@@ -132,8 +132,10 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
 
             // Will only pull a non-profiled user if current user
             if(!this.props.hasProfile) {
-                return (<Heading>You do not have a profile yet.<br/>
-                    Please click the button below to get started on your journey.</Heading>);
+                return (<Heading m={8} mt={14} fontSize={["xl","2xl","3xl","3xl"]}  lineHeight={2}>
+                            You do not have a profile yet<br/>
+                            Please click the button below to get started on your journey
+                        </Heading>);
             } else {
                 // Checks whether this is current user's profile or viewing feed
                 // Affects text seen
@@ -174,19 +176,19 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                         </GridItem>
 
                         {/* Age & Location*/}
-                        <GridItem colSpan={2} mb={4} mt={[0,0,4,6]}>
-                            <Text fontSize="2xl" lineHeight={2}>I am <b>{this.props.profile.age} years old</b> and currently located
+                        <GridItem colSpan={2} mb={4} mt={[0,0,4,6]} ml={6} mr={6}>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2}>I am <b>{this.props.profile.age} years old</b> and currently located
                                 in <b>{this.props.profile.location}</b></Text>
                         </GridItem>
 
                         {/* Bio */}
-                        <GridItem colSpan={2} mb={4}>
-                            <Text fontSize="2xl" lineHeight={2}><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
+                        <GridItem colSpan={2} mb={4} ml={6} mr={6}>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2}><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
                         </GridItem>
 
                         {/* Interests */}
-                        <GridItem colSpan={2}>
-                            <Text fontSize="2xl" lineHeight={2}><b>My interests include:</b> {this.props.profile.interests}</Text>
+                        <GridItem colSpan={2} ml={6} mr={6}>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2}><b>My interests include:</b> {this.props.profile.interests}</Text>
                         </GridItem>
                     </Grid>
                 )
