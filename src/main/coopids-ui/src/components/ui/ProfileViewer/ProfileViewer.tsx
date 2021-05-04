@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {
     Box, Stack, Image, Text, Heading, FormControl, FormLabel, Input,
     NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, Button, Textarea, Grid, GridItem, Flex
+    NumberDecrementStepper, Button, Textarea, Grid, GridItem, Flex, Spacer
 } from "@chakra-ui/react";
 import ErrorMessage from "../../ui/ErrorMessage/ErrorMessage";
 import {Profile} from "../../../services/api";
@@ -32,7 +32,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
             if(this.props.isEditing) {
 
                 return (
-                    <Box p={8} maxWidth="500px" borderWidth={1} borderRadius={8} boxShadow="lg">
+                    <Box p={8} maxWidth="500px" borderWidth={1} borderRadius={8} boxShadow="lg" borderColor="#FFFFFF">
                         <Box textAlign="center">
                             <Heading>Edit your profile</Heading>
                         </Box>
@@ -41,13 +41,12 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                 this.onSubmit(this.state.editedProfile)}} >
                                 <Stack spacing={4}>
                                     {/* Error Message */}
-                                    {/* In future, will have error depending on incorrect field */}
                                     {this.state.error && <ErrorMessage message="Incorrect Input" />}
                                     {/* Photo Field */}
                                     <FormControl isRequired>
                                         <FormLabel>Photo</FormLabel>
                                         <Input type="name" value={this.state.editedProfile.photo || ""}
-                                               aria-label="Photo"
+                                               aria-label="Photo"  borderColor="#FFFFFF"
                                                onChange={e => {e.persist(); this.setState(prevState => ({
                                                    editedProfile: {...prevState.editedProfile,
                                                                    photo: e.target.value}
@@ -58,7 +57,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                     <FormControl isRequired>
                                         <FormLabel>Name</FormLabel>
                                         <Input type="name" value={this.state.editedProfile.name || ""}
-                                               aria-label="Name"
+                                               aria-label="Name"  borderColor="#FFFFFF"
                                                onChange={e => {e.persist(); this.setState(prevState => ({
                                                    editedProfile: {...prevState.editedProfile,
                                                        name: e.target.value}
@@ -68,7 +67,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                     {/* Age Field */}
                                     <FormControl isRequired>
                                         <FormLabel>Age</FormLabel>
-                                        <NumberInput min={18}
+                                        <NumberInput min={18}  borderColor="#FFFFFF"
                                                      value={this.state.editedProfile.age || ""}
                                                      onChange={e => this.setState(prevState => ({
                                                          editedProfile: {...prevState.editedProfile,
@@ -85,7 +84,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                     <FormControl isRequired>
                                         <FormLabel>Bio</FormLabel>
                                         <Textarea type="name" value={this.state.editedProfile.bio || ""}
-                                                  aria-label="Bio"
+                                                  aria-label="Bio"  borderColor="#FFFFFF"
                                                   onChange={e => {e.persist(); this.setState(prevState => ({
                                                       editedProfile: {...prevState.editedProfile,
                                                           bio: e.target.value}
@@ -96,7 +95,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                     <FormControl isRequired>
                                         <FormLabel>Location</FormLabel>
                                         <Input type="name" value={this.state.editedProfile.location || ""}
-                                               aria-label="Location"
+                                               aria-label="Location"  borderColor="#FFFFFF"
                                                onChange={e => {e.persist(); this.setState(prevState => ({
                                                    editedProfile: {...prevState.editedProfile,
                                                        location: e.target.value}
@@ -107,20 +106,20 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                     <FormControl isRequired>
                                         <FormLabel>Interests</FormLabel>
                                         <Input type="name" value={this.state.editedProfile.interests || ""}
-                                               aria-label="Interests"
+                                               aria-label="Interests"  borderColor="#FFFFFF"
                                                onChange={e => {e.persist(); this.setState(prevState => ({
                                                    editedProfile: {...prevState.editedProfile,
                                                        interests: e.target.value}
                                                }))}}
                                         />
                                     </FormControl>
-                                    <Button width="full"
-                                            type="submit"
-                                            boxShadow='sm'
-                                            _hover={{boxShadow: 'md'}}
-                                            _active={{boxShadow: 'lg'}}
-                                            isLoading={this.state.isLoading}
-                                    >
+                                    <Spacer/>
+                                    <Button width="full" type="submit" boxShadow='sm'
+                                            backgroundColor={"#FFFFFF"}
+                                            _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1",
+                                                color: "#FFFFFF", border: "1px solid white"}}
+                                            _active={{boxShadow: 'lg'}} _focus={{outline: "none"}}
+                                            isLoading={this.state.isLoading}>
                                         {this.props.hasProfile ? "Update Profile" : "Create Profile"}
                                     </Button>
                                 </Stack>
