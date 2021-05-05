@@ -44,7 +44,7 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
 
         // Two options depending on size
         return (
-                <Box w={["20%","20%","30%","30%"]} maxW="350px" borderRight=".5px solid #FFFFFF">
+                <Box w={["20%","20%","30%","30%"]} minW={["","","240px",""]} maxW="350px" borderRight=".5px solid #FFFFFF">
                     <Stack spacing={4} align="center" h={"100%"}>
                         <Heading display={{ base: "none", md: "block" }} fontSize={["sm","sm","2xl","3xl"]}
                             pt={2} pb={4} w={"full"} borderBottom=".5px solid #FFFFFF">
