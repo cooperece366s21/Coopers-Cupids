@@ -7,7 +7,7 @@ import {
     getCurrentUserID,
     getUserConversation,
     Message,
-    sendMessage
+    sendMessage, unmatch
 } from "../../../services/api";
 import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
 import "./MessageLayout.css"
@@ -34,10 +34,38 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                             conversationDisplayed: null, currentConversation: []});
     }
 
+    // Updates the list of conversation, while keeping the current conversation active
+    updateConversationList = async () => {
+        this.updateConversationViewer(null);
+
+        // Order may change so save uid to reset current convo as active
+        const oldConversationUID = this.state.conversationDisplayed !== null ?
+            this.state.conversations[this.state.conversationDisplayed].userID : null;
+
+        const conversationResp = await getAllConversations() || [];
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
+        this.setState({conversations: conversationResp});
+
+        // Updates displayed conversation to old one
+        if(oldConversationUID !== null) {
+            // Find new number
+            for(let i = 0; i < this.state.conversations.length; i++) {
+                // Updates conversation viewer
+                if(this.state.conversations[i].userID === oldConversationUID) {
+                    this.updateConversationViewer(i);
+                    return;
+                }
+            }
+        }
+    }
+
     // Changes the conversation shown
     updateConversationViewer = async (newConversation: number | null) => {
         if(newConversation === null) {
-            this.setState({conversationDisplayed: newConversation});
+            this.setState({conversationDisplayed: newConversation, currentConversation: []});
         } else {
             const messages = await getUserConversation(this.state.conversations[newConversation].userID);
 
@@ -48,6 +76,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         }
     }
 
+    // Sends message
     sendMessage = async (toUserID: string, newMessage: string) => {
         await sendMessage(toUserID, newMessage);
         const messages = await getUserConversation(toUserID);
@@ -56,6 +85,18 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         this.props.checkCookieExpiration();
 
         this.setState({currentConversation: messages});
+    }
+
+    // Unmatches with user
+    // Unmatching deletes conversation, so conversation list must be refreshed
+    unmatch = async (unmatchedUserID: string) => {
+        await unmatch(unmatchedUserID);
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
+        // Updates conversations
+        await this.updateConversationList();
     }
 
     render() {
@@ -77,6 +118,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                                     toUserInfo={this.state.conversationDisplayed === null ?
                                         null : this.state.conversations[this.state.conversationDisplayed]}
                                     currentUserID={currentUserID} sendMessage={this.sendMessage}
+                                    unmatch={this.unmatch}
                 />
             </Stack>
         );

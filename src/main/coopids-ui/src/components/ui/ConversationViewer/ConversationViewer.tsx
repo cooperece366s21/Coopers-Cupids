@@ -6,7 +6,8 @@ import "./ConversationViewer.css"
 import {FaHeartBroken} from "react-icons/all";
 
 type ConversationViewerProps = {currentConversation: Message[] | null; toUserInfo: Conversation | null;
-                                currentUserID: string; sendMessage: (toUserID: string, newMessage: string) => void};
+                                currentUserID: string; sendMessage: (toUserID: string, newMessage: string) => void
+                                unmatch: (userID: string) => void};
 type ConversationViewerState = {};
 
 class ConversationViewer extends Component<ConversationViewerProps,ConversationViewerState> {
@@ -89,7 +90,11 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
                             _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1", color: "#FFFFFF",
                             border: "1px solid white"}} onMouseOver={e => this.changeIconColor("#FFFFFF")}
                             onMouseOut={e => this.changeIconColor("#F2BBC1")}
-                            _active={{boxShadow: 'lg'}} _focus={{outline: "none"}}>
+                            _active={{boxShadow: 'lg'}} _focus={{outline: "none"}}
+                            onClick={e => {e.preventDefault();
+                                // toUserInfo should never be null if this page is showing,
+                                // but gotta keep typescript happy
+                                this.props.unmatch(this.props.toUserInfo ? this.props.toUserInfo.userID : "")}}>
                         <FaHeartBroken fill="#F2BBC1" id="BrokenHeartIcon" size="25px"/>
                     </Button>
                 </Flex>
