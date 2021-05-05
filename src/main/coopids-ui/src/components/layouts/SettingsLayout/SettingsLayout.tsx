@@ -12,19 +12,28 @@ import {
     Switch
 } from "@chakra-ui/react";
 import {getEmailSettings, setEmailSettings, updateEmail, updatePassword} from "../../../services/api";
+import FormMessage from "../../ui/FormMessage/FormMessage";
 
+enum responseType {
+    NONE,
+    SUCCESS,
+    MISMATCH_ERROR,
+    INCORRECT_PSWD_ERROR
+}
 type SettingsLayoutProps = {checkCookieExpiration: () => void};
 type SettingsLayoutState = {isLoading: boolean, matchEmails: boolean, messageEmails: boolean,
                             newEmail1: string, newEmail2:string, oldPassword: string, newPassword1: string,
                             newPassword2: string, showOldPassword: boolean, showNewPassword1: boolean,
-                            showNewPassword2: boolean};
+                            showNewPassword2: boolean, preferencesResponse: boolean, emailResponse: responseType,
+                            passwordResponse: responseType};
 
 class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState> {
     constructor(props: SettingsLayoutProps) {
         super(props);
         this.state = {isLoading: true, matchEmails: true, messageEmails: true, oldPassword: "",
                       newPassword1: "", newPassword2: "", newEmail1: "", newEmail2: "", showOldPassword: false,
-                      showNewPassword1: false, showNewPassword2: false}
+                      showNewPassword1: false, showNewPassword2: false, preferencesResponse: false,
+                      emailResponse: responseType.NONE, passwordResponse: responseType.NONE}
     }
 
     async componentDidMount() {
@@ -51,31 +60,87 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
 
     // Updates Settings
     updateSettings = async () => {
+        this.setState({isLoading: true});
+
         await setEmailSettings(this.state.matchEmails, this.state.messageEmails);
         await this.loadEmailSettings();
+
+        this.setState({isLoading:false, preferencesResponse: true});
     }
 
     // Updates Password
     updatePassword = async () => {
+        this.setState({isLoading: true});
+
         // Confirms old password is correct
         // TODO: Either make new endpoint to request current password or send both passwords to back
 
         // Checks that new passwords are equal
         if(this.state.newPassword1 === this.state.newPassword2) {
             await updatePassword(this.state.newPassword1);
+
+            // Shows success message & clears form
+            this.setState({passwordResponse: responseType.SUCCESS, oldPassword: "",
+                                newPassword1: "", newPassword2: ""});
         } else {
-            //TODO: ERROR MESSAGE
+            // Shows error message
+            this.setState({passwordResponse: responseType.MISMATCH_ERROR});
         }
+
+        this.setState({isLoading:false});
     }
 
     // Updates Email Address
     updateEmailAddress = async () => {
+        this.setState({isLoading: true});
+
         // Checks that emails are equal
         if(this.state.newEmail1 === this.state.newEmail2) {
             await updateEmail(this.state.newEmail1);
+
+            // Shows success message & clears form
+            this.setState({emailResponse: responseType.SUCCESS, newEmail1: "", newEmail2: ""});
         } else {
-            // TODO: ERROR MESSAGE
+            // Shows error message
+            this.setState({emailResponse: responseType.MISMATCH_ERROR});
         }
+
+        this.setState({isLoading:false});
+    }
+
+    // Gets response text for form
+    // Parameter is type of form (either email or password)
+    getResponseText = (form: string) => {
+        // Email Form
+        if(form === "Email") {
+            // Success
+            if(this.state.emailResponse === responseType.SUCCESS) {
+                return "SUCCESS! Email Updated!";
+            }
+            // Mismatch Error
+            if(this.state.emailResponse === responseType.MISMATCH_ERROR) {
+                return "Uh Oh! Your emails don't match!";
+            }
+        }
+
+        // Password Form
+        if(form === "Password") {
+            // Success
+            if(this.state.passwordResponse === responseType.SUCCESS) {
+                return "SUCCESS! Password Updated!";
+            }
+            // Mismatch Error
+            if(this.state.passwordResponse === responseType.MISMATCH_ERROR) {
+                return "Uh Oh! Your new passwords don't match!";
+            }
+            // Incorrect Old Password Error
+            if(this.state.passwordResponse === responseType.INCORRECT_PSWD_ERROR) {
+                return "Uh Oh! Your old password doesn't match our records!"
+            }
+        }
+
+        // Should never get here, but Typescript is annoying
+        return "";
     }
 
     render() {
@@ -96,6 +161,12 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                     <Box mt={6}>
                         <form onSubmit={e => {e.preventDefault();
                             this.updateSettings()}}>
+
+                            {/* Success Message */}
+                            {this.state.preferencesResponse ?
+                                <FormMessage message={"Success! Preferences Updated!"} type={"success"}/>
+                            : null}
+
                             <Stack spacing={4}>
                                 {/* Receive emails on matches */}
                                 <FormControl display="flex" alignItems="center">
@@ -135,6 +206,14 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                     <Box mt={6}>
                         <form onSubmit={e => {e.preventDefault();
                             this.updateEmailAddress()}}>
+
+                            {/* Success / Error Message */}
+                            {this.state.emailResponse === responseType.SUCCESS ?
+                                <FormMessage message={this.getResponseText("Email")} type={"success"}/>
+                            : this.state.emailResponse === responseType.MISMATCH_ERROR ?
+                                <FormMessage message={this.getResponseText("Email")} type={"error"}/>
+                            : null}
+
                             <Stack spacing={4}>
                                 {/* New Email Field */}
                                 <FormControl isRequired>
@@ -178,6 +257,15 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                     <Box mt={6}>
                         <form onSubmit={e => {e.preventDefault();
                             this.updatePassword()}}>
+
+                            {/* Success / Error Message */}
+                            {this.state.passwordResponse === responseType.SUCCESS ?
+                                <FormMessage message={this.getResponseText("Password")} type={"success"}/>
+                            : this.state.passwordResponse === responseType.MISMATCH_ERROR ||
+                            this.state.passwordResponse === responseType.INCORRECT_PSWD_ERROR ?
+                                <FormMessage message={this.getResponseText("Password")} type={"error"}/>
+                            : null}
+
                             <Stack spacing={4}>
                                 {/* Old Password Field */}
                                 <FormControl isRequired>

@@ -4,19 +4,19 @@ import {
     NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
     NumberDecrementStepper, Button, Textarea, Grid, GridItem, Flex, Spacer
 } from "@chakra-ui/react";
-import ErrorMessage from "../../ui/ErrorMessage/ErrorMessage";
+import FormMessage from "../FormMessage/FormMessage";
 import {Profile} from "../../../services/api";
 
 // currName is used to change text based on own profile vs feed viewing
 type ProfileViewerProps = {isEditing: boolean; profile: Profile; currName: string;
                            hasProfile: boolean; editProfile: (newProfile: Profile) => void};
 // editedProfile stores the updated profile before it is sent to the backend
-type ProfileViewerState = {error: boolean, isLoading: boolean, editedProfile: Profile};
+type ProfileViewerState = {isLoading: boolean, editedProfile: Profile};
 
 class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
     constructor(props: ProfileViewerProps) {
         super(props);
-        this.state = {error: false, isLoading: false, editedProfile: {...this.props.profile}}
+        this.state = {isLoading: false, editedProfile: {...this.props.profile}}
     }
 
     onSubmit = async (newProfile: Profile) => {
@@ -40,8 +40,6 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                             <form onSubmit={e => {e.preventDefault();
                                 this.onSubmit(this.state.editedProfile)}} >
                                 <Stack spacing={4}>
-                                    {/* Error Message */}
-                                    {this.state.error && <ErrorMessage message="Incorrect Input" />}
                                     {/* Photo Field */}
                                     <FormControl isRequired>
                                         <FormLabel>Photo</FormLabel>
