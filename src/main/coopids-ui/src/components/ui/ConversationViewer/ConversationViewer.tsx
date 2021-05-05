@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Conversation, Message} from "../../../services/api";
+import {Conversation, Message, unmatch} from "../../../services/api";
 import {Avatar, Box, Button, Divider, Flex, Grid, GridItem, Heading, Stack, Text} from "@chakra-ui/react";
 import SendMessageForm from "../SendMessageForm/SendMessageForm";
 import "./ConversationViewer.css"
@@ -7,7 +7,7 @@ import {FaHeartBroken} from "react-icons/all";
 
 type ConversationViewerProps = {currentConversation: Message[] | null; toUserInfo: Conversation | null;
                                 currentUserID: string; sendMessage: (toUserID: string, newMessage: string) => void
-                                unmatch: (userID: string) => void};
+                                unmatch: (userID: string) => void; showProfile: (userID: string | null) => void};
 type ConversationViewerState = {};
 
 class ConversationViewer extends Component<ConversationViewerProps,ConversationViewerState> {
@@ -78,7 +78,9 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
                         {/* Icon with profile picture - Button to view profile*/}
                         <Avatar as="button" size="md" name={this.props.toUserInfo.name}
                                 src={this.props.toUserInfo.photo} _hover={{boxShadow: 'lg'}}
-                                onClick={e => {e.preventDefault(); /*TODO: SHOW PROFILE*/}}/>
+                                onClick={e => {e.preventDefault();
+                                        this.props.showProfile(this.props.toUserInfo ?
+                                        this.props.toUserInfo.userID : null)}}/>
                         {/* Name of other user */}
                         <Text alignSelf="center" pl={2} fontSize="lg">
                             {this.props.toUserInfo.name}
