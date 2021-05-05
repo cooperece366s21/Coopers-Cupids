@@ -45,12 +45,12 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
         // Two options depending on size
         return (
                 <Box w={["20%","20%","30%","30%"]} maxW="350px" borderRight=".5px solid #FFFFFF">
-                    <Stack spacing={4} align="center">
+                    <Stack spacing={4} align="center" h={"100%"}>
                         <Heading display={{ base: "none", md: "block" }} fontSize={["sm","sm","2xl","3xl"]}
                             pt={2} pb={4} w={"full"} borderBottom=".5px solid #FFFFFF">
                             Conversations
                         </Heading>
-                        <Stack width="100%" spacing={4}>
+                        <Stack width="100%" spacing={4} overflowY="auto" pb={10}>
                             {conversationButtons}
                         </Stack>
                     </Stack>

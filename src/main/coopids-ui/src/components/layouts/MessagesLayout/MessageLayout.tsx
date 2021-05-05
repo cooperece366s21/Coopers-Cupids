@@ -10,6 +10,7 @@ import {
     sendMessage
 } from "../../../services/api";
 import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
+import "./MessageLayout.css"
 
 type MessageLayoutProps = {checkCookieExpiration: () => void};
 // conversationDisplayed is the index in conversations[] of the conversation the user wants to see
@@ -67,7 +68,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         }
 
         return (
-            <Stack direction="row" h={"full"}>
+            <Stack direction="row" h={"100%"} id="MessageLayout">
                 <ConversationMenu conversations={this.state.conversations}
                                   updateVisibleConversation={this.updateConversationViewer}
                 />
