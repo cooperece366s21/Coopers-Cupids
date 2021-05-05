@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Conversation, Message} from "../../../services/api";
 import {Avatar, Box, Button, Heading, Stack, Text} from "@chakra-ui/react";
 import SendMessageForm from "../SendMessageForm/SendMessageForm";
+import "./ConversationViewer.css"
 
 type ConversationViewerProps = {currentConversation: Message[] | null; toUserInfo: Conversation | null;
                                 currentUserID: string; sendMessage: (toUserID: string, newMessage: string) => void};
@@ -64,7 +65,7 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
                 </Box>
 
                 {/* Conversation Viewer */}
-                <Stack width="100%" h="100%" pb={4} overflowY="auto">
+                <Stack width="100%" h="100%" pb={4} overflowY="auto" id="ConversationViewer">
                     {this.displayMessages()}
                 </Stack>
 

@@ -11,6 +11,7 @@ import {
     DrawerFooter, Divider, Avatar, Text
 } from "@chakra-ui/react";
 import {Conversation} from "../../../services/api";
+import "./ConversationMenu.css"
 
 type ConversationMenuProps = {conversations: Conversation[];
                               updateVisibleConversation: (newConversation: number | null) => void;};
@@ -20,10 +21,6 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
     constructor(props: ConversationMenuProps) {
         super(props);
         this.state = {isOpen: false};
-    }
-
-    drawerOnClick = () => {
-        this.setState({isOpen: !this.state.isOpen});
     }
 
     render() {
@@ -47,10 +44,10 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
                 <Box w={["20%","20%","30%","30%"]} minW={["","","240px",""]} maxW="350px" borderRight=".5px solid #FFFFFF">
                     <Stack spacing={4} align="center" h={"100%"}>
                         <Heading display={{ base: "none", md: "block" }} fontSize={["sm","sm","2xl","3xl"]}
-                            pt={2} pb={4} w={"full"} borderBottom=".5px solid #FFFFFF">
+                            pt={3} pb={2} w={"full"}>
                             Conversations
                         </Heading>
-                        <Stack width="100%" spacing={4} overflowY="auto" pb={10}>
+                        <Stack width="100%" spacing={4} overflowY="auto" pb={10} id="ConversationMenuList">
                             {conversationButtons}
                         </Stack>
                     </Stack>
