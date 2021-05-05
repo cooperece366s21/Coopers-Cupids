@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import ConversationMenu from "../../ui/ConversationMenu/ConversationMenu";
-import {Flex, Heading} from "@chakra-ui/react";
+import {Flex, Heading, Stack} from "@chakra-ui/react";
 import {
     Conversation,
     getAllConversations,
@@ -67,18 +67,18 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         }
 
         return (
-            <Flex pl={4}>
+            <Stack direction="row">
                 <ConversationMenu conversations={this.state.conversations}
                                   updateVisibleConversation={this.updateConversationViewer}
                 />
                 <ConversationViewer currentConversation={this.state.conversationDisplayed === null ?
-                                                          null :
-                                                          this.state.currentConversation}
+                    null :
+                    this.state.currentConversation}
                                     toUserInfo={this.state.conversationDisplayed === null ?
-                                                  null : this.state.conversations[this.state.conversationDisplayed]}
+                                        null : this.state.conversations[this.state.conversationDisplayed]}
                                     currentUserID={currentUserID} sendMessage={this.sendMessage}
                 />
-            </Flex>
+            </Stack>
         );
     }
 }
