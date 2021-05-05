@@ -145,7 +145,7 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
 
     render() {
         return (
-            <Stack spacing={6} mb={14}>
+            <Stack spacing={6} pb={14}>
                 <Heading mt={14} mb={6} fontSize={["3xl","4xl","4xl","5xl"]}>
                     Settings
                 </Heading>

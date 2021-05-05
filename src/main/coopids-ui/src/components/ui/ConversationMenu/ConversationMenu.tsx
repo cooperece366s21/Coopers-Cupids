@@ -8,7 +8,7 @@ import {
     DrawerContent,
     DrawerHeader,
     DrawerBody, Heading,
-    DrawerFooter
+    DrawerFooter, Divider
 } from "@chakra-ui/react";
 import {Conversation} from "../../../services/api";
 
@@ -65,11 +65,12 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
 
 
                 <Box w={["20%","20%","30%","30%"]} maxW="350px" borderRight="3px solid black">
-                    <Stack spacing={8} align="center">
-                        <Heading borderBottom="3px solid black" display={{ base: "none", md: "block" }}
-                                 fontSize={["2xl","3xl","3xl","4xl"]}>
+                    <Stack spacing={4} align="center">
+                        <Heading display={{ base: "none", md: "block" }} fontSize={["sm","sm","2xl","3xl"]}
+                            mt={2}>
                             Conversations
                         </Heading>
+                        <Divider display={{ base: "none", md: "block" }}/>
                         <Stack width="100%">
                             {conversationButtons}
                         </Stack>

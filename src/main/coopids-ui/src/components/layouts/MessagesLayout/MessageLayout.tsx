@@ -67,7 +67,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         }
 
         return (
-            <Stack direction="row">
+            <Stack direction="row" h={"full"}>
                 <ConversationMenu conversations={this.state.conversations}
                                   updateVisibleConversation={this.updateConversationViewer}
                 />
