@@ -40,11 +40,16 @@ export type Message = {
 
 // Types of responses expected from backend after login attempt
 type loginResponse = {
-    user: User
-    status: "Success"
+    user: User;
+    status: "Success";
 } | {
-    error: string,
-    status: "Failure"
+    error: string;
+    status: "Failure";
+};
+
+export type emailSettings = {
+    matchEmail: string;
+    messageEmail: string;
 };
 
 // Functions
@@ -144,6 +149,56 @@ export async function logout(): Promise<boolean> {
         method: 'POST',
         headers: {auth_token: getUserToken()}
     });
+
+    return resp.ok;
+}
+
+// TODO: THIS NEEDS A HANDLER ENDPOINT
+/* Expecting in response:
+       header: Cookie / Auth Token
+       body: emailSettings (See emailSettings type above)
+ */
+export async function getEmailSettings(): Promise<emailSettings | null> {
+    const resp = await fetch(`${BACKEND_URL}/TODO`, {
+        method: 'GET',
+        headers: {auth_token: getUserToken()}
+    });
+
+    checkCookieExpiration(resp.status);
+
+    return resp.ok ? await resp.json() : null;
+}
+
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
+//TODO: THIS NEEDS A HANDLER ENDPOINT
+export async function setEmailSettings(matchEmail: boolean, messageEmail: boolean): Promise<boolean> {
+    const resp = await fetch(`${BACKEND_URL}/TODO`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
+        body: JSON.stringify({'matchEmail': matchEmail, 'messageEmail': messageEmail})
+    });
+
+    checkCookieExpiration(resp.status);
+
+    return resp.ok;
+}
+
+/* Expecting in response:
+        Nothing - Just looking at status
+ */
+//TODO: THIS NEEDS A HANDLER ENDPOINT
+export async function updateEmail(email: string): Promise<boolean> {
+    const resp = await fetch(`${BACKEND_URL}/TODO`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
+        body: JSON.stringify({'email': email})
+    });
+
+    checkCookieExpiration(resp.status);
 
     return resp.ok;
 }
@@ -353,6 +408,9 @@ const exports = {
     signup,
     login,
     logout,
+    getEmailSettings,
+    setEmailSettings,
+    updateEmail,
     updatePassword,
     getCurrentUser,
     getUserFromID,
