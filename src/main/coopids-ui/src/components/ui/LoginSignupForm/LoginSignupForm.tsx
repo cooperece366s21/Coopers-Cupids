@@ -12,7 +12,7 @@ import {
     InputRightElement, InputGroup
 } from "@chakra-ui/react";
 import api from "../../../services/api";
-import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import FormMessage from "../FormMessage/FormMessage";
 
 // Sets types
 type FormProps = {updateLogin: () => void};
@@ -81,7 +81,7 @@ class LoginSignupForm extends Component<FormProps, FormState> {
                         <form onSubmit={e => {e.preventDefault(); this.onSubmit()}}>
                             <Stack spacing={4}>
                                 {/* Error Message */}
-                                {this.state.apiError && <ErrorMessage message={errorMessage} />}
+                                {this.state.apiError && <FormMessage message={errorMessage} type={"error"} />}
                                 {/* Username Field */}
                                 <FormControl isRequired>
                                     <FormLabel>Email Address</FormLabel>
