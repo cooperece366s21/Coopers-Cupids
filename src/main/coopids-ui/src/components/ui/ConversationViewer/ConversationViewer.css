@@ -1,0 +1,7 @@
+/* Hides scrollbar while keeping scroll functionality*/
+#ConversationViewer::-webkit-scrollbar {
+    display: none;
+}
+#ConversationViewer {
+    scrollbar-width: none;
+}
