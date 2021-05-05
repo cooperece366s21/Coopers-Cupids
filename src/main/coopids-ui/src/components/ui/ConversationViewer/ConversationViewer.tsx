@@ -1,8 +1,9 @@
 import React, {Component} from "react";
 import {Conversation, Message} from "../../../services/api";
-import {Avatar, Box, Button, Heading, Stack, Text} from "@chakra-ui/react";
+import {Avatar, Box, Button, Divider, Flex, Grid, GridItem, Heading, Stack, Text} from "@chakra-ui/react";
 import SendMessageForm from "../SendMessageForm/SendMessageForm";
 import "./ConversationViewer.css"
+import {FaHeartBroken} from "react-icons/all";
 
 type ConversationViewerProps = {currentConversation: Message[] | null; toUserInfo: Conversation | null;
                                 currentUserID: string; sendMessage: (toUserID: string, newMessage: string) => void};
@@ -49,6 +50,14 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
         return messages;
     }
 
+    // Changes color of broken heart icon on hover
+    changeIconColor = (color: string) => {
+        const heartIcon = document.getElementById("BrokenHeartIcon");
+        if(heartIcon !== null) {
+            heartIcon.style.fill = color;
+        }
+    }
+
     render() {
         if (this.props.currentConversation === null || this.props.toUserInfo === null) {
             return (
@@ -61,24 +70,34 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
         }
 
         return (
-            <Stack w="full" p={6} pt={4}>
+            <Stack w="100%" pt={4} pb={6} pr={2} pl={0}>
                 {/* Name & Icon banner on top of conversation*/}
-                <Box alignSelf="center" h="fit-content" w="100%">
-                    <Stack direction="row" borderBottom=".5px solid #FFFFFF" pb={2}
-                           justifyContent="left" >
-                        <Avatar as="button" justifySelf="left" size="md" name={this.props.toUserInfo.name}
+                <Flex pl={4} pr={4} pb={2} w="100%" h="fit-content" borderBottom=".5px solid #FFFFFF">
+                    <Stack direction="row" justifySelf="flex-start" w="100%" spacing={2}>
+                        {/* Icon with profile picture - Button to view profile*/}
+                        <Avatar as="button" size="md" name={this.props.toUserInfo.name}
                                 src={this.props.toUserInfo.photo} _hover={{boxShadow: 'lg'}}
                                 onClick={e => {e.preventDefault(); /*TODO: SHOW PROFILE*/}}/>
-                        <Text alignSelf="center" h="100%" pl={2} fontSize="lg">
+                        {/* Name of other user */}
+                        <Text alignSelf="center" pl={2} fontSize="lg">
                             {this.props.toUserInfo.name}
                         </Text>
                     </Stack>
-                </Box>
+
+                    {/* Unmatching Icon */}
+                    <Button p={2} alignSelf="center" justifySelf="flex-end" backgroundColor="#FFFFFF"
+                            _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1", color: "#FFFFFF",
+                            border: "1px solid white"}} onMouseOver={e => this.changeIconColor("#FFFFFF")}
+                            onMouseOut={e => this.changeIconColor("#F2BBC1")}
+                            _active={{boxShadow: 'lg'}} _focus={{outline: "none"}}>
+                        <FaHeartBroken fill="#F2BBC1" id="BrokenHeartIcon" size="25px"/>
+                    </Button>
+                </Flex>
 
                 {/* Conversation Viewer */}
                 {/* column-reverse flips stack so scrolls up from bottom
                 - messages are fed in reverse to account for this*/}
-                <Stack flexDirection="column-reverse" width="100%" h="100%" pb={4}
+                <Stack flexDirection="column-reverse" width="100%" h="100%" pb={4} pr={8} pl={8}
                        overflowY="auto" id="ConversationViewer">
                     {this.displayMessages()}
                 </Stack>
