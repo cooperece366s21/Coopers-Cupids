@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Conversation, Message} from "../../../services/api";
-import {Box, Heading, Stack, Text} from "@chakra-ui/react";
+import {Avatar, Box, Button, Heading, Stack, Text} from "@chakra-ui/react";
 import SendMessageForm from "../SendMessageForm/SendMessageForm";
 
 type ConversationViewerProps = {currentConversation: Message[] | null; toUserInfo: Conversation | null;
@@ -40,18 +40,37 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
     render() {
         if (this.props.currentConversation === null || this.props.toUserInfo === null) {
             return (
-                <Heading pl={2}>Please pick a conversation to display</Heading>
+                <Box w="full">
+                    <Heading fontSize={["xl","2xl","3xl","3xl"]} mt={4}>
+                        Please pick a conversation to display
+                    </Heading>
+                </Box>
             );
         }
 
         return (
-            <Box float="right" pl={2}>
-                <Heading borderBottom="3px solid black">Conversation with {this.props.toUserInfo.name}</Heading>
-                <Stack width="100%" pb={4}>
+            <Stack w="full" p={6} pt={4}>
+                {/* Name & Icon banner on top of conversation*/}
+                <Box alignSelf="center" h="fit-content" w="100%">
+                    <Stack direction="row" borderBottom=".5px solid #FFFFFF" pb={2}
+                           justifyContent="left" >
+                        <Avatar as="button" justifySelf="left" size="md" name={this.props.toUserInfo.name}
+                                src={this.props.toUserInfo.photo} _hover={{boxShadow: 'lg'}}
+                                onClick={e => {e.preventDefault(); /*TODO: SHOW PROFILE*/}}/>
+                        <Text alignSelf="center" h="100%" pl={2} fontSize="lg">
+                            {this.props.toUserInfo.name}
+                        </Text>
+                    </Stack>
+                </Box>
+
+                {/* Conversation Viewer */}
+                <Stack width="100%" h="100%" pb={4} overflowY="auto">
                     {this.displayMessages()}
                 </Stack>
+
+                {/* Send Message Button*/}
                 <SendMessageForm sendMessage={this.props.sendMessage} toUserID={this.props.toUserInfo.userID} />
-            </Box>
+            </Stack>
         );
     }
 }
