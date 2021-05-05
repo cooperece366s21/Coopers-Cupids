@@ -38,40 +38,42 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
 
         // Two options depending on size
         return (
-                <Box float="left">
-                    {/*On regular screens, show as side bar*/}
-                    <Box display={{ base: "none", md: "block" }} pr={2} borderRight="3px solid black">
-                        <Stack spacing={8} align="center">
-                            <Heading borderBottom="3px solid black">Conversations</Heading>
-                            <Stack width="100%">
-                                {conversationButtons}
-                            </Stack>
-                        </Stack>
-                    </Box>
+                //      TODO: FOR PHONE SCREENS
+                //     {/*When screen is too small, change side bar to draw overlay*/}
+                //     <Box display={{ base: "block", md: "none" }}>
+                //         <Button onClick={this.drawerOnClick}>
+                //             Conversations
+                //         </Button>
+                //         <Drawer isOpen={this.state.isOpen} onClose={()=>{}} placement="left">
+                //             <DrawerOverlay>
+                //                 <DrawerContent>
+                //                     <DrawerHeader borderBottomWidth="1px">Conversations</DrawerHeader>
+                //                     <DrawerBody>
+                //                         <Stack>
+                //                             {conversationButtons}
+                //                         </Stack>
+                //                     </DrawerBody>
+                //                     <DrawerFooter>
+                //                         <Button onClick={this.drawerOnClick}>
+                //                             Back
+                //                         </Button>
+                //                     </DrawerFooter>
+                //                 </DrawerContent>
+                //             </DrawerOverlay>
+                //         </Drawer>
+                //     </Box>
 
-                    {/*When screen is too small, change side bar to draw overlay*/}
-                    <Box display={{ base: "block", md: "none" }}>
-                        <Button onClick={this.drawerOnClick}>
+
+                <Box w={["20%","20%","30%","30%"]} maxW="350px" borderRight="3px solid black">
+                    <Stack spacing={8} align="center">
+                        <Heading borderBottom="3px solid black" display={{ base: "none", md: "block" }}
+                                 fontSize={["2xl","3xl","3xl","4xl"]}>
                             Conversations
-                        </Button>
-                        <Drawer isOpen={this.state.isOpen} onClose={()=>{}} placement="left">
-                            <DrawerOverlay>
-                                <DrawerContent>
-                                    <DrawerHeader borderBottomWidth="1px">Conversations</DrawerHeader>
-                                    <DrawerBody>
-                                        <Stack>
-                                            {conversationButtons}
-                                        </Stack>
-                                    </DrawerBody>
-                                    <DrawerFooter>
-                                        <Button onClick={this.drawerOnClick}>
-                                            Back
-                                        </Button>
-                                    </DrawerFooter>
-                                </DrawerContent>
-                            </DrawerOverlay>
-                        </Drawer>
-                    </Box>
+                        </Heading>
+                        <Stack width="100%">
+                            {conversationButtons}
+                        </Stack>
+                    </Stack>
                 </Box>
             );
 
