@@ -151,8 +151,9 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                 </Heading>
 
                 {/* Settings Form */}
-                <Box textAlign="left" alignSelf="center" p={8} maxWidth="500px" borderWidth={1}
-                     borderRadius={8} boxShadow="lg" borderColor="#FFFFFF" minW="400px">
+                <Box textAlign="left" alignSelf="center" p={8} minW={["250px","400px","400px","400px"]} maxWidth="500px"
+                     w={["312px", "auto", "auto", "auto"]} borderWidth={1} borderRadius={8} boxShadow="lg"
+                     borderColor="#FFFFFF">
                     <Box textAlign="center">
                         <Heading  fontSize={["2xl","3xl","3xl","3xl"]}>
                             Email Preferences
@@ -198,8 +199,9 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                 </Box>
 
                 {/* Email Change Form */}
-                <Box  textAlign="left" alignSelf="center" p={8} maxWidth="500px" borderWidth={1}
-                      borderRadius={8} boxShadow="lg" borderColor="#FFFFFF" minW="400px">
+                <Box textAlign="left" alignSelf="center" p={8} minW={["250px","400px","400px","400px"]} maxWidth="500px"
+                     w={["312px", "auto", "auto", "auto"]} borderWidth={1} borderRadius={8} boxShadow="lg"
+                     borderColor="#FFFFFF">
                     <Box textAlign="center">
                         <Heading fontSize={["2xl","3xl","3xl","3xl"]}>Update Email Address</Heading>
                     </Box>
@@ -249,8 +251,9 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                 </Box>
 
                 {/* Password Change Form */}
-                <Box  textAlign="left" alignSelf="center" p={8} maxWidth="500px" borderWidth={1}
-                      borderRadius={8} boxShadow="lg" borderColor="#FFFFFF" minW="400px">
+                <Box textAlign="left" alignSelf="center" p={8} minW={["250px","400px","400px","400px"]} maxWidth="500px"
+                     w={["312px", "auto", "auto", "auto"]} borderWidth={1} borderRadius={8} boxShadow="lg"
+                     borderColor="#FFFFFF">
                     <Box textAlign="center">
                         <Heading fontSize={["2xl","3xl","3xl","3xl"]}>Update Password</Heading>
                     </Box>
