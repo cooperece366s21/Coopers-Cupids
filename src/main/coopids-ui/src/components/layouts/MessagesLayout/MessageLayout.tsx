@@ -1,27 +1,29 @@
 import React, {Component} from "react";
 import ConversationMenu from "../../ui/ConversationMenu/ConversationMenu";
-import {Flex, Heading, Stack} from "@chakra-ui/react";
+import {Button, Flex, Heading, Stack} from "@chakra-ui/react";
 import {
     Conversation,
     getAllConversations,
     getCurrentUserID,
-    getUserConversation,
-    Message,
+    getUserConversation, getUserProfile,
+    Message, Profile,
     sendMessage, unmatch
 } from "../../../services/api";
 import ConversationViewer from "../../ui/ConversationViewer/ConversationViewer";
 import "./MessageLayout.css"
+import ProfileViewer from "../../ui/ProfileViewer/ProfileViewer";
 
 type MessageLayoutProps = {checkCookieExpiration: () => void};
 // conversationDisplayed is the index in conversations[] of the conversation the user wants to see
 type MessageLayoutState = {conversations: Conversation[]; isLoading: boolean;
-                           conversationDisplayed: number | null; currentConversation: Message[]};
+                           conversationDisplayed: number | null; currentConversation: Message[]
+                           showProfile: boolean; userProfile: Profile};
 
-// TODO: Update conversation every minute or so, or add a refresh button
 class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     constructor(props: MessageLayoutProps) {
         super(props);
-        this.state = {conversations: [], isLoading: true, conversationDisplayed: null, currentConversation: []};
+        this.state = {conversations: [], isLoading: true, conversationDisplayed: null, currentConversation: [],
+                      showProfile: false, userProfile: {} as Profile};
     }
 
     async componentDidMount() {
@@ -99,6 +101,27 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         await this.updateConversationList();
     }
 
+    // Shows profile of other user in conversation
+    showProfile = async (userID: string | null) => {
+        // Will never be null, but need to keep typescript happy
+        if(userID === null) {
+            return;
+        }
+
+        const userProfile = await getUserProfile(userID);
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
+        if(userProfile !== null) {
+            this.setState({showProfile: true, userProfile: userProfile});
+        }
+    }
+
+    hideProfile = () => {
+        this.setState({showProfile: false, userProfile: {} as Profile});
+    }
+
     render() {
         const currentUserID = getCurrentUserID();
 
@@ -106,6 +129,22 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
             return (
                 <Heading>Loading Conversations...</Heading>
             )
+        }
+
+        // Shows profile on icon click
+        if(this.state.showProfile) {
+            return (
+                <Stack width="100%" align="center" justifyContent="center" spacing={4} mb={10}>
+                    <Flex w="100%">
+                        <Button onClick={this.hideProfile} float="left" m={8} mb={0} w="20%" minW="150px">
+                            Back
+                        </Button>
+                    </Flex>
+                    <ProfileViewer isEditing={false} profile={this.state.userProfile} currName={null}
+                                   hasProfile={true} editProfile={() => {}}/>
+                </Stack>
+            )
+
         }
 
         return (
@@ -118,7 +157,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                                     toUserInfo={this.state.conversationDisplayed === null ?
                                         null : this.state.conversations[this.state.conversationDisplayed]}
                                     currentUserID={currentUserID} sendMessage={this.sendMessage}
-                                    unmatch={this.unmatch}
+                                    unmatch={this.unmatch} showProfile={this.showProfile}
                 />
             </Stack>
         );

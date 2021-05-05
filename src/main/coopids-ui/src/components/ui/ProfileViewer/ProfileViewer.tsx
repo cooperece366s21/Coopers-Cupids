@@ -8,7 +8,7 @@ import FormMessage from "../FormMessage/FormMessage";
 import {Profile} from "../../../services/api";
 
 // currName is used to change text based on own profile vs feed viewing
-type ProfileViewerProps = {isEditing: boolean; profile: Profile; currName: string;
+type ProfileViewerProps = {isEditing: boolean; profile: Profile; currName: string | null;
                            hasProfile: boolean; editProfile: (newProfile: Profile) => void};
 // editedProfile stores the updated profile before it is sent to the backend
 type ProfileViewerState = {isLoading: boolean, editedProfile: Profile};
@@ -160,7 +160,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                         <GridItem colSpan={[2,2,1,1]} justifySelf={["center","center","left","left"]} m={4}>
                             <Flex h={"100%"} alignItems={"center"}>
                                 {/* Adds custom greeting message to feed */}
-                                {!ownProfile ?
+                                {!ownProfile && this.props.currName !== null ?
                                     <Text fontSize="4xl" lineHeight={2}>
                                         Hi {this.props.currName}!
                                         <br/>My name is {this.props.profile.name}!
