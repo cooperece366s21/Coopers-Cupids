@@ -9,12 +9,23 @@ type ConversationViewerProps = {currentConversation: Message[] | null; toUserInf
 type ConversationViewerState = {};
 
 class ConversationViewer extends Component<ConversationViewerProps,ConversationViewerState> {
+    // This will scroll to bottom whenever a new message is added
+    componentDidUpdate(prevProps: Readonly<ConversationViewerProps>, prevState: Readonly<ConversationViewerState>, snapshot?: any) {
+        if(prevProps.currentConversation !== this.props.currentConversation) {
+            const messageViewer = document.getElementById("ConversationViewer")
+            // To keep typescript happy
+            if(messageViewer !== null) {
+                messageViewer.scrollTop = 0;
+            }
+        }
+    }
 
     displayMessages = () => {
         // Should never be null, but need to keep TypeScript happy
         if(this.props.currentConversation === null) {return null}
 
-        const messages = this.props.currentConversation.map(
+        // Reverses list, since div is flipped to show new messages on bottom
+        const messages = this.props.currentConversation.reverse().map(
             (message, index) => {
                 // Checks sender of message
                 if(message.fromUserID === this.props.currentUserID) {
@@ -65,7 +76,10 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
                 </Box>
 
                 {/* Conversation Viewer */}
-                <Stack width="100%" h="100%" pb={4} overflowY="auto" id="ConversationViewer">
+                {/* column-reverse flips stack so scrolls up from bottom
+                - messages are fed in reverse to account for this*/}
+                <Stack flexDirection="column-reverse" width="100%" h="100%" pb={4}
+                       overflowY="auto" id="ConversationViewer">
                     {this.displayMessages()}
                 </Stack>
 

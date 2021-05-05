@@ -73,8 +73,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                                   updateVisibleConversation={this.updateConversationViewer}
                 />
                 <ConversationViewer currentConversation={this.state.conversationDisplayed === null ?
-                    null :
-                    this.state.currentConversation}
+                                        null : this.state.currentConversation}
                                     toUserInfo={this.state.conversationDisplayed === null ?
                                         null : this.state.conversations[this.state.conversationDisplayed]}
                                     currentUserID={currentUserID} sendMessage={this.sendMessage}
