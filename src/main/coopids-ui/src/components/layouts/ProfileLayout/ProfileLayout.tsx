@@ -20,7 +20,9 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
         this.props.checkCookieExpiration();
 
         if(json != null) {
-            this.setState({isEditing: false, profile: json, hasProfile: true, isLoading: false})
+            this.setState({isEditing: false, profile: json, hasProfile: true, isLoading: false});
+        } else {
+            this.setState({isEditing: false, profile: {} as Profile, hasProfile: false, isLoading: false});
         }
     }
 
