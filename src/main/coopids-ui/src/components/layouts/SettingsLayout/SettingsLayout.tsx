@@ -11,7 +11,7 @@ import {
     Stack,
     Switch
 } from "@chakra-ui/react";
-import {getEmailSettings, setEmailSettings, updatePassword} from "../../../services/api";
+import {getEmailSettings, setEmailSettings, updateEmail, updatePassword} from "../../../services/api";
 
 type SettingsLayoutProps = {checkCookieExpiration: () => void};
 type SettingsLayoutState = {isLoading: boolean, matchEmails: boolean, messageEmails: boolean,
@@ -55,7 +55,7 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
         await this.loadEmailSettings();
     }
 
-    // Updates password
+    // Updates Password
     updatePassword = async () => {
         // Confirms old password is correct
         // TODO: Either make new endpoint to request current password or send both passwords to back
@@ -66,13 +66,22 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
         } else {
             //TODO: ERROR MESSAGE
         }
+    }
 
+    // Updates Email Address
+    updateEmailAddress = async () => {
+        // Checks that emails are equal
+        if(this.state.newEmail1 === this.state.newEmail2) {
+            await updateEmail(this.state.newEmail1);
+        } else {
+            // TODO: ERROR MESSAGE
+        }
     }
 
     render() {
         return (
-            <Stack spacing={4}>
-                <Heading m={8} mt={14} fontSize={["3xl","4xl","4xl","5xl"]}>
+            <Stack spacing={6} mb={14}>
+                <Heading mt={14} mb={6} fontSize={["3xl","4xl","4xl","5xl"]}>
                     Settings
                 </Heading>
 
@@ -117,6 +126,49 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                     </Box>
                 </Box>
 
+                {/* Email Change Form */}
+                <Box  textAlign="left" alignSelf="center" p={8} maxWidth="500px" borderWidth={1}
+                      borderRadius={8} boxShadow="lg" borderColor="#FFFFFF" minW="400px">
+                    <Box textAlign="center">
+                        <Heading fontSize={["2xl","3xl","3xl","3xl"]}>Update Email Address</Heading>
+                    </Box>
+                    <Box mt={6}>
+                        <form onSubmit={e => {e.preventDefault();
+                            this.updateEmailAddress()}}>
+                            <Stack spacing={4}>
+                                {/* New Email Field */}
+                                <FormControl isRequired>
+                                    <FormLabel>New Email</FormLabel>
+                                    <Input type="email"
+                                           placeholder="Cooopers@Cupids.com" value={this.state.newEmail1}
+                                           aria-label="New Email" borderColor="#FFFFFF"
+                                           onChange={e => this.setState({newEmail1: e.currentTarget.value})}
+                                    />
+                                </FormControl>
+
+                                {/* New Email Confirm Field */}
+                                <FormControl isRequired>
+                                    <FormLabel>Confirm New Email</FormLabel>
+                                    <Input type="email"
+                                           placeholder="Cooopers@Cupids.com" value={this.state.newEmail2}
+                                           aria-label="New Email Confirm" borderColor="#FFFFFF"
+                                           onChange={e => this.setState({newEmail2: e.currentTarget.value})}
+                                    />
+                                </FormControl>
+
+                                <Button width="full" type="submit" boxShadow='sm'
+                                        backgroundColor={"#FFFFFF"}
+                                        _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1",
+                                            color: "#FFFFFF", border: "1px solid white"}}
+                                        _active={{boxShadow: 'lg'}} _focus={{outline: "none"}}
+                                        isLoading={this.state.isLoading}>
+                                    Update Email Address
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Box>
+                </Box>
+
                 {/* Password Change Form */}
                 <Box  textAlign="left" alignSelf="center" p={8} maxWidth="500px" borderWidth={1}
                       borderRadius={8} boxShadow="lg" borderColor="#FFFFFF" minW="400px">
@@ -125,9 +177,8 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                     </Box>
                     <Box mt={6}>
                         <form onSubmit={e => {e.preventDefault();
-                            this.updateSettings()}}>
+                            this.updatePassword()}}>
                             <Stack spacing={4}>
-                                {/* Old Password Field */}
                                 {/* Old Password Field */}
                                 <FormControl isRequired>
                                     <FormLabel>Old Password</FormLabel>
@@ -156,7 +207,7 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                                     <InputGroup>
                                         <Input type={this.state.showNewPassword1 ? "text" : "password"}
                                                placeholder="*******" value={this.state.newPassword1}
-                                               aria-label="Password" borderColor="#FFFFFF"
+                                               aria-label="New Password" borderColor="#FFFFFF"
                                                onChange={e => this.setState({newPassword1: e.currentTarget.value})}
                                         />
                                         <InputRightElement width="4.5rem">
@@ -178,7 +229,7 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                                     <InputGroup>
                                         <Input type={this.state.showNewPassword2 ? "text" : "password"}
                                                placeholder="*******" value={this.state.newPassword2}
-                                               aria-label="Password" borderColor="#FFFFFF"
+                                               aria-label="New Password Confirm" borderColor="#FFFFFF"
                                                onChange={e => this.setState({newPassword2: e.currentTarget.value})}
                                         />
                                         <InputRightElement width="4.5rem">
