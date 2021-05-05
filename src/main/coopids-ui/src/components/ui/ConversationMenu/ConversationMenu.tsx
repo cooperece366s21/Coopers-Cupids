@@ -8,7 +8,7 @@ import {
     DrawerContent,
     DrawerHeader,
     DrawerBody, Heading,
-    DrawerFooter, Divider
+    DrawerFooter, Divider, Avatar, Text
 } from "@chakra-ui/react";
 import {Conversation} from "../../../services/api";
 
@@ -29,9 +29,15 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
     render() {
         const conversationButtons = this.props.conversations.map((value, index) => {
             return (
-                // TODO: Add picture as icon next to name
-                <Button onClick={() => this.props.updateVisibleConversation(index)} key={`Conversation ${index}`}>
-                    {value.name}
+                <Button w={"95%"} alignSelf={"center"} onClick={() => this.props.updateVisibleConversation(index)}
+                        key={`Conversation ${index}`} boxShadow='sm' backgroundColor={"#FFFFFF"}
+                        _hover={{boxShadow: 'lg', color: "#F2BBC1"}} _focus={{outline: "none"}} h="100%" p={1}>
+                    <Stack direction="row" w="100%" h="fit-content">
+                        <Avatar justifySelf="left" size="md" name={value.name} src={value.photo}/>
+                        <Text alignSelf="center" h="100%" pl={4} fontSize="lg">
+                            {value.name}
+                        </Text>
+                    </Stack>
                 </Button>
             )
         })
@@ -64,14 +70,13 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
                 //     </Box>
 
 
-                <Box w={["20%","20%","30%","30%"]} maxW="350px" borderRight="3px solid black">
+                <Box w={["20%","20%","30%","30%"]} maxW="350px" borderRight=".5px solid #FFFFFF">
                     <Stack spacing={4} align="center">
                         <Heading display={{ base: "none", md: "block" }} fontSize={["sm","sm","2xl","3xl"]}
-                            mt={2}>
+                            pt={2} pb={4} w={"full"} borderBottom=".5px solid #FFFFFF">
                             Conversations
                         </Heading>
-                        <Divider display={{ base: "none", md: "block" }}/>
-                        <Stack width="100%">
+                        <Stack width="100%" spacing={4}>
                             {conversationButtons}
                         </Stack>
                     </Stack>
