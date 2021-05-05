@@ -14,14 +14,14 @@ import "./MessageLayout.css"
 
 type MessageLayoutProps = {checkCookieExpiration: () => void};
 // conversationDisplayed is the index in conversations[] of the conversation the user wants to see
-type MessageLayoutState = {conversations: Conversation[]; isLoaded: boolean;
+type MessageLayoutState = {conversations: Conversation[]; isLoading: boolean;
                            conversationDisplayed: number | null; currentConversation: Message[]};
 
 // TODO: Update conversation every minute or so, or add a refresh button
 class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     constructor(props: MessageLayoutProps) {
         super(props);
-        this.state = {conversations: [], isLoaded: false, conversationDisplayed: null, currentConversation: []};
+        this.state = {conversations: [], isLoading: true, conversationDisplayed: null, currentConversation: []};
     }
 
     async componentDidMount() {
@@ -30,7 +30,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         // Checks if cookies expired (request failed)
         this.props.checkCookieExpiration();
 
-        this.setState({conversations: conversationResp, isLoaded: true,
+        this.setState({conversations: conversationResp, isLoading: false,
                             conversationDisplayed: null, currentConversation: []});
     }
 
@@ -61,14 +61,14 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     render() {
         const currentUserID = getCurrentUserID();
 
-        if(!this.state.isLoaded) {
+        if(this.state.isLoading) {
             return (
                 <Heading>Loading Conversations...</Heading>
             )
         }
 
         return (
-            <Stack direction="row" h={"100%"} id="MessageLayout">
+            <Stack direction="row" h="100%" w="100%" id="MessageLayout">
                 <ConversationMenu conversations={this.state.conversations}
                                   updateVisibleConversation={this.updateConversationViewer}
                 />
