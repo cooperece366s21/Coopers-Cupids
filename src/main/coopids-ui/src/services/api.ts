@@ -48,8 +48,8 @@ type loginResponse = {
 };
 
 export type emailSettings = {
-    matchEmail: string;
-    messageEmail: string;
+    matchEmails: boolean;
+    messageEmails: boolean;
 };
 
 // Functions
@@ -173,12 +173,12 @@ export async function getEmailSettings(): Promise<emailSettings | null> {
         Nothing - Just looking at status
  */
 //TODO: THIS NEEDS A HANDLER ENDPOINT
-export async function setEmailSettings(matchEmail: boolean, messageEmail: boolean): Promise<boolean> {
+export async function setEmailSettings(matchEmails: boolean, messageEmails: boolean): Promise<boolean> {
     const resp = await fetch(`${BACKEND_URL}/TODO`, {
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
-        body: JSON.stringify({'matchEmail': matchEmail, 'messageEmail': messageEmail})
+        body: JSON.stringify({'matchEmails': matchEmails, 'messageEmails': messageEmails})
     });
 
     checkCookieExpiration(resp.status);
