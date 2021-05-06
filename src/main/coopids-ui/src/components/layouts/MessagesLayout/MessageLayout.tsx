@@ -17,13 +17,13 @@ type MessageLayoutProps = {checkCookieExpiration: () => void};
 // conversationDisplayed is the index in conversations[] of the conversation the user wants to see
 type MessageLayoutState = {conversations: Conversation[]; isLoading: boolean;
                            conversationDisplayed: number | null; currentConversation: Message[]
-                           showProfile: boolean; userProfile: Profile};
+                           showProfile: boolean; userProfile: Profile; ConversationRefresh: NodeJS.Timeout | null};
 
 class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     constructor(props: MessageLayoutProps) {
         super(props);
         this.state = {conversations: [], isLoading: true, conversationDisplayed: null, currentConversation: [],
-                      showProfile: false, userProfile: {} as Profile};
+                      showProfile: false, userProfile: {} as Profile, ConversationRefresh: null};
     }
 
     async componentDidMount() {
@@ -33,13 +33,18 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         this.props.checkCookieExpiration();
 
         this.setState({conversations: conversationResp, isLoading: false,
-                            conversationDisplayed: null, currentConversation: []});
+                            conversationDisplayed: null, currentConversation: [],
+                            ConversationRefresh: setInterval(this.updateConversationList, 2000)});
+    }
+
+    componentWillUnmount() {
+        if(this.state.ConversationRefresh !== null) {
+            clearInterval(this.state.ConversationRefresh);
+        }
     }
 
     // Updates the list of conversation, while keeping the current conversation active
     updateConversationList = async () => {
-        this.updateConversationViewer(null);
-
         // Order may change so save uid to reset current convo as active
         const oldConversationUID = this.state.conversationDisplayed !== null ?
             this.state.conversations[this.state.conversationDisplayed].userID : null;
@@ -62,6 +67,9 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                 }
             }
         }
+
+        // If unmatched
+        this.updateConversationViewer(null);
     }
 
     // Changes the conversation shown
