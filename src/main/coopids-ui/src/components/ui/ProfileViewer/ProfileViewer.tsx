@@ -17,6 +17,8 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
     constructor(props: ProfileViewerProps) {
         super(props);
         this.state = {isLoading: false, editedProfile: {...this.props.profile}}
+        this.props.profile.interests = this.props.profile.interests !== null ?
+            this.props.profile.interests.split(',').join(', ') : "";
     }
 
     onSubmit = async (newProfile: Profile) => {
@@ -195,7 +197,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
 
                         {/* Interests */}
                         <GridItem colSpan={2} ml={6} mr={6}>
-                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2}><b>My interests include:</b> {this.props.profile.interests}</Text>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="justify"><b>My interests include:</b> {this.props.profile.interests}</Text>
                         </GridItem>
                     </Grid>
                 )
