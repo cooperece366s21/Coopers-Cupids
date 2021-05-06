@@ -48,7 +48,7 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
         // Checks if loading profile
         if(this.state.isLoading) {
             return (
-                <Heading m={8} mt={14} fontSize={["xl","2xl","3xl","3xl"]}>
+                <Heading m={8} pt={14} fontSize={["xl","2xl","3xl","3xl"]}>
                     Loading Profile...
                 </Heading>
             );

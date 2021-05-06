@@ -135,7 +135,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
 
         if(this.state.isLoading) {
             return (
-                <Heading>Loading Conversations...</Heading>
+                <Heading pt={8}>Loading Conversations...</Heading>
             )
         }
 
