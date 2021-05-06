@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Button, Grid, GridItem, Image, Stack} from "@chakra-ui/react";
 import NavBarToggleButton from "../../ui/NavBarToggleButton/NavBarToggleButton";
 import NavBarLink from "../../ui/NavbarLink/NavBarLink";
+import {Link as RouterLink} from "react-router-dom";
 
 // Sets types
 type NavBarProps = {isLoggedIn: boolean; updateLogin: () => void};
@@ -50,7 +51,8 @@ class NavBar extends Component<NavBarProps, NavBarState> {
                             <NavBarLink linkTo={"/Settings"} onPageChange={this.closeNavBar}>Settings</NavBarLink>
                             : null }
                         {this.props.isLoggedIn ?
-                            <Button pt={0} _hover={{background: "#F2BBC1", color: "white"}} onClick={() => {this.closeNavBar();this.props.updateLogin();}}>Logout</Button>
+                            <Button as={RouterLink} to={"/"} pt={0} _hover={{background: "#F2BBC1", color: "white"}}
+                                    onClick={() => {this.closeNavBar();this.props.updateLogin();}}>Logout</Button>
                             : null }
                     </Stack>
                 </GridItem>
