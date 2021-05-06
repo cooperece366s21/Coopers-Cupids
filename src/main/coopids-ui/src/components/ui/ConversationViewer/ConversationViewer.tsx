@@ -13,7 +13,10 @@ type ConversationViewerState = {};
 class ConversationViewer extends Component<ConversationViewerProps,ConversationViewerState> {
     // This will scroll to bottom whenever a new message is added
     componentDidUpdate(prevProps: Readonly<ConversationViewerProps>, prevState: Readonly<ConversationViewerState>, snapshot?: any) {
-        if(prevProps.currentConversation !== this.props.currentConversation) {
+        if(prevProps.currentConversation === null || prevProps.toUserInfo === null ||
+            (this.props.toUserInfo !== null && prevProps.toUserInfo.userID !== this.props.toUserInfo.userID) ||
+            (this.props.currentConversation !== null
+                && prevProps.currentConversation.length !== this.props.currentConversation.length)) {
             const messageViewer = document.getElementById("ConversationViewer")
             // To keep typescript happy
             if(messageViewer !== null) {
