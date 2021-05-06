@@ -26,7 +26,8 @@ class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
 
                     {/* Features */}
                     <Heading size="md" pt={8} pb={4}> How We'll Help You Find That Special Someone </Heading>
-                    <Grid templateColumns="repeat(2,auto)" w="fill" align="center">
+                    <Grid templateColumns={["repeat(1,auto)","repeat(1,auto)","repeat(2,auto)","repeat(2,auto)"]}
+                          w="fill" align="center">
                         <FeatureItem iconType={"profile"}
                                      featureText={"Build a unique profile that showcases you"} />
                         <FeatureItem iconType={"users"}
