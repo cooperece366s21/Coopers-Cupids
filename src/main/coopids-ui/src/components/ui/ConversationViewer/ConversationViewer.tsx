@@ -32,26 +32,38 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
         if(this.props.currentConversation === null) {return null}
 
         // Reverses list, since div is flipped to show new messages on bottom
-        const messages = this.props.currentConversation.reverse().map(
+        let prevDay: string[] = [];
+        const messages = this.props.currentConversation.map(
             (message, index) => {
-                // Checks sender of message
-                if(message.fromUserID === this.props.currentUserID) {
-                    // Current user
+                // Checks who sent message
+                const fromCurrentUser = message.fromUserID === this.props.currentUserID;
+
+                // Checks timestamp
+                const messageDate = message.timestamp.toString().split(',').map(e => e.trim());
+                if(prevDay.length === 0 || messageDate[0] !== prevDay[0]) {
+                    prevDay = messageDate;
+
                     return (
-                        <Text align="right" float="right" color="green" key={`Message ${index}`}>
-                            {message.messageText}
-                        </Text>
-                    )
+                      <Box w="100%">
+                          <Text align="center" color="black" key={`Message ${index} Date`}>
+                              {prevDay[0]}
+                          </Text>
+                          <Text align={fromCurrentUser ? "right" : "left"} float={fromCurrentUser ? "right" : "left"}
+                                color={fromCurrentUser ? "green" : "blue"} key={`Message ${index}`}>
+                              {message.messageText}
+                          </Text>
+                      </Box>
+                    );
                 }
 
-                // Other user
                 return (
-                    <Text align="left" float="left" color="blue" key={`Message ${index}`}>
+                    <Text align={fromCurrentUser ? "right" : "left"} float={fromCurrentUser ? "right" : "left"}
+                          color={fromCurrentUser ? "green" : "blue"} key={`Message ${index}`}>
                         {message.messageText}
                     </Text>
-                )
+                );
             }
-        )
+        ).reverse()
 
         return messages;
     }
