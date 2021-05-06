@@ -54,22 +54,28 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
         // Checks if cookies expired (request failed)
         this.props.checkCookieExpiration();
 
-        this.setState({conversations: conversationResp});
-
         // Updates displayed conversation to old one
         if(oldConversationUID !== null) {
             // Find new number
-            for(let i = 0; i < this.state.conversations.length; i++) {
+            for(let i = 0; i < conversationResp.length; i++) {
                 // Updates conversation viewer
-                if(this.state.conversations[i].userID === oldConversationUID) {
-                    this.updateConversationViewer(i);
-                    return;
+                if(conversationResp[i].userID === oldConversationUID) {
+                    // Gets messages
+                    const messages = await getUserConversation(oldConversationUID);
+
+                    // Checks if cookies expired (request failed)
+                    this.props.checkCookieExpiration();
+
+                    this.setState({conversations: conversationResp, currentConversation: messages,
+                        conversationDisplayed: i});
+
+                    return
                 }
             }
         }
 
         // If unmatched
-        this.updateConversationViewer(null);
+        this.setState({conversations: conversationResp, conversationDisplayed: null, currentConversation: []});
     }
 
     // Changes the conversation shown

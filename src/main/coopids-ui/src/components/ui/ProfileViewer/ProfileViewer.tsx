@@ -192,12 +192,12 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
 
                         {/* Bio */}
                         <GridItem colSpan={2} mb={4} ml={6} mr={6}>
-                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="justify"><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="center"><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
                         </GridItem>
 
                         {/* Interests */}
                         <GridItem colSpan={2} ml={6} mr={6}>
-                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="justify"><b>My interests include:</b> {this.props.profile.interests}</Text>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="center"><b>My interests include:</b> {this.props.profile.interests}</Text>
                         </GridItem>
                     </Grid>
                 )
