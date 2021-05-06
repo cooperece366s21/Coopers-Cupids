@@ -5,8 +5,10 @@ import SendMessageForm from "../SendMessageForm/SendMessageForm";
 import "./ConversationViewer.css"
 import {FaHeartBroken} from "react-icons/all";
 
+
 type ConversationViewerProps = {currentConversation: Message[] | null; toUserInfo: Conversation | null;
-                                currentUserID: string; sendMessage: (toUserID: string, newMessage: string) => void
+                                currentUserID: string; noConvos: boolean;
+                                sendMessage: (toUserID: string, newMessage: string) => void;
                                 unmatch: (userID: string) => void; showProfile: (userID: string | null) => void};
 type ConversationViewerState = {};
 
@@ -66,8 +68,10 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
         if (this.props.currentConversation === null || this.props.toUserInfo === null) {
             return (
                 <Box w="full">
-                    <Heading fontSize={["xl","2xl","3xl","3xl"]} mt={4}>
-                        Please pick a conversation to display
+                    <Heading fontSize={["xl","2xl","3xl","3xl"]} mt={4} mr={4}>
+                        {this.props.noConvos ?
+                            "Once the Coopids match you with a user, a new conversation will appear in the left menu" :
+                            "Please pick a conversation to display"}
                     </Heading>
                 </Box>
             );

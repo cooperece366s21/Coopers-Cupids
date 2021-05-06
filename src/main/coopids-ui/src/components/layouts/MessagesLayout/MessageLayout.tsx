@@ -75,7 +75,7 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     // Changes the conversation shown
     updateConversationViewer = async (newConversation: number | null) => {
         if(newConversation === null) {
-            this.setState({conversationDisplayed: newConversation, currentConversation: []});
+            this.setState({conversationDisplayed: null, currentConversation: []});
         } else {
             const messages = await getUserConversation(this.state.conversations[newConversation].userID);
 
@@ -164,8 +164,8 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                                         null : this.state.currentConversation}
                                     toUserInfo={this.state.conversationDisplayed === null ?
                                         null : this.state.conversations[this.state.conversationDisplayed]}
-                                    currentUserID={currentUserID} sendMessage={this.sendMessage}
-                                    unmatch={this.unmatch} showProfile={this.showProfile}
+                                    noConvos = {this.state.conversations.length === 0} currentUserID={currentUserID}
+                                    sendMessage={this.sendMessage} unmatch={this.unmatch} showProfile={this.showProfile}
                 />
             </Stack>
         );

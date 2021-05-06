@@ -22,6 +22,16 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
     onSubmit = async (newProfile: Profile) => {
         this.setState({isLoading: true});
 
+        // Can never be empty from form, but need to keep TypeScript happy
+        if(newProfile.interests !== null) {
+            // Removes whitespace from interest list
+            const interestList = newProfile.interests.split(",")
+                .map(interest => interest.trim()).join();
+
+            // Updates profile
+            newProfile.interests = interestList;
+        }
+
         await this.props.editProfile(newProfile);
 
         this.setState({isLoading: false});
@@ -102,7 +112,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
                                     </FormControl>
                                     {/* Interests Field */}
                                     <FormControl isRequired>
-                                        <FormLabel>Interests</FormLabel>
+                                        <FormLabel>Interests (Comma-Separated List)</FormLabel>
                                         <Input type="name" value={this.state.editedProfile.interests || ""}
                                                aria-label="Interests"  borderColor="#FFFFFF"
                                                onChange={e => {e.persist(); this.setState(prevState => ({
@@ -180,7 +190,7 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
 
                         {/* Bio */}
                         <GridItem colSpan={2} mb={4} ml={6} mr={6}>
-                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2}><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="justify"><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
                         </GridItem>
 
                         {/* Interests */}
