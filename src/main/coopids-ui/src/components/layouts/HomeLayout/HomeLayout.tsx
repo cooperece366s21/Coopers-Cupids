@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Grid, Heading, Stack, Text} from "@chakra-ui/react";
+import {Box, Grid, Heading, Stack, Text} from "@chakra-ui/react";
 import LoginSignupForm from "../../ui/LoginSignupForm/LoginSignupForm";
 import FeatureItem from "../../ui/FeatureItem/FeatureItem";
 
@@ -10,7 +10,8 @@ class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
 
     render() {
         return (
-                <Stack spacing={2} pt={8} pb={20}>
+            <Box w="100%" align="center">
+                <Stack spacing={2} pt={8} pb={20} pl={6} pr={6} maxW="1200px" alignContent="center">
                     <Heading>Welcome to Cooper's Cupids</Heading>
                     <Heading pb={6}>We're here to make your love life better</Heading>
                     {this.props.isLoggedIn ? null : <LoginSignupForm updateLogin={this.props.updateLogin }/>}
@@ -38,6 +39,7 @@ class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
                                      featureText={"Strike up a wonderful conversation with your match"} />
                     </Grid>
                 </Stack>
+            </Box>
             );
     }
 }
