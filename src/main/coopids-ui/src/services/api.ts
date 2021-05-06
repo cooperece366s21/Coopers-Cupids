@@ -190,12 +190,15 @@ export async function setEmailSettings(matchEmails: boolean, messageEmails: bool
         Nothing - Just looking at status
  */
 //TODO: THIS NEEDS A HANDLER ENDPOINT
-export async function updateEmail(email: string): Promise<boolean> {
+export async function updateEmail(email: string, password: string): Promise<boolean> {
+    // Returns true for testing
+    return true
+
     const resp = await fetch(`${BACKEND_URL}/TODO`, {
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
-        body: JSON.stringify({'email': email})
+        body: JSON.stringify({'email': email, 'password': password})
     });
 
     checkCookieExpiration(resp.status);
@@ -207,12 +210,15 @@ export async function updateEmail(email: string): Promise<boolean> {
         Nothing - Just looking at status
  */
 //TODO: THIS NEEDS A HANDLER ENDPOINT
-export async function updatePassword(password: string): Promise<boolean> {
+export async function updatePassword(oldPassword: string, newPassword: string): Promise<boolean> {
+    // Returns true for testing
+    return true
+
     const resp = await fetch(`${BACKEND_URL}/TODO`, {
         method: 'POST',
         mode: 'cors',
         headers: {auth_token: getUserToken(), 'Content-Type': 'application/json'},
-        body: JSON.stringify({'password': password})
+        body: JSON.stringify({'oldPassword': oldPassword, 'newPassword': newPassword})
     });
 
     checkCookieExpiration(resp.status);

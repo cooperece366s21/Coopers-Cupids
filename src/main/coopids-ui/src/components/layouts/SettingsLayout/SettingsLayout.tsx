@@ -22,18 +22,18 @@ enum responseType {
 }
 type SettingsLayoutProps = {checkCookieExpiration: () => void};
 type SettingsLayoutState = {isLoading: boolean, matchEmails: boolean, messageEmails: boolean,
-                            newEmail1: string, newEmail2:string, oldPassword: string, newPassword1: string,
-                            newPassword2: string, showOldPassword: boolean, showNewPassword1: boolean,
-                            showNewPassword2: boolean, preferencesResponse: boolean, emailResponse: responseType,
-                            passwordResponse: responseType};
+                            newEmail1: string, newEmail2:string, password: string, showPassword: boolean,
+                            oldPassword: string, newPassword1: string, newPassword2: string, showOldPassword: boolean,
+                            showNewPassword1: boolean, showNewPassword2: boolean, preferencesResponse: boolean,
+                            emailResponse: responseType, passwordResponse: responseType};
 
 class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState> {
     constructor(props: SettingsLayoutProps) {
         super(props);
-        this.state = {isLoading: true, matchEmails: true, messageEmails: true, oldPassword: "",
-                      newPassword1: "", newPassword2: "", newEmail1: "", newEmail2: "", showOldPassword: false,
-                      showNewPassword1: false, showNewPassword2: false, preferencesResponse: false,
-                      emailResponse: responseType.NONE, passwordResponse: responseType.NONE}
+        this.state = {isLoading: true, matchEmails: true, messageEmails: true, newEmail1: "", newEmail2: "",
+                      password: "", showPassword: false, oldPassword: "", newPassword1: "", newPassword2: "",
+                      showOldPassword: false, showNewPassword1: false, showNewPassword2: false,
+                      preferencesResponse: false, emailResponse: responseType.NONE, passwordResponse: responseType.NONE}
     }
 
     async componentDidMount() {
@@ -68,44 +68,43 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
         this.setState({isLoading:false, preferencesResponse: true});
     }
 
-    // Updates Password
-    updatePassword = async () => {
-        this.setState({isLoading: true});
-
-        // Confirms old password is correct
-        // TODO: Either make new endpoint to request current password or send both passwords to back
-
-        // Checks that new passwords are equal
-        if(this.state.newPassword1 === this.state.newPassword2) {
-            await updatePassword(this.state.newPassword1);
-
-            // Shows success message & clears form
-            this.setState({passwordResponse: responseType.SUCCESS, oldPassword: "",
-                                newPassword1: "", newPassword2: ""});
-        } else {
-            // Shows error message
-            this.setState({passwordResponse: responseType.MISMATCH_ERROR});
-        }
-
-        this.setState({isLoading:false});
-    }
-
     // Updates Email Address
     updateEmailAddress = async () => {
         this.setState({isLoading: true});
 
         // Checks that emails are equal
         if(this.state.newEmail1 === this.state.newEmail2) {
-            await updateEmail(this.state.newEmail1);
+            await updateEmail(this.state.newEmail1, this.state.password);
 
             // Shows success message & clears form
-            this.setState({emailResponse: responseType.SUCCESS, newEmail1: "", newEmail2: ""});
+            this.setState({emailResponse: responseType.SUCCESS, newEmail1: "", newEmail2: "",
+                                password: ""});
         } else {
             // Shows error message
             this.setState({emailResponse: responseType.MISMATCH_ERROR});
         }
 
-        this.setState({isLoading:false});
+        this.setState({isLoading:false, showPassword: false});
+    }
+
+    // Updates Password
+    updatePassword = async () => {
+        this.setState({isLoading: true});
+
+
+        // Checks that new passwords are equal
+        if(this.state.newPassword1 === this.state.newPassword2) {
+            await updatePassword(this.state.oldPassword, this.state.newPassword1);
+
+            // Shows success message & clears form
+            this.setState({passwordResponse: responseType.SUCCESS, oldPassword: "",
+                newPassword1: "", newPassword2: ""});
+        } else {
+            // Shows error message
+            this.setState({passwordResponse: responseType.MISMATCH_ERROR});
+        }
+
+        this.setState({isLoading:false, showOldPassword: false, showNewPassword1: false, showNewPassword2: false});
     }
 
     // Gets response text for form
@@ -235,6 +234,28 @@ class SettingsLayout extends Component<SettingsLayoutProps, SettingsLayoutState>
                                            aria-label="New Email Confirm" borderColor="#FFFFFF"
                                            onChange={e => this.setState({newEmail2: e.currentTarget.value})}
                                     />
+                                </FormControl>
+
+                                {/* Password Field */}
+                                <FormControl isRequired>
+                                    <FormLabel>Password</FormLabel>
+                                    <InputGroup>
+                                        <Input type={this.state.showPassword ? "text" : "password"}
+                                               placeholder="*******" value={this.state.password}
+                                               aria-label="Password" borderColor="#FFFFFF"
+                                               onChange={e => this.setState({password: e.currentTarget.value})}
+                                        />
+                                        <InputRightElement width="4.5rem">
+                                            <Button h="1.75rem" size="sm" onClick={e => this.setState(
+                                                {showPassword: !this.state.showPassword})}
+                                                    _hover={{boxShadow: 'md', backgroundColor: "#F2BBC1",
+                                                        color: "#FFFFFF", border: "1px solid white"}}
+                                                    backgroundColor={"#FFFFFF"} focusBorderColor="#0087C5"
+                                                    _focus={{outline: "none"}}>
+                                                {this.state.showPassword ? "Hide" : "Show"}
+                                            </Button>
+                                        </InputRightElement>
+                                    </InputGroup>
                                 </FormControl>
 
                                 <Button width="full" type="submit" boxShadow='sm'
