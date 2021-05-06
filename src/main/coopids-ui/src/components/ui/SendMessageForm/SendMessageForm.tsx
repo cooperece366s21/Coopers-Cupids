@@ -21,7 +21,7 @@ class SendMessageForm extends Component<SendMessageFormProps,SendMessageFormStat
                     <FormControl isRequired>
                         <Input type="text" value={this.state.newMessage} aria-label="Message-Input"
                                placeholder={"Write a message to your match!"}
-                               _placeholder={{"font-size": ".9em", "align-self": "center"}}
+                               _placeholder={{"fontSize": ".9em", "alignSelf": "center"}}
                                onChange={e => this.setState({newMessage: e.currentTarget.value})}
                                borderColor="#FFFFFF"
                         />
