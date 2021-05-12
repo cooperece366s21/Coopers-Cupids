@@ -32,7 +32,7 @@ class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
                         <FeatureItem iconType={"profile"}
                                      featureText={"Build a unique profile that showcases you"} />
                         <FeatureItem iconType={"users"}
-                                     featureText={"View exciting people in your area, filtering to your liking"} />
+                                     featureText={"View exciting people in your area, filtered to your liking"} />
                         <FeatureItem iconType={"match-making"}
                                      featureText={"Find your perfect date with our one-of-a-kind matchmaking algorithm"} />
                         <FeatureItem iconType={"messages"}

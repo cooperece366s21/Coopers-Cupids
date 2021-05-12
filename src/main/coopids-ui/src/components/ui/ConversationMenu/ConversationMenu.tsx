@@ -1,14 +1,6 @@
 import React, {Component} from "react";
 import {
-    Box,
-    Stack,
-    Button,
-    Drawer,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerHeader,
-    DrawerBody, Heading,
-    DrawerFooter, Divider, Avatar, Text
+    Box, Stack, Button, Heading, Avatar, Text
 } from "@chakra-ui/react";
 import {Conversation} from "../../../services/api";
 import "./ConversationMenu.css"

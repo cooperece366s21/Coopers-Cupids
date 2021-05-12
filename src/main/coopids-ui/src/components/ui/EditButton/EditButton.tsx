@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Button, color} from "@chakra-ui/react";
+import {Button} from "@chakra-ui/react";
 
 type EditButtonProps = {hasProfile: boolean; onClick: () => void};
 type EditButtonState = {};

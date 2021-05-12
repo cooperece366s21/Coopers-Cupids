@@ -41,13 +41,13 @@ class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
 
     likeClick = async () => {
         this.setState({isLoading: true})
-        await like(this.state.feedList[this.state.currentFeedUser].userID);
+        await like(this.state.feedList[this.state.currentFeedUser].userID!);
         await this.updateFeed();
     }
 
     dislikeClick = async () => {
         this.setState({isLoading: true})
-        await dislike(this.state.feedList[this.state.currentFeedUser].userID);
+        await dislike(this.state.feedList[this.state.currentFeedUser].userID!);
         await this.updateFeed();
     }
 
