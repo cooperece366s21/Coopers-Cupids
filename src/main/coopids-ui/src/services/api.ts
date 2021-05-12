@@ -1,7 +1,7 @@
 // Backend url to make requests from
 
 const BACKEND_URL = "http://localhost:4567";
-const COOKIE_EXP_CODE = 403;
+const COOKIE_EXP_CODE = 450;
 
 // Types
 // -----
@@ -141,9 +141,8 @@ export async function login(username: string, password: string): Promise<loginRe
 export async function logout(): Promise<boolean> {
     const resp = await fetch(`${BACKEND_URL}/logout`, {
         method: 'POST',
-        headers: {auth_token: getUserToken()}
-        // TODO: Send email - waiting for change in backend
-        // body: JSON.stringify({email: getCurrentUsername()})
+        headers: {auth_token: getUserToken()},
+        body: JSON.stringify({email: getCurrentUsername()})
     });
 
 
@@ -301,8 +300,20 @@ export async function editProfile(profile: Profile): Promise<Profile | null> {
     return resp.ok ? await resp.json() : null;
 }
 
+/* Expecting in response:
+       header: Cookie / Auth Token
+       body: Profile (See Profile type above)
+ */
 export async function getCurrentUserProfile(): Promise<Profile | null> {
-    return getUserProfile(getCurrentUsername());
+
+    const resp = await fetch(`${BACKEND_URL}/user/${getCurrentUsername()}/profile`, {
+        method: 'GET',
+        headers: {auth_token: getUserToken()}
+    });
+
+    checkCookieExpiration(resp.status);
+
+    return resp.ok ? await resp.json() : null;
 }
 
 /* Expecting in response:
@@ -310,7 +321,7 @@ export async function getCurrentUserProfile(): Promise<Profile | null> {
        body: Profile (See Profile type above)
  */
 export async function getUserProfile(userID: string): Promise<Profile | null> {
-    const resp = await fetch(`${BACKEND_URL}/user/${userID}/profile`, {
+    const resp = await fetch(`${BACKEND_URL}/user/${getCurrentUsername()}/profile/${userID}`, {
         method: 'GET',
         headers: {auth_token: getUserToken()}
     });

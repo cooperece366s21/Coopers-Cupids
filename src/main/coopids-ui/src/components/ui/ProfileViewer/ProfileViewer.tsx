@@ -1,8 +1,24 @@
 import React, {Component} from "react";
 import {
-    Box, Stack, Image, Text, Heading, FormControl, FormLabel, Input,
-    NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
-    NumberDecrementStepper, Button, Textarea, Grid, GridItem, Flex, Spacer
+    Box,
+    Button,
+    Flex,
+    FormControl,
+    FormLabel,
+    Grid,
+    GridItem,
+    Heading,
+    Image,
+    Input,
+    NumberDecrementStepper,
+    NumberIncrementStepper,
+    NumberInput,
+    NumberInputField,
+    NumberInputStepper,
+    Spacer,
+    Stack,
+    Text,
+    Textarea
 } from "@chakra-ui/react";
 import {Profile} from "../../../services/api";
 
@@ -22,15 +38,10 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
         this.setState({isLoading: true});
 
         // Removes whitespace from interest list
-        const interestList = newProfile.interests.split(",")
+        newProfile.interests = newProfile.interests.split(",")
             .map(interest => interest.trim()).join();
 
-        // Updates profile
-        newProfile.interests = interestList;
-
         await this.props.editProfile(newProfile);
-
-        this.setState({isLoading: false});
     }
 
     render() {

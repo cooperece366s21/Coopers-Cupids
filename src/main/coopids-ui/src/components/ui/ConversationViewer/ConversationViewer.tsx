@@ -44,7 +44,7 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
 
                     return (
                       <Box w="100%">
-                          <Text align="center" color="black" key={`Message ${index} Date`}>
+                          <Text align="center" color="black" key={`Message ${index} Date ${messageDate[0]}`}>
                               {prevDay[0]}
                           </Text>
                           <Text align={fromCurrentUser ? "right" : "left"} float={fromCurrentUser ? "right" : "left"}
