@@ -1,0 +1,7 @@
+/* Hides scrollbar while keeping scroll functionality*/
+#ConversationMenuList::-webkit-scrollbar {
+    display: none;
+}
+#ConversationMenuList {
+    scrollbar-width: none;
+}

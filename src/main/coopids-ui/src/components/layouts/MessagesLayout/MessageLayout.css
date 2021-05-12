@@ -1,0 +1,7 @@
+/* No scroll bar since conversation menu and message viewer have internal scroll bars*/
+/* Once screen becomes too small, put back scroll bar */
+@media (min-height: 500px) {
+    #MessageLayout {
+        overflow-y: hidden;
+    }
+}

@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Box} from "@chakra-ui/react";
+import {GridItem} from "@chakra-ui/react";
 import {CloseIcon, HamburgerIcon} from "@chakra-ui/icons";
 
 type ToggleProps = {onToggle: () => void; isOpen: boolean};
@@ -8,9 +8,10 @@ type ToggleState = {};
 class NavBarToggleButton extends Component<ToggleProps, ToggleState> {
     render() {
         return (
-            <Box display={{base: "block", md: "none"}} onClick={this.props.onToggle}>
-                {this.props.isOpen ? <CloseIcon /> : <HamburgerIcon />}
-            </Box>
+            <GridItem display={{base: "inline", md: "none"}} onClick={this.props.onToggle}
+                justifySelf="flex-end" pt={7}>
+                {this.props.isOpen ? <CloseIcon boxSize={4} /> : <HamburgerIcon boxSize={6} />}
+            </GridItem>
         );
     }
 }

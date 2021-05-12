@@ -10,7 +10,8 @@ class EditButton extends Component<EditButtonProps, EditButtonState> {
         const buttonText = this.props.hasProfile ? "Edit Profile" : "Create Profile";
 
         return (
-            <Button variant="ghost" onClick={this.props.onClick}>
+            <Button variant="ghost" onClick={this.props.onClick} m={[2,2,6,6]}
+            _hover={{color: "#F2BBC1", background: "#FFFFFF"}} fontSize={["lg","lg","xl","xl"]}>
                 {buttonText}
             </Button>
         )

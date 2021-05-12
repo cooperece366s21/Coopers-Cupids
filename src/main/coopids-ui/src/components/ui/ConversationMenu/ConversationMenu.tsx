@@ -1,16 +1,9 @@
 import React, {Component} from "react";
 import {
-    Box,
-    Stack,
-    Button,
-    Drawer,
-    DrawerOverlay,
-    DrawerContent,
-    DrawerHeader,
-    DrawerBody, Heading,
-    DrawerFooter
+    Box, Stack, Button, Heading, Avatar, Text
 } from "@chakra-ui/react";
 import {Conversation} from "../../../services/api";
+import "./ConversationMenu.css"
 
 type ConversationMenuProps = {conversations: Conversation[];
                               updateVisibleConversation: (newConversation: number | null) => void;};
@@ -22,56 +15,34 @@ class ConversationMenu extends Component<ConversationMenuProps,ConversationMenuS
         this.state = {isOpen: false};
     }
 
-    drawerOnClick = () => {
-        this.setState({isOpen: !this.state.isOpen});
-    }
-
     render() {
         const conversationButtons = this.props.conversations.map((value, index) => {
             return (
-                // TODO: Add picture as icon next to name
-                <Button onClick={() => this.props.updateVisibleConversation(index)} key={`Conversation ${index}`}>
-                    {value.name}
+                <Button w={"95%"} alignSelf={"center"} onClick={() => this.props.updateVisibleConversation(index)}
+                        key={`Conversation ${index}`} boxShadow='sm' backgroundColor={"#FFFFFF"}
+                        _hover={{boxShadow: 'lg', color: "#F2BBC1"}} _focus={{outline: "none"}} h="100%" p={1.5}>
+                    <Stack direction="row" w="100%" h="fit-content" justifyContent={{base: "center", md: "left"}}>
+                        <Avatar justifySelf={{base: "center", md: "left"}} size="md" name={value.name} src={value.photo}/>
+                        <Text alignSelf="center" h="100%" pl={1} fontSize="md" display={{ base: "none", md: "block" }}>
+                            {value.name}
+                        </Text>
+                    </Stack>
                 </Button>
             )
         })
 
         // Two options depending on size
         return (
-                <Box float="left">
-                    {/*On regular screens, show as side bar*/}
-                    <Box display={{ base: "none", md: "block" }} pr={2} borderRight="3px solid black">
-                        <Stack spacing={8} align="center">
-                            <Heading borderBottom="3px solid black">Conversations</Heading>
-                            <Stack width="100%">
-                                {conversationButtons}
-                            </Stack>
-                        </Stack>
-                    </Box>
-
-                    {/*When screen is too small, change side bar to draw overlay*/}
-                    <Box display={{ base: "block", md: "none" }}>
-                        <Button onClick={this.drawerOnClick}>
+                <Box w={["20%","20%","30%","30%"]} minW={["","","240px",""]} maxW="350px" borderRight=".5px solid #FFFFFF">
+                    <Stack spacing={4} align="center" h={"100%"}>
+                        <Heading display={{ base: "none", md: "block" }} fontSize={["sm","sm","2xl","3xl"]}
+                            pt={3} pb={2} w={"full"}>
                             Conversations
-                        </Button>
-                        <Drawer isOpen={this.state.isOpen} onClose={()=>{}} placement="left">
-                            <DrawerOverlay>
-                                <DrawerContent>
-                                    <DrawerHeader borderBottomWidth="1px">Conversations</DrawerHeader>
-                                    <DrawerBody>
-                                        <Stack>
-                                            {conversationButtons}
-                                        </Stack>
-                                    </DrawerBody>
-                                    <DrawerFooter>
-                                        <Button onClick={this.drawerOnClick}>
-                                            Back
-                                        </Button>
-                                    </DrawerFooter>
-                                </DrawerContent>
-                            </DrawerOverlay>
-                        </Drawer>
-                    </Box>
+                        </Heading>
+                        <Stack width="100%" spacing={4} overflowY="auto" pb={10} id="ConversationMenuList">
+                            {conversationButtons}
+                        </Stack>
+                    </Stack>
                 </Box>
             );
 

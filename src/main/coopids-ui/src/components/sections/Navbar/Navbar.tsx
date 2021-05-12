@@ -1,7 +1,8 @@
 import React, {Component} from "react";
-import {Box, Button, Flex, Stack} from "@chakra-ui/react";
+import {Button, Grid, GridItem, Image, Stack} from "@chakra-ui/react";
 import NavBarToggleButton from "../../ui/NavBarToggleButton/NavBarToggleButton";
 import NavBarLink from "../../ui/NavbarLink/NavBarLink";
+import {Link as RouterLink} from "react-router-dom";
 
 // Sets types
 type NavBarProps = {isLoggedIn: boolean; updateLogin: () => void};
@@ -16,32 +17,47 @@ class NavBar extends Component<NavBarProps, NavBarState> {
     // Toggle Navbar state on small screens
     toggleNavBar = () => {this.setState({isOpen: !this.state.isOpen});}
 
-    // TODO: Only show home page when not logged in
+    // Closes Navbar on page change
+    closeNavBar = () => {this.setState({isOpen: false});}
+
     render() {
         return (
-            <Flex as="nav" align="center" justify="space-between" wrap="wrap" w="fill" mb={8} p={8}>
-                <NavBarToggleButton onToggle={this.toggleNavBar} isOpen={this.state.isOpen} />
-                <Box display={{ base: this.state.isOpen ? "block" : "none", md: "block" }}
-                     flexBasis={{ base: "100%", md: "auto" }}>
-                    <Stack spacing={8} align="center" justify={["center", "space-between", "flex-end", "flex-end"]}
-                        direction={["column", "row", "row", "row"]} pt={[4, 4, 0, 0]}>
-                        <NavBarLink linkTo={"/"}>Home</NavBarLink>
+            <Grid as="nav" w="fill" p={6} templateColumns="repeat(2,auto)"
+                  borderBottom={"solid #cfcdcc .5px"} backgroundColor={"#ffffff"}>
+                {/* Logo */}
+                <GridItem display="inline" justifySelf="flex-start" pl={4}>
+                    <NavBarLink linkTo={"/"} onPageChange={this.closeNavBar}>
+                        <Image src="images/Coopids_logo_large.png" width="9em"/>
+                    </NavBarLink>
+                </GridItem>
+                {/* Navbar Toggle Button - On small screens*/}
+                {this.props.isLoggedIn ?
+                    <NavBarToggleButton onToggle={this.toggleNavBar} isOpen={this.state.isOpen} />
+                    : null }
+                {/* Navbar Links*/}
+                <GridItem display={{ base: this.state.isOpen ? "block" : "none", md: "block" }} colSpan={[2,2,1,1]}>
+                    <Stack spacing={[4,4,10,20]} align="center" justify={["center", "center", "flex-end", "flex-end"]}
+                        direction={["column", "column", "row", "row"]} pt={5} pr={4}>
                         {this.props.isLoggedIn ?
-                            <NavBarLink linkTo={"/Profile"}>Profile</NavBarLink>
+                            <NavBarLink linkTo={"/Profile"} onPageChange={this.closeNavBar}>Profile</NavBarLink>
                             : null }
                         {this.props.isLoggedIn ?
-                            <NavBarLink linkTo={"/Feed"}>Feed</NavBarLink>
+                            <NavBarLink linkTo={"/Feed"} onPageChange={this.closeNavBar}>Feed</NavBarLink>
                             : null }
                         {this.props.isLoggedIn ?
-                            <NavBarLink linkTo={"/Messages"}>Messages</NavBarLink>
+                            <NavBarLink linkTo={"/Messages"} onPageChange={this.closeNavBar}>Messages</NavBarLink>
                             : null }
                         {this.props.isLoggedIn ?
-                            <Button onClick={this.props.updateLogin}>Logout</Button>
+                            <NavBarLink linkTo={"/Settings"} onPageChange={this.closeNavBar}>Settings</NavBarLink>
+                            : null }
+                        {this.props.isLoggedIn ?
+                            <Button as={RouterLink} to={"/"} pt={0} _hover={{background: "#F2BBC1", color: "white"}}
+                                    onClick={() => {this.closeNavBar();this.props.updateLogin();}}>Logout</Button>
                             : null }
                     </Stack>
-                </Box>
-                {/* TODO: Add settings icon for "change password" and "logout" */}
-            </Flex>
+                </GridItem>
+                {/* TODO: Add settings icon for "change email" & "change password"*/}
+            </Grid>
         );
     }
 }

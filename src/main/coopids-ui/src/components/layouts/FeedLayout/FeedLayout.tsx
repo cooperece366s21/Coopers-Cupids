@@ -1,68 +1,97 @@
 import React, {Component} from "react";
-import {dislike, getFeed, like, Profile} from "../../../services/api";
+import {dislike, getCurrentUserProfile, getFeed, like, Profile} from "../../../services/api";
 import {Button, Flex, Heading, Spacer, Stack} from "@chakra-ui/react";
 import ProfileViewer from "../../ui/ProfileViewer/ProfileViewer";
 
-type FeedLayoutProps = {};
-type FeedLayoutState = {feedList: Profile[], currentUser: number};
+type FeedLayoutProps = {checkCookieExpiration: () => void};
+// name is the name of current user (used for customized text)
+// curentFeedUser is the index of the current user being viewed in the feedList
+type FeedLayoutState = {userName: string | undefined; feedList: Profile[]; currentFeedUser: number; isLoading: boolean};
 
 class FeedLayout extends Component<FeedLayoutProps,FeedLayoutState> {
     constructor(props: FeedLayoutProps) {
         super(props);
-        this.state = {feedList: [], currentUser: 1};
+        this.state = {userName: undefined, feedList: [], currentFeedUser: 1, isLoading: true};
     }
 
     async componentDidMount() {
         const feed = await getFeed() || [];
-        this.setState({feedList: feed, currentUser: 0});
+        const profile = await getCurrentUserProfile();
+
+        // Checks if cookies expired (request failed)
+        this.props.checkCookieExpiration();
+
+        this.setState({userName: profile != null ? profile.name : undefined, feedList: feed,
+            currentFeedUser: 0, isLoading: false});
     }
 
     async updateFeed() {
         // Checks if ran out of feed
-        if(this.state.currentUser >= this.state.feedList.length-1) {
+        if(this.state.currentFeedUser >= this.state.feedList.length-1) {
             const feed = await getFeed();
-            this.setState({feedList: feed, currentUser: 0});
+
+            // Checks if cookies expired (request failed)
+            this.props.checkCookieExpiration();
+
+            this.setState({feedList: feed, currentFeedUser: 0, isLoading: false});
         } else {
-            this.setState({currentUser: this.state.currentUser + 1});
+            this.setState({currentFeedUser: this.state.currentFeedUser + 1, isLoading: false});
         }
     }
 
     likeClick = async () => {
-        await like(this.state.feedList[this.state.currentUser].userID);
+        this.setState({isLoading: true})
+        await like(this.state.feedList[this.state.currentFeedUser].userID!);
         await this.updateFeed();
     }
 
     dislikeClick = async () => {
-        await dislike(this.state.feedList[this.state.currentUser].userID);
+        this.setState({isLoading: true})
+        await dislike(this.state.feedList[this.state.currentFeedUser].userID!);
         await this.updateFeed();
     }
 
     render() {
-        // TODO: Maybe differentiate empty vs no profile based on null response from API
-        // API gives [] when empty, null when no profile
-        if(this.state.feedList.length === 0) {
+        // Loading
+        if(this.state.isLoading) {
             return (
-                <Heading>Feed is empty<br/>Please create a profile or convince your friends to join Coopids</Heading>
-            )
-        }
-        if(this.state.currentUser >= this.state.feedList.length) {
-            return (
-                <Heading>Loading Feed...</Heading>
+                <Heading m={8} pt={14} fontSize={["xl","2xl","3xl","3xl"]}>
+                    Loading Feed...
+                </Heading>
             )
         }
 
+        // No Profile
+        if(this.state.userName === undefined) {
+            return(
+                <Heading m={8} mt={14} fontSize={["xl","2xl","3xl","3xl"]} lineHeight={2}>
+                    Before the coopids can show you other users' profiles, you need to create a profile to show them
+                </Heading>
+            )
+        }
+
+        // Empty Feed
+        if(this.state.feedList.length === 0) {
+            return (
+                <Heading m={8} mt={14} fontSize={["xl","2xl","3xl","3xl"]}  lineHeight={2}>
+                    The coopids couldn't find anyone :(<br/>
+                    Please convince your friends to join
+                </Heading>
+            )
+        }
+
+        // Only shows if user has a profile & there is a feed to show them
         return (
-                // TODO: Only show this if current user has a profile
-                <Stack width="full" align="center" justifyContent="center" spacing={4}>
-                    <ProfileViewer isEditing={false} profile={this.state.feedList[this.state.currentUser]}
-                                   hasProfile={true} editProfile={()=>{}} />
-                    <Flex w={"50%"} pt={4}>
-                        <Button colorScheme="yellow" float="left" type="submit" w={"40%"}
+                <Stack width="full" align="center" justifyContent="center" spacing={4} mb={10}>
+                    <ProfileViewer isEditing={false} profile={this.state.feedList[this.state.currentFeedUser]}
+                                   currName={this.state.userName} hasProfile={true} editProfile={()=>{}} />
+                    <Flex w={"70%"} pt={4}>
+                        <Button colorScheme="yellow" float="left" type="submit" w={"45%"}
                                 onClick={this.dislikeClick}>
                             Dislike
                         </Button>
                         <Spacer />
-                        <Button colorScheme="green" float="right" type="submit" w={"40%"}
+                        <Button colorScheme="green" float="right" type="submit" w={"45%"}
                                 onClick={this.likeClick}>
                             Like
                         </Button>
