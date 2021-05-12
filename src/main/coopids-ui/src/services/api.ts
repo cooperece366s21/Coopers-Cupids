@@ -156,7 +156,7 @@ export async function logout(): Promise<boolean> {
         Nothing - Just looking at status
  */
 export async function deleteAccount(password: string): Promise<boolean> {
-    const resp = await fetch(`${BACKEND_URL}/${getCurrentUsername()}/delete`, {
+    const resp = await fetch(`${BACKEND_URL}/user/${getCurrentUsername()}/delete`, {
         method: 'POST',
         headers: {auth_token: getUserToken()},
         body: JSON.stringify({password: password})

@@ -245,7 +245,7 @@ public class Handler {
             return null;
         }
         Hashtable<String, String> info = this.gson.fromJson(req.body(), new TypeToken<Hashtable<String, String>>(){}.getType());
-        if (!info.containsKey("password")) {
+        if (!info.containsKey("old_password") || !info.containsKey("new_password")) {
             // no password provided
             res.status(403);
             return null;
