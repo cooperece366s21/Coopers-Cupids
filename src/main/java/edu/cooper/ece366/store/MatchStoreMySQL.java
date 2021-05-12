@@ -9,6 +9,7 @@ public class MatchStoreMySQL implements MatchStore {
 
     public MatchStoreMySQL(final Jdbi jdbi) { this.jdbi = jdbi; }
 
+    // Returns if like resulted in a match
     @Override
     public boolean addLike(String userID, String likedUserID) {
         if (userID.equals(likedUserID)) {
@@ -40,6 +41,7 @@ public class MatchStoreMySQL implements MatchStore {
         }
     }
 
+    // Only adds dislike to database
     @Override
     public void addDislike(String userID, String dislikedUserID) {
         if (userID.equals(dislikedUserID)) {
@@ -60,6 +62,7 @@ public class MatchStoreMySQL implements MatchStore {
         }
     }
 
+    // Only removes all associated conversations and adds a dislike so user doesnt show up in feed
     @Override
     public void unmatch(String userID, String unmatchedUserID) {
         this.jdbi.useHandle(handle ->
@@ -68,6 +71,13 @@ public class MatchStoreMySQL implements MatchStore {
                         unmatchedUserID,
                         userID,
                         unmatchedUserID));
+        this.jdbi.useHandle(handle ->
+                handle.execute("DELETE FROM likes_dislikes WHERE (from_userID = ? and to_userID = ?) OR (to_userID = ? AND from_userID = ?)",
+                        userID,
+                        unmatchedUserID,
+                        userID,
+                        unmatchedUserID));
+        addDislike(userID, unmatchedUserID);
     }
 
     // Returns list of userIDs that user has liked
@@ -116,6 +126,7 @@ public class MatchStoreMySQL implements MatchStore {
                         .list());
     }
 
+    // Returns whether or not two people matched
     @Override
     public boolean isMatch(String userID, String matchUserID) {
         Optional<String> match = this.jdbi.withHandle(handle ->

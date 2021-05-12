@@ -10,7 +10,9 @@ public interface MatchFeedService {
     // Returns feed for current user
     List<Profile> getUserFeed(String userID, int numUsers);
 
+    // Returns MatchStore
     MatchStore getMatchStore();
 
+    // Returns UserStore
     UserStore getUserStore();
 }

@@ -14,22 +14,22 @@ public interface UserStore {
     // returns false if email not used
     boolean checkEmail(String email);
 
-    // Checks if password is correct
+    // checks if password is correct
     boolean validateUser(String userID, String password);
 
-    // Checks if UserID is taken
+    // checks if UserID is taken
     boolean isUser(String userID);
 
-    // Returns user matching ID
+    // returns user matching ID
     User getUserFromId(String userID);
 
-    // Adds user
+    // adds user
     void addUser(User user);
 
-    // Deletes User
+    // deletes User
     void deleteUser(String userID);
 
-    // Returns list of users for feed
+    // returns list of users for feed
     List<Profile> feedUsers(int numUsers);
 
     // method to add a profile for a user

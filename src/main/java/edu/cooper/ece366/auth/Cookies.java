@@ -11,9 +11,10 @@ public class Cookies {
 
     public Cookies(final Jdbi jdbi) { this.jdbi = jdbi; }
 
+    // Assigns a random UID to a newly logged in user
     public String assignCookie(String userID) {
         // purge cookies whenever a new one is created
-        purgeCookies();
+        this.purgeCookies();
         String cookie = UUID.randomUUID().toString().replace("-", "");
         List<String> presentCookies = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT cookie FROM cookies")
@@ -36,6 +37,7 @@ public class Cookies {
         return finalCookie;
     }
 
+    // Returns whether or not a cookie matches with a userID
     public boolean verifyCookie(String cookie, String userID) {
         Optional<String> uid = this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT userID FROM cookies WHERE cookie = ?")
@@ -59,35 +61,13 @@ public class Cookies {
         return false;
     }
 
-    public String getUser(String cookie) {
-        Optional<String> uid = this.jdbi.withHandle(handle ->
-                handle.createQuery("SELECT userID FROM cookies WHERE cookie = ?")
-                        .bind(0, cookie)
-                        .mapTo(String.class)
-                        .findOne());
-        if (uid.isPresent()) {
-            Timestamp timestamp = this.jdbi.withHandle(handle ->
-                    handle.createQuery("SELECT expire FROM cookies WHERE cookie = ?")
-                            .bind(0, cookie)
-                            .mapTo(Timestamp.class)
-                            .one());
-            if (timestamp.after(new Timestamp(System.currentTimeMillis()))) {
-                return uid.get();
-            }
-            else {
-                deleteCookie(cookie, uid.get());
-                return null;
-            }
-        }
-        return null;
-    }
-
     // No need for existence checking, if doesnt exist nothing deleted
     public void deleteCookie(String cookie, String userID) {
         this.jdbi.useHandle(handle ->
                 handle.execute("DELETE FROM cookies WHERE cookie = ? AND userID = ?", cookie, userID));
     }
 
+    // Removes all expired cookies from database
     public void purgeCookies() {
         this.jdbi.useHandle(handle ->
                 handle.execute("SET SQL_SAFE_UPDATES = 0"));

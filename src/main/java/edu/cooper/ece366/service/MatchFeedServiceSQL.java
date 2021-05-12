@@ -1,7 +1,6 @@
 package edu.cooper.ece366.service;
 
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.cooper.ece366.model.Profile;
@@ -17,6 +16,7 @@ public class MatchFeedServiceSQL implements MatchFeedService {
         this.userStore = userStore;
     }
 
+    // Returns a List of profile to show to user in feed
     @Override
     public List<Profile> getUserFeed(String userID, int numUsers) {
         List<Profile> userFeed;
@@ -28,31 +28,75 @@ public class MatchFeedServiceSQL implements MatchFeedService {
                                 && !this.matchStore.getDislikes(userID).contains(user.getUserID())) // user disliked person that likes them
                             .collect(Collectors.toList());
 
-        int prevFeedSize = userFeed.size(), attempts = 0;
-
-        while (attempts < 5) {
-            userFeed.addAll(this.userStore.feedUsers(numUsers)
-                                .stream()
-                                .filter(user -> !userFeed.contains(user)
+        if (userFeed.size() >= numUsers) {
+            // Case for very attractive person
+            // GET THEM OFF THE APP
+            Collections.shuffle(userFeed);
+            return userFeed.subList(0, numUsers);
+        }
+        else {
+            int tolerance = 3;
+            int tolIts = 0;
+            int totIts = 0;
+            while (userFeed.size() < numUsers) {
+                int finalTolerance = tolerance;
+                List<Profile> fedUsers = this.userStore.feedUsers(numUsers * 2);
+                if (tolerance > 0) {
+                    // request more users that output because assuming most wont fit tolerance
+                    userFeed.addAll(fedUsers
+                            .stream()
+                            .filter(user -> !userFeed.contains(user)
+                                    && !this.matchStore.getLikes(userID).contains(user.getUserID())
+                                    && !this.matchStore.getDislikes(userID).contains(user.getUserID())
+                                    && !this.matchStore.getDislikes(user.getUserID()).contains(userID)
+                                    && !this.matchStore.isMatch(user.getUserID(), userID)
+                                    && !user.getUserID().equals(userID)
+                                    && similarity(user, this.userStore.getProfileFromId(userID)) >= finalTolerance)
+                            .collect(Collectors.toList()));
+                    // if the size of the fed users is less than requested (meaning there are less users than requested),
+                    // then decrease the tolerance immediately since everyone that could have been added at this
+                    // tolerance has been
+                    if (fedUsers.size() < numUsers * 2) {
+                        tolerance -= 1;
+                        continue;
+                    }
+                }
+                else {
+                    // no point of calling similarity function if tolerance is 0 or less (waste of time)
+                    userFeed.addAll(fedUsers
+                            .stream()
+                            .filter(user -> !userFeed.contains(user)
                                     && !this.matchStore.getLikes(userID).contains(user.getUserID())
                                     && !this.matchStore.getDislikes(userID).contains(user.getUserID())
                                     && !this.matchStore.getDislikes(user.getUserID()).contains(userID)
                                     && !this.matchStore.isMatch(user.getUserID(), userID)
                                     && !user.getUserID().equals(userID))
-                                .collect(Collectors.toList()));
-
-            if (userFeed.size() == prevFeedSize) {
-                attempts++;
+                            .collect(Collectors.toList()));
+                    // if the size of the users is less than requested (meaning there are less users than requested),
+                    // then end loop immediately because everyone that was eligible to be added was added
+                    if (fedUsers.size() < numUsers * 2) {
+                        break;
+                    }
+                }
+                if (totIts == 9) {
+                    break;
+                }
+                else if (tolIts == 1) {
+                    tolerance -= 1;
+                    tolIts = 0;
+                    totIts += 1;
+                }
+                else {
+                    tolIts += 1;
+                    totIts += 1;
+                }
             }
-            else {
-                prevFeedSize = userFeed.size();
-                attempts = 0;
+            Collections.shuffle(userFeed);
+            if (userFeed.size() >= numUsers) {
+                return userFeed.subList(0, numUsers);
             }
+            return userFeed;
         }
-        // done so that not all the people that liked them came up first
-        Collections.shuffle(userFeed);
-
-        return userFeed;
     }
 
     @Override
@@ -60,4 +104,24 @@ public class MatchFeedServiceSQL implements MatchFeedService {
 
     @Override
     public UserStore getUserStore() { return this.userStore; }
+
+    public int similarity(Profile one, Profile two) {
+        int same = 0;
+
+        String ones = one.getInterests().toLowerCase();
+        String twos = two.getInterests().toLowerCase();
+
+
+        Set<String> oneInterests = new HashSet<>(Arrays.asList(ones.split(",")));
+        String[] twoInterests = twos.split(",");
+
+
+        for (String interest : twoInterests) {
+            if (oneInterests.contains(interest)) {
+                same += 1;
+            }
+        }
+
+        return same;
+    }
 }

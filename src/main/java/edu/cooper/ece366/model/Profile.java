@@ -1,8 +1,6 @@
 package edu.cooper.ece366.model;
 
 public class Profile {
-    // Variables
-    // ----------
     private String userID;
     private String name;
     private int age;
@@ -21,8 +19,6 @@ public class Profile {
         this.interests = ints;
     }
 
-    // Setters
-    // --------
     public void setName(String name) { this.name = name; }
 
     public void setAge(int age) { this.age = age; }
@@ -35,8 +31,6 @@ public class Profile {
 
     public void setInterests(String interests) { this.interests = interests; }
 
-    // Getters
-    // --------
     public String getUserID() { return this.userID; }
 
     public String getName() { return this.name; }

@@ -6,6 +6,7 @@ import static spark.Spark.initExceptionHandler;
 import static spark.Spark.options;
 import static spark.Spark.post;
 
+import edu.cooper.ece366.service.EmailService;
 import spark.ResponseTransformer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,7 +49,9 @@ public class App
                             new MatchFeedServiceSQL(new MatchStoreMySQL(jdbi), new UserStoreMySQL(jdbi)),
                             new ConversationStoreMySQL(jdbi),
                             new Cookies(jdbi),
-                            gson);
+                            gson,
+                            new EmailService("markkoszykowski@gmail.com", "")
+        );
 
         options(
                 "/*",
@@ -75,36 +78,51 @@ public class App
                     res.type("application/json");
                 });
 
+        // method to test server connection
         get("/ping", (req, res) -> "OK");
+        // method to signup
         // doesnt need a get method (can be done in frontend)
         post("/signup", handler::signup, responseTransformer);
+        // method to login with create account
         // doesnt need a get method (can be done in frontend)
         post("/login", handler::login, responseTransformer);
+        // method to logout if logged in
         // doesnt need a get method (can be done in frontend)
         post("/logout", handler::logout, responseTransformer);
-        // may delete since same as below
-        // get("/me", handler::me, responseTransformer);
+        // method to retrieve persons account
         get("/user/:email", handler::getUser, responseTransformer);
-        // requests password ("password")
+        // method to delete account (and all associated data on server)
         post("/user/:email/delete", handler::deleteAccount, responseTransformer);
-        // requests password (for verification) ("password") and new email ("email") in body
+        // method to update a users email associated with account (requires password check)
         post("/user/:email/editEmail", handler::changeEmail, responseTransformer);
-        // requests old password (for verification) ("old_password") and new password ("new_password") in body
+        // method to update a users password (requires password check)
         post("/user/:email/editPassword", handler::changePassword, responseTransformer);
-        // doesnt need a get method (can be done in frontend)
+        // method to create a profile for an account
         post("/user/:email/create", handler::create, responseTransformer);
+        // method to retrieve profile associated with account
         get("/user/:email/profile", handler::getProfile, responseTransformer);
+        // method to update a users profile
         post("/user/:email/profile/edit", handler::editProfile, responseTransformer);
+        // method to get a feed for a person
         // no post method needed (use like/dislike as necessary)
         get("/user/:email/feed", handler::getFeed, responseTransformer);
+        // method to send a like to another profile
         post("/user/:email/feed/like", handler::like, responseTransformer);
+        // method to send a dislike to another profile
         post("/user/:email/feed/dislike", handler::dislike, responseTransformer);
+        // method to retrieve conversations with matched users
         // doesnt need post method (cant create new conversation without match)
         get("/user/:email/convos", handler::getConvos, responseTransformer);
+        // method to get a specific conversation with a matched user
         // doesnt need post method (use send to post/send message)
         get("/user/:email/convos/:matchId", handler::getConvo, responseTransformer);
+        // method to send a message in a conversation
         post("/user/:email/convos/:matchId/send", handler::sendMessage, responseTransformer);
+        // method to unmatch with a specific user
         // doesnt need get method needed
         post("/user/:email/convos/:matchId/unmatch", handler::unmatch, responseTransformer);
+        // method to get a persons profile if they matched
+        // shouldnt have post method because cant change others profiles
+        get("/user/:email/profile/:matchId", handler::getMatchProfile, responseTransformer);
     }
 }
