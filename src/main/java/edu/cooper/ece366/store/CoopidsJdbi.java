@@ -9,6 +9,7 @@ public class CoopidsJdbi {
 
     public static Jdbi create(String jdbcUrl, String user, String pass) { return Jdbi.create(jdbcUrl, user, pass); }
 
+    // Sets up the schema on App launch based on sql file provided
     public static void setupSchema(Jdbi jdbi, String sqlFilePath) {
         File schemaFile = new File(sqlFilePath);
 

@@ -24,5 +24,6 @@ public interface MatchStore {
     // Returns list of userIDs that matched with user (users liked each other)
     List<String> getMatches(String userID);
 
+    // Returns boolean which indicates whether two users matched
     boolean isMatch(String userID, String matchUserID);
 }

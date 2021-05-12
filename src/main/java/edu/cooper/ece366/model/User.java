@@ -1,17 +1,11 @@
 package edu.cooper.ece366.model;
 
 public class User {
-    // Variables
-    // ----------
     private boolean hasProfile;
     private final String userID;
     private String email;
     private String password;
 
-    // Methods
-    // --------
-
-    // Constructor
     public User(String uid, String email, String password, boolean hp) {
         this.userID = uid;
         this.email = email;

@@ -31,6 +31,8 @@ public class UserStoreMySQL implements UserStore {
         return userID;
     }
 
+    // Checks if email is already associated with an account
+    // Returns true if email is already in use
     @Override
     public boolean checkEmail(String email) {
         List<String> presentEmails = this.jdbi.withHandle(handle ->
@@ -40,6 +42,8 @@ public class UserStoreMySQL implements UserStore {
         return presentEmails.contains(email);
     }
 
+    // Checks database if provided email and password are correct
+    // Returns true is correct
     @Override
     public boolean validateUser(String email, String password) {
         Optional<String> dbPass = this.jdbi.withHandle(handle ->
@@ -50,6 +54,7 @@ public class UserStoreMySQL implements UserStore {
         return dbPass.isPresent() && dbPass.get().equals(password);
     }
 
+    // Returns whether or not a userID is associated with an account
     @Override
     public boolean isUser(String userID) {
         List<String> presentIDs = this.jdbi.withHandle(handle ->
@@ -63,7 +68,7 @@ public class UserStoreMySQL implements UserStore {
     // Only call if existence of user is known
     @Override
     public User getUserFromId(String userID) {
-        Optional<User> user = this.jdbi.withHandle(handle ->
+        return this.jdbi.withHandle(handle ->
                 handle.createQuery("SELECT * FROM users WHERE userID = ?")
                         .bind(0, userID)
                         .map((rs, ctx) ->
@@ -71,8 +76,7 @@ public class UserStoreMySQL implements UserStore {
                                         rs.getString("email"),
                                         rs.getString("password"),
                                         rs.getBoolean("hasProfile")))
-                        .findOne());
-        return user.orElse(null);
+                        .one());
     }
 
     // Adds user
@@ -156,6 +160,7 @@ public class UserStoreMySQL implements UserStore {
                         profile.getUserID()));
     }
 
+    // Returns the email based on userID
     @Override
     public String getEmailFromId(String userID) {
         return this.jdbi.withHandle(handle ->
@@ -165,6 +170,7 @@ public class UserStoreMySQL implements UserStore {
                         .one());
     }
 
+    // Returns the userID based on email
     @Override
     public String getIdFromEmail(String email) {
         return this.jdbi.withHandle(handle ->
@@ -192,18 +198,21 @@ public class UserStoreMySQL implements UserStore {
                         .one());
     }
 
+    // Updates a users email
     @Override
     public void updateEmail(String userID, String email) {
         this.jdbi.useHandle(handle ->
                 handle.execute("UPDATE users SET email = ? WHERE userID = ?", email, userID));
     }
 
+    // Updates a users password
     @Override
     public void updatePassword(String userID, String password) {
         this.jdbi.useHandle(handle ->
                 handle.execute("UPDATE users SET password = ? WHERE userID = ?", password, userID));
     }
 
+    // Updates a profile
     @Override
     public void updateProfile(Profile profile) {
         this.jdbi.useHandle(handle ->
