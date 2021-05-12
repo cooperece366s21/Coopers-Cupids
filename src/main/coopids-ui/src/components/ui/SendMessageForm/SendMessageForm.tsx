@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Box, Button, Flex, FormControl, Input} from "@chakra-ui/react";
+import {Button, Flex, FormControl, Input} from "@chakra-ui/react";
 
 type SendMessageFormProps = {sendMessage: (toUserID: string, newMessage: string) => void;
                              toUserID: string};

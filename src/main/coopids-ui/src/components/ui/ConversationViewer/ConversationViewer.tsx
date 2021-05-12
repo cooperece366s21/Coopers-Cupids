@@ -1,14 +1,13 @@
 import React, {Component} from "react";
-import {Conversation, Message, unmatch} from "../../../services/api";
-import {Avatar, Box, Button, Divider, Flex, Grid, GridItem, Heading, Stack, Text} from "@chakra-ui/react";
+import {Conversation, Message} from "../../../services/api";
+import {Avatar, Box, Button, Flex, Heading, Stack, Text} from "@chakra-ui/react";
 import SendMessageForm from "../SendMessageForm/SendMessageForm";
 import "./ConversationViewer.css"
 import {FaHeartBroken} from "react-icons/all";
 
 
 type ConversationViewerProps = {currentConversation: Message[] | null; toUserInfo: Conversation | null;
-                                currentUserID: string; noConvos: boolean;
-                                sendMessage: (toUserID: string, newMessage: string) => void;
+                                noConvos: boolean; sendMessage: (toUserID: string, newMessage: string) => void;
                                 unmatch: (userID: string) => void; showProfile: (userID: string | null) => void};
 type ConversationViewerState = {};
 
@@ -36,7 +35,7 @@ class ConversationViewer extends Component<ConversationViewerProps,ConversationV
         const messages = this.props.currentConversation.map(
             (message, index) => {
                 // Checks who sent message
-                const fromCurrentUser = message.fromUserID === this.props.currentUserID;
+                const fromCurrentUser = message.fromUserID !== this.props.toUserInfo!.userID;
 
                 // Checks timestamp
                 const messageDate = message.timestamp.toString().split(',').map(e => e.trim());

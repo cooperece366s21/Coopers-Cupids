@@ -4,7 +4,6 @@ import {Button, Flex, Heading, Stack} from "@chakra-ui/react";
 import {
     Conversation,
     getAllConversations,
-    getCurrentUserID,
     getUserConversation, getUserProfile,
     Message, Profile,
     sendMessage, unmatch
@@ -137,7 +136,6 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
     }
 
     render() {
-        const currentUserID = getCurrentUserID();
 
         if(this.state.isLoading) {
             return (
@@ -170,8 +168,8 @@ class MessageLayout extends Component<MessageLayoutProps,MessageLayoutState> {
                                         null : this.state.currentConversation}
                                     toUserInfo={this.state.conversationDisplayed === null ?
                                         null : this.state.conversations[this.state.conversationDisplayed]}
-                                    noConvos = {this.state.conversations.length === 0} currentUserID={currentUserID}
-                                    sendMessage={this.sendMessage} unmatch={this.unmatch} showProfile={this.showProfile}
+                                    noConvos = {this.state.conversations.length === 0} sendMessage={this.sendMessage}
+                                    unmatch={this.unmatch} showProfile={this.showProfile}
                 />
             </Stack>
         );

@@ -4,7 +4,6 @@ import {
     NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper,
     NumberDecrementStepper, Button, Textarea, Grid, GridItem, Flex, Spacer
 } from "@chakra-ui/react";
-import FormMessage from "../FormMessage/FormMessage";
 import {Profile} from "../../../services/api";
 
 // currName is used to change text based on own profile vs feed viewing
@@ -17,22 +16,17 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
     constructor(props: ProfileViewerProps) {
         super(props);
         this.state = {isLoading: false, editedProfile: {...this.props.profile}}
-        this.props.profile.interests = this.props.profile.interests !== null ?
-            this.props.profile.interests.split(',').join(', ') : "";
     }
 
     onSubmit = async (newProfile: Profile) => {
         this.setState({isLoading: true});
 
-        // Can never be empty from form, but need to keep TypeScript happy
-        if(newProfile.interests !== null) {
-            // Removes whitespace from interest list
-            const interestList = newProfile.interests.split(",")
-                .map(interest => interest.trim()).join();
+        // Removes whitespace from interest list
+        const interestList = newProfile.interests.split(",")
+            .map(interest => interest.trim()).join();
 
-            // Updates profile
-            newProfile.interests = interestList;
-        }
+        // Updates profile
+        newProfile.interests = interestList;
 
         await this.props.editProfile(newProfile);
 
@@ -186,18 +180,24 @@ class ProfileViewer extends Component<ProfileViewerProps,ProfileViewerState> {
 
                         {/* Age & Location*/}
                         <GridItem colSpan={2} mb={4} mt={[0,0,4,6]} ml={6} mr={6}>
-                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2}>I am <b>{this.props.profile.age} years old</b> and currently located
-                                in <b>{this.props.profile.location}</b></Text>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2}>
+                                I am <b>{this.props.profile.age} years old</b> and currently located in <b>
+                                {this.props.profile.location}</b>
+                            </Text>
                         </GridItem>
 
                         {/* Bio */}
                         <GridItem colSpan={2} mb={4} ml={6} mr={6}>
-                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="center"><b>Let me tell you a little about myself:</b> {this.props.profile.bio}</Text>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="center">
+                                <b>Let me tell you a little about myself:</b> {this.props.profile.bio}
+                            </Text>
                         </GridItem>
 
                         {/* Interests */}
                         <GridItem colSpan={2} ml={6} mr={6}>
-                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="center"><b>My interests include:</b> {this.props.profile.interests}</Text>
+                            <Text fontSize={["xl","xl","2xl","2xl"]} lineHeight={2} align="center">
+                                <b>My interests include:</b> {this.props.profile.interests.split(',').join(', ')}
+                            </Text>
                         </GridItem>
                     </Grid>
                 )

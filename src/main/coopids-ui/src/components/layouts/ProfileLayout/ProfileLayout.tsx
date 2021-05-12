@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Box, Heading, Stack} from "@chakra-ui/react";
 import EditButton from "../../ui/EditButton/EditButton";
 import ProfileViewer from "../../ui/ProfileViewer/ProfileViewer";
-import {Profile, getCurrentUserProfile, setUserProfile} from "../../../services/api";
+import {Profile, getCurrentUserProfile, editProfile, setUserProfile} from "../../../services/api";
 
 type ProfileLayoutProps = {checkCookieExpiration: () => void};
 type ProfileLayoutState = {isEditing: boolean; profile: Profile; hasProfile: boolean; isLoading: boolean};
@@ -19,7 +19,7 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
         // Checks if cookies expired (request failed)
         this.props.checkCookieExpiration();
 
-        if(json != null) {
+        if(json !== null) {
             this.setState({isEditing: false, profile: json, hasProfile: true, isLoading: false});
         } else {
             this.setState({isEditing: false, profile: {} as Profile, hasProfile: false, isLoading: false});
@@ -32,7 +32,8 @@ class ProfileLayout extends Component<ProfileLayoutProps,ProfileLayoutState> {
 
     updateProfile = async (newProfile: Profile) => {
         this.setState({isLoading: true});
-        const json = await setUserProfile(newProfile);
+
+        const json = this.state.hasProfile ? await editProfile(newProfile) : await setUserProfile(newProfile);
 
         // Checks if cookies expired (request failed)
         this.props.checkCookieExpiration();
