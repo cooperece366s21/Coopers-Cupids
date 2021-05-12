@@ -50,7 +50,7 @@ public class App
                             new ConversationStoreMySQL(jdbi),
                             new Cookies(jdbi),
                             gson,
-                            new EmailService("markkoszykowski@gmail.com", "polska12")
+                            new EmailService("markkoszykowski@gmail.com", "")
         );
 
         options(
