@@ -18,11 +18,14 @@ class HomeLayout extends Component<HomeLayoutProps,HomeLayoutState> {
 
                     {/* About */}
                     <Heading size="md" pt={8} pb={4}> About Cooper's Cupids </Heading>
-                    <Text p={4} pt={0} align="justify"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                        cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    <Text p={4} pt={0} align="justify">
+                        Are your unhappy in your current relationship? Are you lonely, but don't know any single people
+                        in your area? Well, worry no more! Whether you're going through a mid-life crisis or just
+                        getting into the game, Cooper's Cupids (Coopids) is the website for you. Cooper's Coopids is
+                        the newest and most elite dating app of the decade. With our seamless profile creation,
+                        state-of-the-art feed building algorithm, and a conversation interface that will keep you
+                        talking all night long, we will make sure you find that special someone and solve all of life's
+                        woes.
                     </Text>
 
                     {/* Features */}
